@@ -27,12 +27,8 @@
     <link rel="manifest" href="/static/assets/icons/site.webmanifest">
     
     <style>
-        /* ===== القواعد الأساسية (ثابتة لجميع القوالب) ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ===== القواعد الأساسية ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Tajawal', 'Segoe UI', Arial, sans-serif;
@@ -61,54 +57,25 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         
-        .avatar {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transition: transform 0.3s ease;
-            display: block;
-        }
-        
-        .avatar:hover {
-            transform: scale(1.05);
-        }
+        .avatar { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; display: block; }
+        .avatar:hover { transform: scale(1.05); }
         
         .avatar-fallback {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
+        .avatar-fallback span { font-size: 56px; }
         
-        .avatar-fallback span {
-            font-size: 56px;
-        }
-        
-        .avatar-container.loading {
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        
+        .avatar-container.loading { animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse {
             0% { opacity: 0.6; transform: scale(0.98); }
             50% { opacity: 1; transform: scale(1); }
             100% { opacity: 0.6; transform: scale(0.98); }
         }
         
-        h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-        
-        .username {
-            font-size: 14px;
-            margin-bottom: 20px;
-            direction: ltr;
-        }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .username { font-size: 14px; margin-bottom: 20px; direction: ltr; }
         
         .bio {
             padding: 15px 20px;
@@ -120,65 +87,24 @@
             word-wrap: break-word;
             white-space: pre-wrap;
         }
-        
-        .bio:empty {
-            display: none;
-        }
-        
-        .divider {
-            height: 1px;
-            margin: 25px 0;
-        }
+        .bio:empty { display: none; }
         
         /* أزرار الحسابات */
         .account-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 85%;
-            margin: 12px auto;
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            color: white;
-            border: none;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            width: 85%; margin: 12px auto; padding: 12px 20px;
+            border-radius: 50px; text-decoration: none; font-size: 16px; font-weight: bold;
+            transition: all 0.3s ease; color: white; border: none; cursor: pointer;
+            position: relative; overflow: hidden;
         }
-        
         .account-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.1);
-            transform: scaleX(0);
-            transform-origin: right;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.1); transform: scaleX(0); transform-origin: right;
             transition: transform 0.3s ease;
         }
-        
-        .account-btn:hover::before {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-        
-        .account-btn:hover {
-            transform: translateY(-3px);
-            filter: brightness(1.05);
-        }
-        
-        .account-btn i {
-            font-size: 20px;
-            width: 24px;
-            text-align: center;
-        }
+        .account-btn:hover::before { transform: scaleX(1); transform-origin: left; }
+        .account-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
+        .account-btn i { font-size: 20px; width: 24px; text-align: center; }
         
         /* ألوان المنصات */
         .platform-youtube { background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); }
@@ -193,30 +119,35 @@
         .platform-github { background: linear-gradient(135deg, #333333 0%, #242424 100%); }
         .platform-telegram { background: linear-gradient(135deg, #0088cc 0%, #006699 100%); }
         .platform-whatsapp { background: linear-gradient(135deg, #25d366 0%, #128C7E 100%); }
+        .platform-phone { background: linear-gradient(135deg, #34b7f1 0%, #1e88e5 100%); }
+        .platform-email { background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%); }
         
         /* الروابط المخصصة */
-        .custom-link {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+        .custom-link { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         
-        /* قسم وسائل الدفع */
-        .payment-section {
-            margin: 30px 0 20px;
-            padding: 20px 0;
+        /* قسم معلومات الاتصال */
+        .contacts-section {
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
         }
-        .payment-title {
-            font-size: 16px;
+        .contacts-title {
+            font-size: 15px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
-        .payment-title i {
-            font-size: 18px;
-        }
+        .contact-item { margin: 10px 0; }
+        
+        /* قسم وسائل الدفع */
+        .payment-section { margin: 30px 0 20px; padding: 20px 0; }
+        .payment-title { font-size: 16px; font-weight: bold; margin-bottom: 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .payment-title i { font-size: 18px; }
         .payment-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
@@ -225,58 +156,23 @@
             align-items: center;
         }
         .payment-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            text-decoration: none; transition: all 0.3s ease;
+            cursor: pointer; width: 100%;
         }
-        .payment-item:hover {
-            transform: translateY(-5px);
-        }
+        .payment-item:hover { transform: translateY(-5px); }
         .payment-icon {
-            width: 55px;
-            height: 55px;
-            border-radius: 16px;
-            object-fit: contain;
-            background: white;
-            padding: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 55px; height: 55px; border-radius: 16px; object-fit: contain;
+            background: white; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-        .payment-item:hover .payment-icon {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transform: scale(1.02);
-        }
-        .payment-name {
-            font-size: 10px;
-            margin-top: 6px;
-            font-weight: 500;
-            text-align: center;
-        }
+        .payment-item:hover .payment-icon { box-shadow: 0 8px 20px rgba(0,0,0,0.15); transform: scale(1.02); }
+        .payment-name { font-size: 10px; margin-top: 6px; font-weight: 500; text-align: center; }
         
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            font-size: 13px;
-        }
-        
-        .footer a {
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        
-        .views {
-            margin-top: 15px;
-            font-size: 11px;
-        }
+        .footer { margin-top: 30px; padding-top: 20px; font-size: 13px; }
+        .footer a { text-decoration: none; font-weight: bold; transition: 0.3s; }
+        .footer a:hover { text-decoration: underline; }
+        .views { margin-top: 15px; font-size: 11px; }
         
         @media (max-width: 600px) {
             body { padding: 15px; }
@@ -290,56 +186,22 @@
             .payment-grid { gap: 12px 8px; }
         }
         
-        @media (min-width: 601px) and (max-width: 900px) {
-            .payment-grid { grid-template-columns: repeat(6, 1fr); }
-        }
-        @media (min-width: 901px) {
-            .payment-grid { grid-template-columns: repeat(6, 1fr); }
-        }
+        @media (min-width: 601px) and (max-width: 900px) { .payment-grid { grid-template-columns: repeat(6, 1fr); } }
+        @media (min-width: 901px) { .payment-grid { grid-template-columns: repeat(6, 1fr); } }
         
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .container {
-            animation: fadeInUp 0.6s ease-out;
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.6s ease-out; }
         
         /* شاشة التحميل */
         #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
             transition: opacity 0.5s ease-out;
         }
-        
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            margin-top: 20px;
-            color: white;
-            font-size: 16px;
-        }
+        .loader { width: 60px; height: 60px; border: 5px solid rgba(255,255,255,0.3); border-top: 5px solid white; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { margin-top: 20px; color: white; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -361,6 +223,26 @@
         
         <div id="accountsContainer"></div>
         <div id="customLinksContainer"></div>
+        
+        <!-- قسم معلومات الاتصال (الجوال والإيميل) -->
+        <div id="contactsSection" class="contacts-section" style="display: none;">
+            <div class="contacts-title">
+                <i class="fas fa-address-card"></i>
+                <span>📞 معلومات الاتصال</span>
+            </div>
+            <div id="phoneContainer" class="contact-item" style="display: none;">
+                <a href="#" id="phoneLink" class="account-btn platform-phone" target="_blank">
+                    <i class="fas fa-phone-alt"></i>
+                    <span id="phoneText"></span>
+                </a>
+            </div>
+            <div id="emailContainer" class="contact-item" style="display: none;">
+                <a href="#" id="emailLink" class="account-btn platform-email" target="_blank">
+                    <i class="fas fa-envelope"></i>
+                    <span id="emailText"></span>
+                </a>
+            </div>
+        </div>
         
         <!-- قسم وسائل الدفع الإلكتروني -->
         <div id="paymentSection" class="payment-section" style="display: none;">
@@ -427,14 +309,9 @@
                 'pink': '/static/themes/pink.css',
                 'ocean': '/static/themes/ocean.css'
             };
-            
             const themeUrl = themeMap[themeName] || themeMap['default'];
             const themeLink = document.getElementById('themeStylesheet');
-            
-            if (themeLink) {
-                themeLink.href = themeUrl;
-                console.log(`تم تطبيق الثيم: ${themeName}`);
-            }
+            if (themeLink) themeLink.href = themeUrl;
         }
         
         // =====================================================
@@ -458,21 +335,14 @@
         function displayAccounts(accounts) {
             const container = document.getElementById('accountsContainer');
             if (!container) return;
-            
             let html = '';
             for (const [platform, identifier] of Object.entries(accounts)) {
                 let username = null;
-                
-                if (typeof identifier === 'string') {
-                    username = identifier;
-                } else if (identifier && typeof identifier === 'object' && identifier.account_identifier) {
-                    username = identifier.account_identifier;
-                }
-                
+                if (typeof identifier === 'string') username = identifier;
+                else if (identifier && typeof identifier === 'object' && identifier.account_identifier) username = identifier.account_identifier;
                 if (username) {
                     const cleanIdentifier = username.replace('@', '');
                     let url = '';
-                    
                     switch(platform) {
                         case 'youtube': url = `https://youtube.com/@${cleanIdentifier}`; break;
                         case 'instagram': url = `https://instagram.com/${cleanIdentifier}`; break;
@@ -486,13 +356,7 @@
                         case 'whatsapp': url = `https://wa.me/${cleanIdentifier}`; break;
                         default: continue;
                     }
-                    
-                    html += `
-                        <a href="${url}" class="account-btn platform-${platform}" target="_blank" rel="noopener noreferrer">
-                            <i class="fab fa-${platform}"></i>
-                            <span>${platformNames[platform] || platform}</span>
-                        </a>
-                    `;
+                    html += `<a href="${url}" class="account-btn platform-${platform}" target="_blank" rel="noopener noreferrer"><i class="fab fa-${platform}"></i><span>${platformNames[platform] || platform}</span></a>`;
                 }
             }
             container.innerHTML = html;
@@ -505,17 +369,11 @@
         function displayCustomLinks(links) {
             const container = document.getElementById('customLinksContainer');
             if (!container) return;
-            
             if (links && links.length > 0) {
                 let html = '';
                 for (const link of links) {
                     if (link.url && link.title) {
-                        html += `
-                            <a href="${link.url}" class="account-btn custom-link" target="_blank" rel="noopener noreferrer">
-                                <i class="fas fa-link"></i>
-                                <span>${link.title}</span>
-                            </a>
-                        `;
+                        html += `<a href="${link.url}" class="account-btn custom-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-link"></i><span>${link.title}</span></a>`;
                     }
                 }
                 container.innerHTML = html;
@@ -523,94 +381,113 @@
         }
         
         // =====================================================
-        // دالة الحصول على رابط التطبيق
+        // دالة عرض جهات الاتصال (الجوال والإيميل)
+        // =====================================================
+        
+        function displayContacts(contacts) {
+            const contactsSection = document.getElementById('contactsSection');
+            const phoneContainer = document.getElementById('phoneContainer');
+            const emailContainer = document.getElementById('emailContainer');
+            const phoneLink = document.getElementById('phoneLink');
+            const emailLink = document.getElementById('emailLink');
+            const phoneText = document.getElementById('phoneText');
+            const emailText = document.getElementById('emailText');
+            
+            if (!contactsSection) return;
+            let hasAnyContact = false;
+            
+            if (contacts && contacts.phone && contacts.phone.trim()) {
+                const phone = contacts.phone.trim();
+                phoneLink.href = `tel:${phone}`;
+                phoneText.innerText = `📱 اتصال: ${phone}`;
+                phoneContainer.style.display = 'block';
+                hasAnyContact = true;
+            } else {
+                phoneContainer.style.display = 'none';
+            }
+            
+            if (contacts && contacts.email && contacts.email.trim()) {
+                const email = contacts.email.trim();
+                emailLink.href = `mailto:${email}`;
+                emailText.innerText = `✉️ ${email}`;
+                emailContainer.style.display = 'block';
+                hasAnyContact = true;
+            } else {
+                emailContainer.style.display = 'none';
+            }
+            
+            contactsSection.style.display = hasAnyContact ? 'block' : 'none';
+        }
+        
+        // =====================================================
+        // دوال وسائل الدفع (الانتقال إلى التطبيق مع تتبع النقرات)
         // =====================================================
         
         function getPaymentScheme(methodKey) {
-    const schemes = {
-        'jaib': 'jaib://',           // تطبيق جيب
-        'floosak': 'floosak://',     // تطبيق فلوسك
-        'jawaly': 'jawaly://',       // تطبيق جوالي
-        'mahfazti': 'mahfazti://',   // تطبيق محفظتي
-        'mobilemoney': 'mobilmoney://', // تطبيق موبايل موني
-        'yemenwallet': 'yemenwallet://', // تطبيق يمن والت
-        'shilling': 'shilling://',   // تطبيق شلن
-        'easywallet': 'easywallet://', // تطبيق سهل
-        'onecash': 'onecash://',     // تطبيق ون كاش
-        'kremi': 'kremi://',         // تطبيق كريمي
-        'cash': 'cash://',           // تطبيق كاش
-        'mtnmomo': 'mtnmomo://'      // تطبيق MTN Mobile Money
-    };
-    return schemes[methodKey] || '';
-}
-
-// إضافة روابط متجر التطبيقات للتحويل إذا لم يكن التطبيق مثبتاً
-function getAppStoreUrl(methodKey) {
-    const storeUrls = {
-        'jaib': 'https://play.google.com/store/apps/details?id=com.jaib.app', // رابط جيب في المتجر
-        'yemenwallet': 'https://play.google.com/store/apps/details?id=com.s2m.yemenpost.customer.android', // رابط يمن والت في المتجر [citation:4]
-        // أضف باقي الروابط حسب توفرها
-    };
-    return storeUrls[methodKey] || '';
-}
-
-// دالة محسنة لفتح التطبيق أو الانتقال للمتجر
-function openPaymentApp(methodKey, accountNumber) {
-    const scheme = getPaymentScheme(methodKey);
-    const appUrl = `${scheme}${accountNumber}`;
-    const storeUrl = getAppStoreUrl(methodKey);
-    
-    // محاولة فتح التطبيق
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = appUrl;
-    document.body.appendChild(iframe);
-    
-    // إذا لم يفتح التطبيق خلال ثانية، انتقل إلى المتجر
-    setTimeout(() => {
-        document.body.removeChild(iframe);
-        if (storeUrl) {
-            window.location.href = storeUrl;
-        } else {
-            // إذا لم يوجد رابط متجر، نفتح صفحة بحث جوجل
-            window.location.href = `https://www.google.com/search?q=${methodKey}+تطبيق`;
+            const schemes = {
+                'jaib': 'jaib://', 'floosak': 'floosak://', 'jawaly': 'jawaly://',
+                'mahfazti': 'mahfazti://', 'mobilemoney': 'mobilmoney://',
+                'yemenwallet': 'yemenwallet://', 'shilling': 'shilling://',
+                'easywallet': 'easywallet://', 'onecash': 'onecash://',
+                'kremi': 'kremi://', 'cash': 'cash://', 'mtnmomo': 'mtnmomo://'
+            };
+            return schemes[methodKey] || '';
         }
-    }, 1000);
-}
         
-        // =====================================================
-        // دالة تتبع النقرات
-        // =====================================================
+        function getAppStoreUrl(methodKey) {
+            const storeUrls = {
+                'jaib': 'https://play.google.com/store/apps/details?id=com.jaib.app',
+                'yemenwallet': 'https://play.google.com/store/apps/details?id=com.s2m.yemenpost.customer.android'
+            };
+            return storeUrls[methodKey] || '';
+        }
         
         async function trackPaymentClick(methodKey, accountNumber) {
             try {
                 await fetch('/api/payment/click', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        method_key: methodKey,
-                        account_number: accountNumber,
-                        page_url: pageUrl
-                    })
+                    body: JSON.stringify({ method_key: methodKey, account_number: accountNumber, page_url: pageUrl })
                 });
-                console.log(`تم تسجيل نقرة على ${methodKey}`);
-            } catch (error) {
-                console.error('Error tracking click:', error);
-            }
+            } catch (error) { console.error('Error tracking click:', error); }
+        }
+        
+        async function openPaymentApp(methodKey, accountNumber, methodName) {
+            const scheme = getPaymentScheme(methodKey);
+            const appUrl = `${scheme}${accountNumber}`;
+            const storeUrl = getAppStoreUrl(methodKey);
+            
+            // تتبع النقرة أولاً
+            await trackPaymentClick(methodKey, accountNumber);
+            
+            // محاولة فتح التطبيق
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = appUrl;
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                if (storeUrl) {
+                    if (confirm(`⚠️ لم يتم فتح تطبيق ${methodName}\nهل تريد التوجه إلى متجر التحميل؟`)) {
+                        window.location.href = storeUrl;
+                    }
+                } else {
+                    alert(`الرجاء تثبيت تطبيق ${methodName} أولاً للقيام بالتحويل.`);
+                }
+            }, 1000);
         }
         
         // =====================================================
-        // دالة عرض وسائل الدفع (معدلة)
+        // دالة عرض وسائل الدفع
         // =====================================================
         
         async function displayPaymentMethods() {
             const section = document.getElementById('paymentSection');
             const grid = document.getElementById('paymentGrid');
-            
             if (!section || !grid) return;
             
             try {
-                // تحميل وسائل الدفع من الخادم
                 const response = await fetch(`/api/payment/load-page?page_url=${pageUrl}`);
                 const result = await response.json();
                 
@@ -619,10 +496,7 @@ function openPaymentApp(methodKey, accountNumber) {
                     return;
                 }
                 
-                const activeWallets = paymentWallets.filter(wallet => {
-                    return result.payment_methods[wallet.id];
-                });
-                
+                const activeWallets = paymentWallets.filter(wallet => result.payment_methods[wallet.id]);
                 if (activeWallets.length === 0) {
                     section.style.display = 'none';
                     return;
@@ -631,30 +505,18 @@ function openPaymentApp(methodKey, accountNumber) {
                 let html = '';
                 for (const wallet of activeWallets) {
                     const accountNumber = result.payment_methods[wallet.id];
-                    const scheme = getPaymentScheme(wallet.id);
-                    const appUrl = `${scheme}${accountNumber}`;
-                    
                     html += `
-                        <a href="${appUrl}" 
-                           class="payment-item" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           data-method-key="${wallet.id}"
-                           data-account="${accountNumber}"
-                           onclick="trackPaymentClick('${wallet.id}', '${accountNumber}')">
+                        <div class="payment-item" onclick="openPaymentApp('${wallet.id}', '${accountNumber}', '${wallet.name}')">
                             <img src="/static/assets/payment-icons/${wallet.id}.webp" 
-                                 alt="${wallet.name}"
-                                 class="payment-icon"
+                                 alt="${wallet.name}" class="payment-icon"
                                  onerror="this.src='/static/assets/payment-icons/placeholder.png'">
                             <span class="payment-name">${wallet.name}</span>
-                        </a>
+                        </div>
                     `;
                 }
                 
                 grid.innerHTML = html;
                 section.style.display = 'block';
-                console.log('تم عرض وسائل الدفع:', activeWallets.map(w => w.name));
-                
             } catch (error) {
                 console.error('Error loading payment methods:', error);
                 section.style.display = 'none';
@@ -668,9 +530,7 @@ function openPaymentApp(methodKey, accountNumber) {
         async function incrementViews(pageUrlParam) {
             try {
                 await supabaseClient.rpc('increment_bio_views', { page_url_param: pageUrlParam });
-            } catch (error) {
-                console.error('Error incrementing views:', error);
-            }
+            } catch (error) { console.error('Error incrementing views:', error); }
         }
         
         // =====================================================
@@ -695,25 +555,14 @@ function openPaymentApp(methodKey, accountNumber) {
                     document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
                     document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
                     
-                    // تطبيق الثيم
                     applyTheme(data.theme_name || 'default');
-                    
-                    // عرض الصورة الشخصية
                     displayAvatar(data.avatar_url, data.display_name);
-                    
-                    // عرض حسابات التواصل
                     displayAccounts(data.accounts || {});
-                    
-                    // عرض الروابط المخصصة
                     displayCustomLinks(data.custom_links || []);
-                    
-                    // عرض وسائل الدفع (باستخدام الدالة المعدلة)
+                    displayContacts(data.contacts || {});
                     await displayPaymentMethods();
-                    
-                    // زيادة عدد المشاهدات
                     await incrementViews(pageUrl);
                     
-                    // إخفاء شاشة التحميل
                     setTimeout(() => {
                         document.getElementById('loading-screen').style.opacity = '0';
                         setTimeout(() => {
@@ -732,14 +581,14 @@ function openPaymentApp(methodKey, accountNumber) {
         
         function showError(message) {
             const loadingScreen = document.getElementById('loading-screen');
-            loadingScreen.innerHTML = `
-                <div style="text-align:center;color:white;">
-                    <h2>❌ ${message}</h2>
-                    <p>عذراً، لم نتمكن من العثور على هذه الصفحة</p>
-                    <a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a>
-                </div>
-            `;
+            loadingScreen.innerHTML = `<div style="text-align:center;color:white;"><h2>❌ ${message}</h2><p>عذراً، لم نتمكن من العثور على هذه الصفحة</p><a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a></div>`;
         }
+        
+        // =====================================================
+        // ربط الدوال للنطاق العام
+        // =====================================================
+        
+        window.openPaymentApp = openPaymentApp;
         
         // =====================================================
         // تهيئة Supabase
