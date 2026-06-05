@@ -436,7 +436,7 @@ def track_payment_click():
                     'method_key': method_key,
                     'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
                     'clicker_user_agent': request.headers.get('User-Agent'),
-                    'clicked_at': 'now()
+                    'clicked_at': 'now()'  # <-- تم إغلاق النص هنا بشكل صحيح
                 })\
                 .execute()
         
