@@ -388,18 +388,18 @@
         // =====================================================
         
         const paymentWallets = [
-            { id: 'jaib', name: 'جيب', scheme: 'jaib://' },
-            { id: 'floosak', name: 'فلوسك', scheme: 'floosak://' },
-            { id: 'jawaly', name: 'جوالي', scheme: 'jawaly://' },
-            { id: 'mahfazti', name: 'محفظتي', scheme: 'mahfazti://' },
-            { id: 'mobilemoney', name: 'موبايل موني', scheme: 'mobilmoney://' },
-            { id: 'yemenwallet', name: 'يمن والت', scheme: 'yemenwallet://' },
-            { id: 'shilling', name: 'شلن', scheme: 'shilling://' },
-            { id: 'easywallet', name: 'سهل', scheme: 'easywallet://' },
-            { id: 'onecash', name: 'ون كاش', scheme: 'onecash://' },
-            { id: 'kremi', name: 'كريمي', scheme: 'kremi://' },
-            { id: 'cash', name: 'كاش', scheme: 'cash://' },
-            { id: 'mtnmomo', name: 'MTN Mobile Money', scheme: 'mtnmomo://' }
+            { id: 'jaib', name: 'جيب' },
+            { id: 'floosak', name: 'فلوسك' },
+            { id: 'jawaly', name: 'جوالي' },
+            { id: 'mahfazti', name: 'محفظتي' },
+            { id: 'mobilemoney', name: 'موبايل موني' },
+            { id: 'yemenwallet', name: 'يمن والت' },
+            { id: 'shilling', name: 'شلن' },
+            { id: 'easywallet', name: 'سهل' },
+            { id: 'onecash', name: 'ون كاش' },
+            { id: 'kremi', name: 'كريمي' },
+            { id: 'cash', name: 'كاش' },
+            { id: 'mtnmomo', name: 'MTN Mobile Money' }
         ];
         
         const platformNames = { 
@@ -523,48 +523,108 @@
         }
         
         // =====================================================
-        // دالة عرض وسائل الدفع
+        // دالة الحصول على رابط التطبيق
         // =====================================================
         
-        function displayPaymentMethods(paymentMethodsData) {
+        function getPaymentScheme(methodKey) {
+            const schemes = {
+                'jaib': 'jaib://',
+                'floosak': 'floosak://',
+                'jawaly': 'jawaly://',
+                'mahfazti': 'mahfazti://',
+                'mobilemoney': 'mobilmoney://',
+                'yemenwallet': 'yemenwallet://',
+                'shilling': 'shilling://',
+                'easywallet': 'easywallet://',
+                'onecash': 'onecash://',
+                'kremi': 'kremi://',
+                'cash': 'cash://',
+                'mtnmomo': 'mtnmomo://'
+            };
+            return schemes[methodKey] || '';
+        }
+        
+        // =====================================================
+        // دالة تتبع النقرات
+        // =====================================================
+        
+        async function trackPaymentClick(methodKey, accountNumber) {
+            try {
+                await fetch('/api/payment/click', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        method_key: methodKey,
+                        account_number: accountNumber,
+                        page_url: pageUrl
+                    })
+                });
+                console.log(`تم تسجيل نقرة على ${methodKey}`);
+            } catch (error) {
+                console.error('Error tracking click:', error);
+            }
+        }
+        
+        // =====================================================
+        // دالة عرض وسائل الدفع (معدلة)
+        // =====================================================
+        
+        async function displayPaymentMethods() {
             const section = document.getElementById('paymentSection');
             const grid = document.getElementById('paymentGrid');
             
             if (!section || !grid) return;
             
-            const activeWallets = paymentWallets.filter(wallet => {
-                return paymentMethodsData && paymentMethodsData[wallet.id];
-            });
-            
-            if (activeWallets.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-            
-            let html = '';
-            for (const wallet of activeWallets) {
-                const accountNumber = paymentMethodsData[wallet.id];
-                const appUrl = `${wallet.scheme}${accountNumber}`;
+            try {
+                // تحميل وسائل الدفع من الخادم
+                const response = await fetch(`/api/payment/load-page?page_url=${pageUrl}`);
+                const result = await response.json();
                 
-                html += `
-                    <a href="${appUrl}" 
-                       class="payment-item" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       data-wallet="${wallet.id}"
-                       data-number="${accountNumber}">
-                        <img src="/static/assets/payment-icons/${wallet.id}.webp" 
-                             alt="${wallet.name}"
-                             class="payment-icon"
-                             onerror="this.src='/static/assets/payment-icons/placeholder.png'">
-                        <span class="payment-name">${wallet.name}</span>
-                    </a>
-                `;
+                if (!result.success || !result.payment_methods) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                const activeWallets = paymentWallets.filter(wallet => {
+                    return result.payment_methods[wallet.id];
+                });
+                
+                if (activeWallets.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                let html = '';
+                for (const wallet of activeWallets) {
+                    const accountNumber = result.payment_methods[wallet.id];
+                    const scheme = getPaymentScheme(wallet.id);
+                    const appUrl = `${scheme}${accountNumber}`;
+                    
+                    html += `
+                        <a href="${appUrl}" 
+                           class="payment-item" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           data-method-key="${wallet.id}"
+                           data-account="${accountNumber}"
+                           onclick="trackPaymentClick('${wallet.id}', '${accountNumber}')">
+                            <img src="/static/assets/payment-icons/${wallet.id}.webp" 
+                                 alt="${wallet.name}"
+                                 class="payment-icon"
+                                 onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                            <span class="payment-name">${wallet.name}</span>
+                        </a>
+                    `;
+                }
+                
+                grid.innerHTML = html;
+                section.style.display = 'block';
+                console.log('تم عرض وسائل الدفع:', activeWallets.map(w => w.name));
+                
+            } catch (error) {
+                console.error('Error loading payment methods:', error);
+                section.style.display = 'none';
             }
-            
-            grid.innerHTML = html;
-            section.style.display = 'block';
-            console.log('تم عرض وسائل الدفع:', activeWallets.map(w => w.name));
         }
         
         // =====================================================
@@ -613,8 +673,8 @@
                     // عرض الروابط المخصصة
                     displayCustomLinks(data.custom_links || []);
                     
-                    // عرض وسائل الدفع
-                    displayPaymentMethods(data.payment_methods || {});
+                    // عرض وسائل الدفع (باستخدام الدالة المعدلة)
+                    await displayPaymentMethods();
                     
                     // زيادة عدد المشاهدات
                     await incrementViews(pageUrl);

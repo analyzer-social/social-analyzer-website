@@ -281,12 +281,81 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+        
+        /* Payment methods styles */
+        .payment-grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .payment-input-item {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .payment-input-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.1);
+        }
+        .payment-input-item img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+        .payment-input-item .method-name {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .payment-input-item input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .stats-table {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .stat-name {
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .stat-clicks {
+            color: #667eea;
+            font-weight: bold;
+        }
+        .stat-last {
+            font-size: 11px;
+            color: #718096;
+        }
+        
         @media (max-width: 600px) {
             .container { padding: 20px; }
             .row-2cols { grid-template-columns: 1fr; }
             .contacts-grid { grid-template-columns: 1fr; }
             .custom-link-item input:first-child,
             .custom-link-item input:last-child { width: 100%; }
+            .payment-grid-dashboard { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
         }
         .loading {
             position: fixed;
@@ -407,7 +476,7 @@
             </div>
         </div>
 
-        <!-- جهات الاتصال (جديد) -->
+        <!-- جهات الاتصال -->
         <div class="card">
             <h3><i class="fas fa-address-card"></i> معلومات الاتصال</h3>
             <div class="contacts-grid">
@@ -420,6 +489,20 @@
                     <label>✉️ البريد الإلكتروني</label>
                     <input type="email" id="emailAddress" placeholder="example@domain.com">
                 </div>
+            </div>
+        </div>
+
+        <!-- قسم وسائل الدفع مع الإحصائيات -->
+        <div class="card">
+            <h3><i class="fas fa-credit-card"></i> وسائل الدفع الإلكتروني</h3>
+            <div class="payment-grid-dashboard" id="paymentMethodsContainer"></div>
+            <small>📌 أدخل رقم المحفظة أو الجوال لكل وسيلة دفع</small>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> إحصائيات نقرات وسائل الدفع</h3>
+            <div id="paymentStatsContainer">
+                <p style="color: #718096; text-align: center;">📊 لا توجد إحصائيات بعد</p>
             </div>
         </div>
 
@@ -462,6 +545,26 @@
         let currentPageUrl = null;
         let customLinks = [];
         let userData = {};
+        
+        // =====================================================
+        // قائمة المحافظ
+        // =====================================================
+        const paymentWallets = [
+            { id: 'jaib', name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
+            { id: 'floosak', name: 'فلوسك', icon: '/static/assets/payment-icons/floosak.webp' },
+            { id: 'jawaly', name: 'جوالي', icon: '/static/assets/payment-icons/jawaly.webp' },
+            { id: 'mahfazti', name: 'محفظتي', icon: '/static/assets/payment-icons/mahfazti.webp' },
+            { id: 'mobilemoney', name: 'موبايل موني', icon: '/static/assets/payment-icons/mobilemoney.webp' },
+            { id: 'yemenwallet', name: 'يمن والت', icon: '/static/assets/payment-icons/yemenwallet.webp' },
+            { id: 'shilling', name: 'شلن', icon: '/static/assets/payment-icons/shilling.webp' },
+            { id: 'easywallet', name: 'سهل', icon: '/static/assets/payment-icons/easywallet.webp' },
+            { id: 'onecash', name: 'ون كاش', icon: '/static/assets/payment-icons/onecash.webp' },
+            { id: 'kremi', name: 'كريمي', icon: '/static/assets/payment-icons/kremi.webp' },
+            { id: 'cash', name: 'كاش', icon: '/static/assets/payment-icons/cash.webp' },
+            { id: 'mtnmomo', name: 'MTN Mobile Money', icon: '/static/assets/payment-icons/mtnmomo.webp' }
+        ];
+        
+        let paymentData = {};
         
         // =====================================================
         // دوال العرض والتحكم
@@ -510,7 +613,6 @@
                 await navigator.clipboard.writeText(fullUrl);
                 showSuccess('✅ تم نسخ الرابط بنجاح!');
                 
-                // تغيير النص مؤقتاً
                 const copyBtn = document.querySelector('.copy-btn');
                 const originalHTML = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
@@ -518,7 +620,6 @@
                     copyBtn.innerHTML = originalHTML;
                 }, 2000);
             } catch (err) {
-                // Fallback للهواتف القديمة
                 const textarea = document.createElement('textarea');
                 textarea.value = fullUrl;
                 document.body.appendChild(textarea);
@@ -593,6 +694,113 @@
         }
         
         // =====================================================
+        // دوال وسائل الدفع
+        // =====================================================
+        
+        function renderPaymentInputs() {
+            const container = document.getElementById('paymentMethodsContainer');
+            if (!container) return;
+            
+            let html = '';
+            for (const wallet of paymentWallets) {
+                html += `
+                    <div class="payment-input-item">
+                        <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                        <div class="method-name">${wallet.name}</div>
+                        <input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${escapeHtml(paymentData[wallet.id] || '')}">
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+        
+        function getPaymentData() {
+            const data = {};
+            for (const wallet of paymentWallets) {
+                const value = document.getElementById(`payment_${wallet.id}`)?.value.trim();
+                if (value) {
+                    data[wallet.id] = value;
+                }
+            }
+            return data;
+        }
+        
+        async function loadPaymentData() {
+            try {
+                const response = await fetch('/api/payment/load', {
+                    headers: { 'X-User-Id': currentUserId }
+                });
+                const result = await response.json();
+                
+                if (result.success && result.payment_methods) {
+                    paymentData = result.payment_methods;
+                    for (const wallet of paymentWallets) {
+                        const input = document.getElementById(`payment_${wallet.id}`);
+                        if (input && paymentData[wallet.id]) {
+                            input.value = paymentData[wallet.id];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading payment data:', error);
+            }
+        }
+        
+        async function savePaymentMethods() {
+            try {
+                const response = await fetch('/api/payment/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Id': currentUserId
+                    },
+                    body: JSON.stringify({
+                        payment_methods: getPaymentData(),
+                        bio_page_id: currentPageUrl
+                    })
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error saving payment methods:', error);
+                return { success: false };
+            }
+        }
+        
+        async function loadPaymentStats() {
+            try {
+                const response = await fetch(`/api/payment/stats/${currentUserId}`, {
+                    headers: { 'X-User-Id': currentUserId }
+                });
+                const result = await response.json();
+                
+                const container = document.getElementById('paymentStatsContainer');
+                if (result.success && result.stats && result.stats.length > 0) {
+                    const activeStats = result.stats.filter(s => s.account_number);
+                    if (activeStats.length > 0) {
+                        let html = '<div class="stats-table">';
+                        for (const stat of activeStats) {
+                            html += `
+                                <div class="stat-row">
+                                    <span class="stat-name">${escapeHtml(stat.method_name)}</span>
+                                    <span class="stat-clicks">👆 ${stat.clicks_count || 0} نقرة</span>
+                                    <span class="stat-last">${stat.last_click_at ? 'آخر نقرة: ' + new Date(stat.last_click_at).toLocaleDateString('ar') : 'لا توجد نقرات بعد'}</span>
+                                </div>
+                            `;
+                        }
+                        html += '</div>';
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<p style="color: #718096; text-align: center;">📊 لا توجد إحصائيات بعد</p>';
+                    }
+                } else {
+                    container.innerHTML = '<p style="color: #718096; text-align: center;">📊 لا توجد إحصائيات بعد</p>';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // =====================================================
         // دالة حفظ البيانات الرئيسية
         // =====================================================
         
@@ -603,7 +811,6 @@
                 return;
             }
             
-            // التحقق من صحة الجلسة قبل الحفظ
             if (!checkSessionValidity()) return;
             
             showLoading();
@@ -636,7 +843,6 @@
                 console.log('جاري حفظ البيانات:', bioData);
                 
                 if (currentPageUrl) {
-                    // تحديث صفحة موجودة
                     const { data, error } = await supabaseClient
                         .from('bio_pages')
                         .update(bioData)
@@ -647,7 +853,6 @@
                     showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
                     
                 } else {
-                    // إنشاء صفحة جديدة - رابط عشوائي
                     const randomId = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 4);
                     const pageUrl = randomId;
                     
@@ -671,6 +876,10 @@
                     document.getElementById('pageUrlValue').innerText = currentPageUrl;
                     showSuccess('✅ تم إنشاء صفحة البايو بنجاح!');
                 }
+                
+                // حفظ وسائل الدفع
+                await savePaymentMethods();
+                await loadPaymentStats();
                 
             } catch (error) {
                 console.error('خطأ في الحفظ:', error);
@@ -716,7 +925,6 @@
                     document.getElementById('facebook').value = accounts.facebook || '';
                     document.getElementById('twitter').value = accounts.twitter || '';
                     
-                    // تحميل جهات الاتصال
                     loadContacts(data.contacts || {});
                     
                     currentPageUrl = data.page_url;
@@ -726,6 +934,11 @@
                 } else {
                     console.log('لا توجد صفحة بايو سابقة');
                 }
+                
+                // تحميل وسائل الدفع والإحصائيات
+                await loadPaymentData();
+                renderPaymentInputs();
+                await loadPaymentStats();
                 
             } catch (error) {
                 console.error('خطأ في تحميل البيانات:', error);
@@ -797,7 +1010,6 @@
         function checkSessionValidity() {
             const expiresAt = localStorage.getItem('bio_expires_at');
             if (!expiresAt || Date.now() > parseInt(expiresAt)) {
-                // الجلسة منتهية
                 console.log('الجلسة منتهية، يتم تسجيل الخروج');
                 localStorage.clear();
                 window.location.replace('/');
@@ -806,28 +1018,17 @@
             return true;
         }
         
-        // =====================================================
-        // دالة تسجيل الخروج المحسنة
-        // =====================================================
-        
         function logout() {
             if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                // مسح فقط بيانات الجلسة
                 localStorage.removeItem('bio_token');
                 localStorage.removeItem('bio_user_id');
                 localStorage.removeItem('bio_username');
                 localStorage.removeItem('bio_expires_at');
                 localStorage.removeItem('bio_first_name');
                 localStorage.removeItem('bio_last_name');
-                
-                // منع العودة للخلف باستخدام replace
                 window.location.replace('/');
             }
         }
-        
-        // =====================================================
-        // دالة معاينة الصفحة المحسنة
-        // =====================================================
         
         function previewBioPage() {
             if (!currentPageUrl) {
@@ -835,10 +1036,8 @@
                 return;
             }
             
-            // التحقق من صحة الجلسة قبل المعاينة
             if (!checkSessionValidity()) return;
             
-            // استخدام الدومين الحالي تلقائياً بدلاً من الثابت
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             window.open(`${baseUrl}/bio/${currentPageUrl}`, '_blank');
         }
@@ -848,17 +1047,13 @@
         // =====================================================
         
         async function init() {
-            // التحقق من صحة الجلسة أولاً
             if (!checkSessionValidity()) return;
             
-            // تحميل بيانات المستخدم
             const userLoaded = await loadUserData();
             if (!userLoaded) return;
             
-            // تحميل بيانات البايو
             await loadBioData();
             
-            // منع استخدام زر الرجوع بعد تسجيل الخروج
             history.pushState(null, null, location.href);
             window.onpopstate = function () {
                 history.go(1);
@@ -867,10 +1062,8 @@
             console.log('تم تهيئة لوحة التحكم بنجاح');
         }
         
-        // منع حفظ الصفحة في ذاكرة التخزين المؤقت (للمتصفحات)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
-                // الصفحة تم تحميلها من ذاكرة التخزين المؤقت
                 console.log('تم تحميل الصفحة من cache، جاري التحقق من الجلسة');
                 checkSessionValidity();
             }
@@ -885,7 +1078,6 @@
         window.logout = logout;
         window.copyPageUrl = copyPageUrl;
         
-        // بدء التهيئة
         init();
     </script>
 </body>

@@ -275,6 +275,194 @@ def serve_static(filename):
 def serve_icon(filename):
     return send_from_directory('static/assets/icons', filename)
 # =====================================================
+# APIs لوسائل الدفع
+# =====================================================
+
+@app.route('/api/payment/save', methods=['POST'])
+@require_auth
+def save_payment_methods():
+    """حفظ وسائل الدفع للمستخدم"""
+    try:
+        user_id = request.headers.get('X-User-Id')
+        data = request.json
+        payment_methods = data.get('payment_methods', {})
+        bio_page_id = data.get('bio_page_id')
+        
+        # الحصول على الصفحة الحالية
+        result = supabase.table('bio_pages')\
+            .select('id')\
+            .eq('user_id', int(user_id))\
+            .maybe_single()\
+            .execute()
+        
+        if not result.data:
+            return jsonify({'error': 'Bio page not found'}), 404
+        
+        bio_page_id = result.data['id']
+        
+        # قائمة المحافظ
+        payment_wallets = [
+            {'key': 'jaib', 'name': 'جيب'},
+            {'key': 'floosak', 'name': 'فلوسك'},
+            {'key': 'jawaly', 'name': 'جوالي'},
+            {'key': 'mahfazti', 'name': 'محفظتي'},
+            {'key': 'mobilemoney', 'name': 'موبايل موني'},
+            {'key': 'yemenwallet', 'name': 'يمن والت'},
+            {'key': 'shilling', 'name': 'شلن'},
+            {'key': 'easywallet', 'name': 'سهل'},
+            {'key': 'onecash', 'name': 'ون كاش'},
+            {'key': 'kremi', 'name': 'كريمي'},
+            {'key': 'cash', 'name': 'كاش'},
+            {'key': 'mtnmomo', 'name': 'MTN Mobile Money'}
+        ]
+        
+        for wallet in payment_wallets:
+            account_number = payment_methods.get(wallet['key'], '')
+            
+            if account_number:
+                # تحديث أو إنشاء
+                existing = supabase.table('payment_methods')\
+                    .select('id')\
+                    .eq('user_id', int(user_id))\
+                    .eq('method_key', wallet['key'])\
+                    .maybe_single()\
+                    .execute()
+                
+                if existing.data:
+                    supabase.table('payment_methods')\
+                        .update({
+                            'account_number': account_number,
+                            'updated_at': 'now()'
+                        })\
+                        .eq('id', existing.data['id'])\
+                        .execute()
+                else:
+                    supabase.table('payment_methods')\
+                        .insert({
+                            'user_id': int(user_id),
+                            'bio_page_id': bio_page_id,
+                            'method_key': wallet['key'],
+                            'method_name': wallet['name'],
+                            'account_number': account_number,
+                            'created_at': 'now()'
+                        })\
+                        .execute()
+            else:
+                # إذا كان الحقل فارغاً، احذف السجل
+                supabase.table('payment_methods')\
+                    .delete()\
+                    .eq('user_id', int(user_id))\
+                    .eq('method_key', wallet['key'])\
+                    .execute()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        print(f"Error saving payment methods: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/load', methods=['GET'])
+@require_auth
+def load_payment_methods():
+    """تحميل وسائل الدفع للمستخدم"""
+    try:
+        user_id = request.headers.get('X-User-Id')
+        
+        result = supabase.table('payment_methods')\
+            .select('method_key, account_number')\
+            .eq('user_id', int(user_id))\
+            .execute()
+        
+        payment_methods = {}
+        for item in result.data:
+            payment_methods[item['method_key']] = item['account_number']
+        
+        return jsonify({'success': True, 'payment_methods': payment_methods})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/click', methods=['POST'])
+def track_payment_click():
+    """تسجيل نقرة على وسيلة دفع"""
+    try:
+        data = request.json
+        method_key = data.get('method_key')
+        account_number = data.get('account_number')
+        page_url = data.get('page_url')
+        
+        # الحصول على bio_page_id من page_url
+        bio_result = supabase.table('bio_pages')\
+            .select('id, user_id')\
+            .eq('page_url', page_url)\
+            .maybe_single()\
+            .execute()
+        
+        if not bio_result.data:
+            return jsonify({'error': 'Bio page not found'}), 404
+        
+        bio_page_id = bio_result.data['id']
+        user_id = bio_result.data['user_id']
+        
+        # الحصول على payment_method_id
+        pm_result = supabase.table('payment_methods')\
+            .select('id')\
+            .eq('user_id', user_id)\
+            .eq('method_key', method_key)\
+            .eq('bio_page_id', bio_page_id)\
+            .maybe_single()\
+            .execute()
+        
+        if pm_result.data:
+            payment_method_id = pm_result.data['id']
+            
+            # تحديث عدد النقرات
+            supabase.table('payment_methods')\
+                .update({
+                    'clicks_count': supabase.raw('clicks_count + 1'),
+                    'last_click_at': 'now()'
+                })\
+                .eq('id', payment_method_id)\
+                .execute()
+            
+            # تسجيل النقرة
+            supabase.table('payment_clicks')\
+                .insert({
+                    'payment_method_id': payment_method_id,
+                    'user_id': user_id,
+                    'bio_page_id': bio_page_id,
+                    'method_key': method_key,
+                    'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                    'clicker_user_agent': request.headers.get('User-Agent'),
+                    'clicked_at': 'now()
+                })\
+                .execute()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        print(f"Error tracking click: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/stats/<int:user_id>', methods=['GET'])
+@require_auth
+def get_payment_stats(user_id):
+    """إحصائيات نقرات وسائل الدفع للمستخدم"""
+    try:
+        result = supabase.table('payment_methods')\
+            .select('method_name, method_key, account_number, clicks_count, last_click_at')\
+            .eq('user_id', user_id)\
+            .order('clicks_count', desc=True)\
+            .execute()
+        
+        return jsonify({'success': True, 'stats': result.data})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500    
+# =====================================================
 # تشغيل التطبيق
 # =====================================================
 
