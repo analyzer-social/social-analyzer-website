@@ -18,6 +18,7 @@
             justify-content: center;
             align-items: center;
             color: white;
+            margin: 0;
         }
         .loader {
             width: 50px;
@@ -33,56 +34,164 @@
             100% { transform: rotate(360deg); }
         }
         .container { text-align: center; }
+        .error-box {
+            background: rgba(220, 53, 69, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .success-box {
+            background: rgba(40, 167, 69, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="loader"></div>
         <h2>جاري تسجيل الدخول...</h2>
-        <p>يرجى الانتظار</p>
+        <p id="statusText">يرجى الانتظار، جاري التحقق من بياناتك</p>
     </div>
-    
-    <script src="/static/config.js"></script>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('id');
         const username = urlParams.get('username');
         const firstName = urlParams.get('first_name');
+        const lastName = urlParams.get('last_name');
+        const authDate = urlParams.get('auth_date');
+        const hash = urlParams.get('hash');
         
-        if (userId) {
+        const statusDiv = document.getElementById('statusText');
+        
+        async function showError(message) {
+            statusDiv.innerHTML = `<div class="error-box">❌ ${message}<br><button onclick="window.location.href='/'">العودة للرئيسية</button></div>`;
+        }
+        
+        async function showSuccess(message) {
+            statusDiv.innerHTML = `<div class="success-box">✅ ${message}<br><button onclick="window.location.href='/dashboard'">الدخول للوحة التحكم</button></div>`;
+            // إخفاء loader
+            document.querySelector('.loader').style.display = 'none';
+        }
+        
+        if (!userId || !hash) {
+            showError('بيانات المصادقة غير مكتملة. الرجاء المحاولة مرة أخرى.');
+        } else {
+            // حفظ بيانات المصادقة في localStorage
             const localToken = btoa(`${userId}:${Date.now()}`);
             localStorage.setItem('bio_token', localToken);
             localStorage.setItem('bio_user_id', userId);
-            localStorage.setItem('bio_username', username || firstName);
+            localStorage.setItem('bio_username', username || firstName || `user_${userId}`);
+            localStorage.setItem('bio_first_name', firstName || '');
+            localStorage.setItem('bio_last_name', lastName || '');
             
-            // التحقق من وجود المستخدم في Supabase
-            async function setupUser() {
+            console.log('تم حفظ بيانات المستخدم محلياً:', { userId, username, firstName });
+            
+            async function setupUserInDatabase() {
                 try {
+                    // إنشاء عميل Supabase
                     const supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
                     
-                    const { data: existingUser } = await supabaseClient
-                        .from('bio_pages')
-                        .select('user_id')
-                        .eq('user_id', parseInt(userId))
+                    // 1. التحقق من وجود المستخدم في جدول app_users
+                    statusDiv.innerText = 'جاري التحقق من حسابك...';
+                    
+                    const { data: existingUser, error: selectError } = await supabaseClient
+                        .from('app_users')
+                        .select('id, username, first_name')
+                        .eq('id', parseInt(userId))
                         .maybeSingle();
                     
-                    if (!existingUser) {
-                        // لا حاجة لإنشاء مستخدم هنا، سيتم إنشاؤه عند حفظ البيانات أول مرة
-                        console.log('مستخدم جديد، سيتم إنشاء صفحته عند أول حفظ');
+                    if (selectError && selectError.code !== 'PGRST116') {
+                        console.error('خطأ في البحث:', selectError);
+                        throw new Error('خطأ في التحقق من المستخدم');
                     }
                     
-                    window.location.href = '/dashboard';
+                    if (existingUser) {
+                        // المستخدم موجود
+                        console.log('المستخدم موجود مسبقاً:', existingUser);
+                        statusDiv.innerText = 'مرحباً بعودتك! جاري توجيهك...';
+                        showSuccess('تم تسجيل الدخول بنجاح! مرحباً بعودتك.');
+                    } else {
+                        // المستخدم غير موجود، نقوم بإنشائه
+                        statusDiv.innerText = 'جاري إنشاء حسابك الجديد...';
+                        
+                        const newUser = {
+                            id: parseInt(userId),
+                            username: username || `user_${userId}`,
+                            first_name: firstName || '',
+                            last_name: lastName || '',
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        };
+                        
+                        console.log('جاري إنشاء مستخدم جديد:', newUser);
+                        
+                        const { data: insertedUser, error: insertError } = await supabaseClient
+                            .from('app_users')
+                            .insert([newUser])
+                            .select();
+                        
+                        if (insertError) {
+                            console.error('خطأ في إنشاء المستخدم:', insertError);
+                            
+                            // محاولة بديلة: استخدام API الخادم
+                            statusDiv.innerText = 'محاولة طريقة بديلة...';
+                            
+                            const response = await fetch('/api/user/create', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    telegram_id: userId,
+                                    username: username || `user_${userId}`,
+                                    first_name: firstName || '',
+                                    last_name: lastName || ''
+                                })
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                console.log('تم إنشاء المستخدم عبر API:', result);
+                                showSuccess('تم إنشاء حسابك بنجاح! مرحباً بك.');
+                            } else {
+                                throw new Error(result.error || 'فشل في إنشاء المستخدم');
+                            }
+                        } else {
+                            console.log('تم إنشاء مستخدم جديد بنجاح:', insertedUser);
+                            showSuccess('تم إنشاء حسابك بنجاح! مرحباً بك.');
+                        }
+                    }
+                    
+                    // إذا وصلنا لهنا بدون showSuccess (لأنه تم استدعاؤه بالفعل)
+                    if (!existingUser && !insertError) {
+                        showSuccess('تم إنشاء حسابك بنجاح! مرحباً بك.');
+                    } else if (existingUser && document.querySelector('.loader').style.display !== 'none') {
+                        showSuccess('تم تسجيل الدخول بنجاح! مرحباً بعودتك.');
+                    }
+                    
                 } catch (error) {
-                    console.error('Error:', error);
-                    window.location.href = '/dashboard';
+                    console.error('خطأ في المصادقة:', error);
+                    showError(error.message || 'حدث خطأ أثناء تسجيل الدخول. الرجاء المحاولة مرة أخرى.');
                 }
             }
             
-            setupUser();
-        } else {
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 2000);
+            // بدء عملية إنشاء المستخدم
+            setupUserInDatabase();
         }
     </script>
 </body>

@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم صفحة البايو</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        window.SUPABASE_URL = '{{ SUPABASE_URL }}';
-        window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
-    </script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
+    
+    <!-- Favicon and App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    <link rel="mask-icon" href="/static/assets/icons/safari-pinned-tab.svg" color="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="theme-color" content="#667eea">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,45 +33,89 @@
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
-        .tabs {
+        .header {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .tab-btn {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            color: #718096;
-            cursor: pointer;
-            border-radius: 12px 12px 0 0;
+        .header h1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .tab-btn.active {
+        .user-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-info i {
+            margin-left: 8px;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e9ecef;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            margin-bottom: 20px;
             color: #667eea;
-            border-bottom: 3px solid #667eea;
-            background: #f0f4ff;
+            border-right: 4px solid #667eea;
+            padding-right: 12px;
+            font-size: 1.1rem;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; color: #2d3748; }
+        button {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
         input, textarea, select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #e2e8f0;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-family: 'Tajawal', sans-serif;
             font-size: 14px;
+            transition: all 0.3s;
         }
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
-        textarea { resize: vertical; min-height: 80px; }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
         .platform-input {
             display: flex;
             align-items: center;
@@ -73,35 +123,42 @@
             margin-bottom: 10px;
         }
         .platform-input i {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
-            font-size: 20px;
+            font-size: 22px;
         }
-        .platform-input input { flex: 1; }
+        .platform-input input {
+            flex: 1;
+        }
         .custom-link-item {
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
-        .custom-link-item input:first-child { width: 30%; }
-        .custom-link-item input:last-child { width: 60%; }
+        .custom-link-item input:first-child {
+            width: 30%;
+        }
+        .custom-link-item input:last-child {
+            width: 60%;
+        }
         .remove-link {
-            background: #f56565;
+            background: #dc3545;
             color: white;
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
             cursor: pointer;
         }
         .add-link {
-            background: #48bb78;
+            background: #28a745;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -113,7 +170,7 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 14px;
+            padding: 15px;
             border-radius: 12px;
             font-size: 16px;
             font-weight: bold;
@@ -121,94 +178,170 @@
             width: 100%;
             margin-top: 20px;
         }
-        .save-btn:hover { opacity: 0.95; transform: translateY(-2px); }
         .page-url {
-            background: #f0f4ff;
+            background: linear-gradient(135deg, #f0f4ff, #e9ecef);
             padding: 15px;
             border-radius: 12px;
             margin: 20px 0;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .page-url .url-text {
+            direction: ltr;
+            display: inline-block;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        .copy-btn {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .copy-btn:hover {
+            transform: translateY(-2px);
         }
         .success-msg, .error-msg {
             padding: 12px;
             border-radius: 12px;
             margin-bottom: 20px;
             display: none;
+            animation: slideDown 0.3s ease;
         }
-        .success-msg { background: #c6f6d5; color: #22543d; }
-        .error-msg { background: #fed7d7; color: #742a2a; }
-        .theme-preview {
-            margin-top: 10px;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .row-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
         .logout-btn {
-            background: #e53e3e;
+            background: linear-gradient(135deg, #dc3545, #c82333);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 12px;
-            margin-bottom: 20px;
+            font-size: 14px;
         }
-        .preview-container {
-            background: #f7fafc;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-        }
-        .preview-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .preview-btn {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
+            gap: 8px;
         }
-        .preview-name { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
-        .preview-bio { color: #718096; margin-bottom: 20px; }
-        .preview-link {
+        small {
             display: block;
-            background: white;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 12px;
-            text-decoration: none;
-            color: #2d3748;
-            border: 1px solid #e2e8f0;
+            margin-top: 5px;
+            color: #718096;
+            font-size: 12px;
+        }
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
         @media (max-width: 600px) {
             .container { padding: 20px; }
             .row-2cols { grid-template-columns: 1fr; }
-            .custom-link-item { flex-wrap: wrap; }
-            .custom-link-item input:first-child, .custom-link-item input:last-child { width: 100%; }
+            .contacts-grid { grid-template-columns: 1fr; }
+            .custom-link-item input:first-child,
+            .custom-link-item input:last-child { width: 100%; }
+        }
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div class="header">
             <h1>📄 إعدادات صفحة البايو</h1>
-            <button class="logout-btn" onclick="logout()">🚪 تسجيل الخروج</button>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="userDisplayName">مرحباً بك</span>
+                <button class="logout-btn" onclick="logout()" style="margin-right: 0;">🚪 تسجيل الخروج</button>
+            </div>
         </div>
-        
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('settings')">⚙️ الإعدادات</button>
-            <button class="tab-btn" onclick="switchTab('preview')">👁️ معاينة الصفحة</button>
-        </div>
-        
-        <div id="settingsTab" class="tab-content active">
-            <div id="successMsg" class="success-msg">✅ تم حفظ التغييرات بنجاح!</div>
-            <div id="errorMsg" class="error-msg">❌ حدث خطأ، يرجى المحاولة مرة أخرى</div>
 
+        <div id="successMsg" class="success-msg">
+            <i class="fas fa-check-circle"></i> <span id="successText">تم حفظ التغييرات بنجاح!</span>
+        </div>
+        <div id="errorMsg" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorText">حدث خطأ، يرجى المحاولة مرة أخرى</span>
+        </div>
+
+        <!-- المعلومات الشخصية -->
+        <div class="card">
+            <h3><i class="fas fa-user"></i> المعلومات الشخصية</h3>
             <div class="form-group">
                 <label>🖼️ رابط الصورة الشخصية (اختياري)</label>
                 <input type="url" id="avatarUrl" placeholder="https://example.com/avatar.jpg">
@@ -222,7 +355,12 @@
                 <div class="form-group">
                     <label>🔗 رابط صفحتك</label>
                     <div class="page-url">
-                        analyzer.social/bio/<span id="pageUrlValue" style="color:#667eea;font-weight:bold;">...</span>
+                        <i class="fas fa-globe"></i>
+                        <span class="url-text" id="pageUrlFull">analyzer.social/bio/</span>
+                        <span id="pageUrlValue" style="color:#667eea;font-weight:bold;">...</span>
+                        <button class="copy-btn" onclick="copyPageUrl()">
+                            <i class="fas fa-copy"></i> نسخ الرابط
+                        </button>
                     </div>
                 </div>
             </div>
@@ -241,263 +379,450 @@
                     <option value="pink">🌸 وردي</option>
                     <option value="ocean">🌊 محيط</option>
                 </select>
-                <div id="themePreview" class="theme-preview"></div>
             </div>
-
-            <div class="form-group">
-                <label>📱 حسابات التواصل</label>
-                <div class="platform-input">
-                    <i class="fab fa-youtube" style="background:#ff0000;"></i>
-                    <input type="text" id="youtube" placeholder="@username">
-                </div>
-                <div class="platform-input">
-                    <i class="fab fa-instagram" style="background:#e1306c;"></i>
-                    <input type="text" id="instagram" placeholder="@username">
-                </div>
-                <div class="platform-input">
-                    <i class="fab fa-tiktok" style="background:#000000;"></i>
-                    <input type="text" id="tiktok" placeholder="@username">
-                </div>
-                <div class="platform-input">
-                    <i class="fab fa-facebook-f" style="background:#1877f2;"></i>
-                    <input type="text" id="facebook" placeholder="username">
-                </div>
-                <div class="platform-input">
-                    <i class="fab fa-twitter" style="background:#1da1f2;"></i>
-                    <input type="text" id="twitter" placeholder="@username">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>🔗 روابط مخصصة</label>
-                <div id="customLinksContainer"></div>
-                <button type="button" class="add-link" onclick="addCustomLink()">+ إضافة رابط</button>
-            </div>
-
-            <button class="save-btn" onclick="saveBioPage()">💾 حفظ التغييرات</button>
         </div>
-        
-        <div id="previewTab" class="tab-content">
-            <div class="preview-container" id="previewContainer">
-                <div class="preview-avatar" id="previewAvatar">?</div>
-                <div class="preview-name" id="previewName">الاسم المعروض</div>
-                <div class="preview-bio" id="previewBio">السيرة الذاتية ستظهر هنا</div>
-                <div id="previewLinks"></div>
+
+        <!-- حسابات التواصل الاجتماعي -->
+        <div class="card">
+            <h3><i class="fas fa-share-alt"></i> حسابات التواصل الاجتماعي</h3>
+            <div class="platform-input">
+                <i class="fab fa-youtube" style="background:#ff0000;"></i>
+                <input type="text" id="youtube" placeholder="اسم المستخدم في يوتيوب">
             </div>
-            <p style="text-align:center; margin-top:15px; font-size:12px; color:#718096;">
-                <i class="fas fa-info-circle"></i> هذه معاينة تقريبية
-            </p>
+            <div class="platform-input">
+                <i class="fab fa-instagram" style="background:#e1306c;"></i>
+                <input type="text" id="instagram" placeholder="اسم المستخدم في انستقرام">
+            </div>
+            <div class="platform-input">
+                <i class="fab fa-tiktok" style="background:#000000;"></i>
+                <input type="text" id="tiktok" placeholder="اسم المستخدم في تيك توك">
+            </div>
+            <div class="platform-input">
+                <i class="fab fa-facebook-f" style="background:#1877f2;"></i>
+                <input type="text" id="facebook" placeholder="اسم المستخدم في فيسبوك">
+            </div>
+            <div class="platform-input">
+                <i class="fab fa-twitter" style="background:#1da1f2;"></i>
+                <input type="text" id="twitter" placeholder="اسم المستخدم في X">
+            </div>
+        </div>
+
+        <!-- جهات الاتصال (جديد) -->
+        <div class="card">
+            <h3><i class="fas fa-address-card"></i> معلومات الاتصال</h3>
+            <div class="contacts-grid">
+                <div class="form-group">
+                    <label>📱 رقم الجوال (واتساب)</label>
+                    <input type="tel" id="phoneNumber" placeholder="مثال: 966512345678">
+                    <small>📌 سيظهر زر اتصال وزر واتساب مباشرة</small>
+                </div>
+                <div class="form-group">
+                    <label>✉️ البريد الإلكتروني</label>
+                    <input type="email" id="emailAddress" placeholder="example@domain.com">
+                </div>
+            </div>
+        </div>
+
+        <!-- الروابط المخصصة -->
+        <div class="card">
+            <h3><i class="fas fa-link"></i> روابط مخصصة</h3>
+            <div id="customLinksContainer"></div>
+            <button type="button" class="add-link" onclick="addCustomLink()">
+                <i class="fas fa-plus"></i> إضافة رابط
+            </button>
+        </div>
+
+        <button class="save-btn" onclick="saveBioPage()">
+            <i class="fas fa-save"></i> حفظ التغييرات
+        </button>
+        
+        <button class="preview-btn" onclick="previewBioPage()">
+            <i class="fas fa-eye"></i> معاينة صفحة البايو
+        </button>
+    </div>
+
+    <div id="loadingOverlay" class="loading" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>جاري حفظ البيانات...</p>
         </div>
     </div>
 
     <script src="/static/config.js"></script>
     <script>
-        let customLinks = [];
+        // =====================================================
+        // إعدادات Supabase
+        // =====================================================
+        const SUPABASE_URL = '{{ SUPABASE_URL }}';
+        const SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // متغيرات عامة
         let currentUserId = null;
         let currentPageUrl = null;
-        let supabaseClient = null;
+        let customLinks = [];
+        let userData = {};
         
-        const token = localStorage.getItem('bio_token');
-        if (!token) window.location.href = '/';
+        // =====================================================
+        // دوال العرض والتحكم
+        // =====================================================
         
-        currentUserId = localStorage.getItem('bio_user_id');
-        
-        function initSupabaseClient() {
-            supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-            loadBioData();
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
         
-        function switchTab(tabName) {
-            const settingsTab = document.getElementById('settingsTab');
-            const previewTab = document.getElementById('previewTab');
-            const btns = document.querySelectorAll('.tab-btn');
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMsg');
+            document.getElementById('successText').innerText = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            document.getElementById('errorText').innerText = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // =====================================================
+        // دالة نسخ الرابط
+        // =====================================================
+        
+        async function copyPageUrl() {
+            if (!currentPageUrl) {
+                showError('⚠️ لا يوجد رابط للحفظ بعد، قم بحفظ البيانات أولاً');
+                return;
+            }
             
-            if (tabName === 'settings') {
-                settingsTab.classList.add('active');
-                previewTab.classList.remove('active');
-                btns[0].classList.add('active');
-                btns[1].classList.remove('active');
-            } else {
-                settingsTab.classList.remove('active');
-                previewTab.classList.add('active');
-                btns[0].classList.remove('active');
-                btns[1].classList.add('active');
-                updatePreview();
+            const fullUrl = `https://social-analyzer-website.onrender.com/bio/${currentPageUrl}`;
+            
+            try {
+                await navigator.clipboard.writeText(fullUrl);
+                showSuccess('✅ تم نسخ الرابط بنجاح!');
+                
+                // تغيير النص مؤقتاً
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                }, 2000);
+            } catch (err) {
+                // Fallback للهواتف القديمة
+                const textarea = document.createElement('textarea');
+                textarea.value = fullUrl;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showSuccess('✅ تم نسخ الرابط بنجاح!');
             }
         }
         
-        function updatePreview() {
-            const name = document.getElementById('displayName').value || 'الاسم المعروض';
-            const bio = document.getElementById('bio').value || 'السيرة الذاتية ستظهر هنا';
-            const avatarUrl = document.getElementById('avatarUrl').value;
-            const previewAvatar = document.getElementById('previewAvatar');
-            
-            document.getElementById('previewName').innerText = name;
-            document.getElementById('previewBio').innerText = bio;
-            
-            if (avatarUrl) {
-                previewAvatar.style.backgroundImage = `url(${avatarUrl})`;
-                previewAvatar.style.backgroundSize = 'cover';
-                previewAvatar.style.backgroundPosition = 'center';
-                previewAvatar.innerText = '';
-            } else {
-                previewAvatar.style.backgroundImage = '';
-                previewAvatar.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
-                previewAvatar.innerText = name.charAt(0) || '?';
+        // =====================================================
+        // دوال جهات الاتصال
+        // =====================================================
+        
+        function getContacts() {
+            return {
+                phone: document.getElementById('phoneNumber').value.trim(),
+                email: document.getElementById('emailAddress').value.trim()
+            };
+        }
+        
+        function loadContacts(contacts) {
+            if (contacts) {
+                document.getElementById('phoneNumber').value = contacts.phone || '';
+                document.getElementById('emailAddress').value = contacts.email || '';
             }
-            
-            let linksHtml = '';
-            const youtube = document.getElementById('youtube').value;
-            const instagram = document.getElementById('instagram').value;
-            const tiktok = document.getElementById('tiktok').value;
-            const facebook = document.getElementById('facebook').value;
-            const twitter = document.getElementById('twitter').value;
-            
-            if (youtube) linksHtml += `<div class="preview-link"><i class="fab fa-youtube" style="color:#ff0000;"></i> يوتيوب: @${youtube.replace('@', '')}</div>`;
-            if (instagram) linksHtml += `<div class="preview-link"><i class="fab fa-instagram" style="color:#e1306c;"></i> انستقرام: @${instagram.replace('@', '')}</div>`;
-            if (tiktok) linksHtml += `<div class="preview-link"><i class="fab fa-tiktok"></i> تيك توك: @${tiktok.replace('@', '')}</div>`;
-            if (facebook) linksHtml += `<div class="preview-link"><i class="fab fa-facebook-f" style="color:#1877f2;"></i> فيسبوك: ${facebook}</div>`;
-            if (twitter) linksHtml += `<div class="preview-link"><i class="fab fa-twitter" style="color:#1da1f2;"></i> X: ${twitter}</div>`;
-            
-            customLinks.forEach(link => {
-                if (link.title && link.url) linksHtml += `<div class="preview-link"><i class="fas fa-link"></i> ${link.title}</div>`;
+        }
+        
+        // =====================================================
+        // دوال الروابط المخصصة
+        // =====================================================
+        
+        function renderCustomLinks() {
+            const container = document.getElementById('customLinksContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            customLinks.forEach((link, index) => {
+                const div = document.createElement('div');
+                div.className = 'custom-link-item';
+                div.innerHTML = `
+                    <input type="text" placeholder="العنوان" value="${escapeHtml(link.title)}" onchange="updateCustomLink(${index}, 'title', this.value)">
+                    <input type="url" placeholder="https://..." value="${escapeHtml(link.url)}" onchange="updateCustomLink(${index}, 'url', this.value)">
+                    <button class="remove-link" onclick="removeCustomLink(${index})"><i class="fas fa-trash"></i></button>
+                `;
+                container.appendChild(div);
             });
-            
-            if (!linksHtml) linksHtml = '<div style="color:#a0aec0;">لا توجد روابط مضافة بعد</div>';
-            document.getElementById('previewLinks').innerHTML = linksHtml;
         }
+        
+        function updateCustomLink(index, field, value) {
+            customLinks[index][field] = value;
+        }
+        
+        function addCustomLink() {
+            if (customLinks.length >= 10) {
+                showError('الحد الأقصى هو 10 روابط مخصصة');
+                return;
+            }
+            customLinks.push({ title: 'رابط جديد', url: 'https://' });
+            renderCustomLinks();
+        }
+        
+        function removeCustomLink(index) {
+            customLinks.splice(index, 1);
+            renderCustomLinks();
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // =====================================================
+        // دالة حفظ البيانات الرئيسية
+        // =====================================================
+        
+        async function saveBioPage() {
+            if (!currentUserId) {
+                showError('الرجاء تسجيل الدخول أولاً');
+                window.location.href = '/';
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const accounts = {};
+                const youtube = document.getElementById('youtube').value.trim();
+                const instagram = document.getElementById('instagram').value.trim();
+                const tiktok = document.getElementById('tiktok').value.trim();
+                const facebook = document.getElementById('facebook').value.trim();
+                const twitter = document.getElementById('twitter').value.trim();
+                
+                if (youtube) accounts.youtube = youtube.replace('@', '');
+                if (instagram) accounts.instagram = instagram.replace('@', '');
+                if (tiktok) accounts.tiktok = tiktok.replace('@', '');
+                if (facebook) accounts.facebook = facebook;
+                if (twitter) accounts.twitter = twitter;
+                
+                const bioData = {
+                    avatar_url: document.getElementById('avatarUrl').value || null,
+                    display_name: document.getElementById('displayName').value || userData.username || 'مستخدم',
+                    bio: document.getElementById('bio').value || null,
+                    theme_name: document.getElementById('theme').value,
+                    accounts: accounts,
+                    custom_links: customLinks,
+                    contacts: getContacts(),
+                    updated_at: new Date().toISOString()
+                };
+                
+                console.log('جاري حفظ البيانات:', bioData);
+                
+                if (currentPageUrl) {
+                    // تحديث صفحة موجودة
+                    const { data, error } = await supabaseClient
+                        .from('bio_pages')
+                        .update(bioData)
+                        .eq('user_id', parseInt(currentUserId))
+                        .select();
+                    
+                    if (error) throw error;
+                    showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
+                    
+                } else {
+                    // إنشاء صفحة جديدة - رابط عشوائي
+                    const randomId = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 4);
+                    const pageUrl = randomId;
+                    
+                    const newData = {
+                        user_id: parseInt(currentUserId),
+                        page_url: pageUrl,
+                        ...bioData,
+                        is_active: true,
+                        views_count: 0,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    const { data, error } = await supabaseClient
+                        .from('bio_pages')
+                        .insert([newData])
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    currentPageUrl = pageUrl;
+                    document.getElementById('pageUrlValue').innerText = currentPageUrl;
+                    showSuccess('✅ تم إنشاء صفحة البايو بنجاح!');
+                }
+                
+            } catch (error) {
+                console.error('خطأ في الحفظ:', error);
+                showError(error.message || 'حدث خطأ أثناء حفظ البيانات');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // =====================================================
+        // تحميل البيانات من قاعدة البيانات
+        // =====================================================
         
         async function loadBioData() {
+            if (!currentUserId) return;
+            
             try {
+                console.log('جاري تحميل بيانات المستخدم:', currentUserId);
+                
                 const { data, error } = await supabaseClient
                     .from('bio_pages')
                     .select('*')
                     .eq('user_id', parseInt(currentUserId))
                     .maybeSingle();
                 
+                if (error) {
+                    console.error('خطأ في التحميل:', error);
+                    return;
+                }
+                
                 if (data) {
+                    console.log('تم تحميل البيانات:', data);
+                    
                     document.getElementById('avatarUrl').value = data.avatar_url || '';
                     document.getElementById('displayName').value = data.display_name || '';
                     document.getElementById('bio').value = data.bio || '';
                     document.getElementById('theme').value = data.theme_name || 'default';
                     
                     const accounts = data.accounts || {};
-                    document.getElementById('youtube').value = accounts.youtube?.account_identifier || '';
-                    document.getElementById('instagram').value = accounts.instagram?.account_identifier || '';
-                    document.getElementById('tiktok').value = accounts.tiktok?.account_identifier || '';
-                    document.getElementById('facebook').value = accounts.facebook?.account_identifier || '';
-                    document.getElementById('twitter').value = accounts.twitter?.account_identifier || '';
+                    document.getElementById('youtube').value = accounts.youtube || '';
+                    document.getElementById('instagram').value = accounts.instagram || '';
+                    document.getElementById('tiktok').value = accounts.tiktok || '';
+                    document.getElementById('facebook').value = accounts.facebook || '';
+                    document.getElementById('twitter').value = accounts.twitter || '';
+                    
+                    // تحميل جهات الاتصال
+                    loadContacts(data.contacts || {});
                     
                     currentPageUrl = data.page_url;
                     document.getElementById('pageUrlValue').innerText = currentPageUrl;
                     customLinks = data.custom_links || [];
                     renderCustomLinks();
-                    updateThemePreview();
-                    updatePreview();
+                } else {
+                    console.log('لا توجد صفحة بايو سابقة');
                 }
+                
             } catch (error) {
-                console.error('Error loading bio:', error);
+                console.error('خطأ في تحميل البيانات:', error);
             }
         }
         
-        function renderCustomLinks() {
-            const container = document.getElementById('customLinksContainer');
-            container.innerHTML = '';
-            customLinks.forEach((link, index) => {
-                const div = document.createElement('div');
-                div.className = 'custom-link-item';
-                div.innerHTML = `
-                    <input type="text" placeholder="العنوان" value="${escapeHtml(link.title)}" oninput="updateCustomLink(${index}, 'title', this.value); updatePreview();">
-                    <input type="url" placeholder="https://..." value="${escapeHtml(link.url)}" oninput="updateCustomLink(${index}, 'url', this.value); updatePreview();">
-                    <button class="remove-link" onclick="removeCustomLink(${index})"><i class="fas fa-trash"></i></button>
-                `;
-                container.appendChild(div);
-            });
-            updatePreview();
-        }
+        // =====================================================
+        // دوال المصادقة والمستخدم
+        // =====================================================
         
-        function updateCustomLink(index, field, value) { customLinks[index][field] = value; updatePreview(); }
-        function addCustomLink() { customLinks.push({ title: 'رابط جديد', url: 'https://' }); renderCustomLinks(); }
-        function removeCustomLink(index) { customLinks.splice(index, 1); renderCustomLinks(); }
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-        
-        function updateThemePreview() {
-            const theme = document.getElementById('theme').value;
-            const preview = document.getElementById('themePreview');
-            const themes = {
-                default: { bg: '#ffffff', text: '#2d3748', border: '#e2e8f0' },
-                dark: { bg: '#1a202c', text: '#f7fafc', border: '#4a5568' },
-                green: { bg: '#f0fff4', text: '#22543d', border: '#9ae6b4' },
-                pink: { bg: '#fff5f5', text: '#742a2a', border: '#feb2b2' },
-                ocean: { bg: '#ebf8ff', text: '#2c5282', border: '#90cdf4' }
-            };
-            const t = themes[theme];
-            preview.style.background = t.bg;
-            preview.style.color = t.text;
-            preview.style.border = `1px solid ${t.border}`;
-            preview.innerHTML = `معاينة: ${theme === 'default' ? 'الوضع الفاتح' : theme === 'dark' ? 'الوضع الداكن' : theme === 'green' ? 'الأخضر' : theme === 'pink' ? 'الوردي' : 'المحيط'}`;
-        }
-        
-        document.getElementById('theme').addEventListener('change', () => { updateThemePreview(); updatePreview(); });
-        document.querySelectorAll('#avatarUrl, #displayName, #bio, #youtube, #instagram, #tiktok, #facebook, #twitter').forEach(el => {
-            el.addEventListener('input', () => updatePreview());
-        });
-        
-        async function saveBioPage() {
-            const accounts = {};
-            const youtube = document.getElementById('youtube').value.trim();
-            const instagram = document.getElementById('instagram').value.trim();
-            const tiktok = document.getElementById('tiktok').value.trim();
-            const facebook = document.getElementById('facebook').value.trim();
-            const twitter = document.getElementById('twitter').value.trim();
+        async function loadUserData() {
+            currentUserId = localStorage.getItem('bio_user_id');
+            const telegramUsername = localStorage.getItem('bio_username');
             
-            if (youtube) accounts.youtube = { account_identifier: youtube.replace('@', '') };
-            if (instagram) accounts.instagram = { account_identifier: instagram.replace('@', '') };
-            if (tiktok) accounts.tiktok = { account_identifier: tiktok.replace('@', '') };
-            if (facebook) accounts.facebook = { account_identifier: facebook };
-            if (twitter) accounts.twitter = { account_identifier: twitter };
-            
-            const bioData = {
-                avatar_url: document.getElementById('avatarUrl').value,
-                display_name: document.getElementById('displayName').value,
-                bio: document.getElementById('bio').value,
-                theme_name: document.getElementById('theme').value,
-                accounts: accounts,
-                custom_links: customLinks,
-                updated_at: new Date().toISOString()
-            };
+            if (!currentUserId) {
+                window.location.href = '/';
+                return false;
+            }
             
             try {
-                if (currentPageUrl) {
-                    const { error } = await supabaseClient.from('bio_pages').update(bioData).eq('user_id', parseInt(currentUserId));
-                    if (error) throw error;
+                const { data, error } = await supabaseClient
+                    .from('app_users')
+                    .select('*')
+                    .eq('id', parseInt(currentUserId))
+                    .maybeSingle();
+                
+                if (data) {
+                    userData = data;
+                    const displayName = data.first_name || data.username || `مستخدم ${currentUserId}`;
+                    document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
+                    
+                    if (!document.getElementById('displayName').value) {
+                        document.getElementById('displayName').value = displayName;
+                    }
                 } else {
-                    const pageUrl = generatePageUrl();
-                    const { error } = await supabaseClient.from('bio_pages').insert([{
-                        user_id: parseInt(currentUserId), page_url: pageUrl, ...bioData, is_active: true, created_at: new Date().toISOString()
-                    }]);
-                    if (error) throw error;
-                    currentPageUrl = pageUrl;
-                    document.getElementById('pageUrlValue').innerText = pageUrl;
+                    userData = {
+                        id: currentUserId,
+                        username: telegramUsername || `user_${currentUserId}`,
+                        first_name: telegramUsername || '',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    const { error: insertError } = await supabaseClient
+                        .from('app_users')
+                        .insert([userData]);
+                    
+                    if (insertError) {
+                        console.error('خطأ في إنشاء المستخدم:', insertError);
+                    } else {
+                        console.log('تم إنشاء مستخدم جديد');
+                    }
+                    
+                    document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> ${telegramUsername || 'مستخدم جديد'}`;
                 }
-                document.getElementById('successMsg').style.display = 'block';
-                setTimeout(() => { document.getElementById('successMsg').style.display = 'none'; }, 3000);
+                
+                return true;
+                
             } catch (error) {
-                document.getElementById('errorMsg').style.display = 'block';
-                setTimeout(() => { document.getElementById('errorMsg').style.display = 'none'; }, 3000);
+                console.error('خطأ في تحميل بيانات المستخدم:', error);
+                document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> مستخدم`;
+                return true;
             }
         }
         
-        function generatePageUrl() {
-            const name = document.getElementById('displayName').value || 'user';
-            const random = Math.random().toString(36).substring(2, 8);
-            return `${name.replace(/\s/g, '_').toLowerCase()}_${random}`;
+        function previewBioPage() {
+            if (!currentPageUrl) {
+                showError('⚠️ لا يوجد رابط لصفحة البايو بعد\nيرجى حفظ البيانات أولاً');
+                return;
+            }
+            window.open(`/bio/${currentPageUrl}`, '_blank');
         }
         
-        function logout() { localStorage.clear(); window.location.href = '/'; }
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.clear();
+                window.location.href = '/';
+            }
+        }
         
-        window.switchTab = switchTab;
-        initSupabaseClient();
+        // =====================================================
+        // تهيئة الصفحة
+        // =====================================================
+        
+        async function init() {
+            const userLoaded = await loadUserData();
+            if (!userLoaded) return;
+            await loadBioData();
+            console.log('تم تهيئة لوحة التحكم بنجاح');
+        }
+        
+        // ربط الدوال للنطاق العام
+        window.addCustomLink = addCustomLink;
+        window.removeCustomLink = removeCustomLink;
+        window.updateCustomLink = updateCustomLink;
+        window.saveBioPage = saveBioPage;
+        window.previewBioPage = previewBioPage;
+        window.logout = logout;
+        window.copyPageUrl = copyPageUrl;
+        
+        // بدء التهيئة
+        init();
     </script>
 </body>
 </html>

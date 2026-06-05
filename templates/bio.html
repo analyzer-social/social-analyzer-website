@@ -10,16 +10,28 @@
         window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
         window.PAGE_URL = '{{ page_url }}';
     </script>
+    
+    <!-- الخطوط -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome للأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===== القواعد الأساسية ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'Tajawal', 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
             padding: 30px;
             transition: all 0.3s ease;
         }
+        
         .container {
             max-width: 600px;
             margin: auto;
@@ -28,36 +40,92 @@
             text-align: center;
             transition: all 0.3s ease;
         }
+        
+        /* ===== الصورة الشخصية ===== */
         .avatar-container {
+            position: relative;
             width: 140px;
             height: 140px;
             margin: 0 auto 20px;
             border-radius: 50%;
             overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
-        .avatar { width: 100%; height: 100%; object-fit: cover; }
+        
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+        
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+        
         .avatar-fallback {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 56px;
-            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        h1 { font-size: 28px; margin-bottom: 8px; }
-        .username { font-size: 14px; margin-bottom: 20px; direction: ltr; }
+        
+        .avatar-fallback span {
+            font-size: 56px;
+        }
+        
+        .avatar-container.loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.6; transform: scale(0.98); }
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .username {
+            font-size: 14px;
+            margin-bottom: 20px;
+            direction: ltr;
+        }
+        
         .bio {
             padding: 15px 20px;
             border-radius: 15px;
             margin: 20px 0;
             line-height: 1.7;
             font-size: 14px;
+            text-align: center;
             background: rgba(0,0,0,0.03);
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
+        
+        .bio:empty {
+            display: none;
+        }
+        
+        .divider {
+            height: 1px;
+            margin: 25px 0;
+        }
+        
+        /* ===== أزرار الحسابات ===== */
         .account-btn {
             display: flex;
             align-items: center;
@@ -72,42 +140,155 @@
             font-weight: bold;
             transition: all 0.3s ease;
             color: white;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-        .account-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
-        .platform-youtube { background: linear-gradient(135deg, #ff0000, #cc0000); }
-        .platform-instagram { background: linear-gradient(135deg, #f77737, #e1306c, #833ab4); }
-        .platform-tiktok { background: linear-gradient(135deg, #000000, #2d2d2d); }
-        .platform-tiktok i { color: #25f4ee; }
-        .platform-facebook { background: linear-gradient(135deg, #1877f2, #0d65d4); }
-        .platform-twitter { background: linear-gradient(135deg, #1da1f2, #0d8bd9); }
-        .custom-link { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .footer { margin-top: 30px; padding-top: 20px; font-size: 13px; }
-        .footer a { text-decoration: none; font-weight: bold; }
-        .views { margin-top: 15px; font-size: 11px; }
+        
+        .account-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.1);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        
+        .account-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .account-btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.05);
+        }
+        
+        .account-btn i {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* ألوان المنصات */
+        .platform-youtube { 
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            box-shadow: 0 4px 15px rgba(255,0,0,0.3);
+        }
+        .platform-instagram { 
+            background: linear-gradient(135deg, #f77737 0%, #e1306c 50%, #833ab4 100%);
+            box-shadow: 0 4px 15px rgba(225,48,108,0.3);
+        }
+        .platform-tiktok { 
+            background: linear-gradient(135deg, #000000 0%, #161616 50%, #2d2d2d 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .platform-tiktok i { 
+            color: #25f4ee;
+        }
+        .platform-facebook { 
+            background: linear-gradient(135deg, #1877f2 0%, #0d65d4 100%);
+            box-shadow: 0 4px 15px rgba(24,119,242,0.3);
+        }
+        .platform-snapchat { 
+            background: linear-gradient(135deg, #fffc00 0%, #ffe600 100%);
+            color: #000000 !important;
+        }
+        .platform-snapchat i {
+            color: #000000;
+        }
+        .platform-twitter { 
+            background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+            box-shadow: 0 4px 15px rgba(29,161,242,0.3);
+        }
+        .platform-linkedin { 
+            background: linear-gradient(135deg, #0077b5 0%, #005e8c 100%);
+            box-shadow: 0 4px 15px rgba(0,119,181,0.3);
+        }
+        .platform-github { 
+            background: linear-gradient(135deg, #333333 0%, #242424 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .platform-telegram { 
+            background: linear-gradient(135deg, #0088cc 0%, #006699 100%);
+            box-shadow: 0 4px 15px rgba(0,136,204,0.3);
+        }
+        .platform-whatsapp { 
+            background: linear-gradient(135deg, #25d366 0%, #128C7E 100%);
+            box-shadow: 0 4px 15px rgba(37,211,102,0.3);
+        }
+        .platform-phone { 
+            background: linear-gradient(135deg, #34b7f1 0%, #1e88e5 100%);
+            box-shadow: 0 4px 15px rgba(52,183,241,0.3);
+        }
+        .platform-email { 
+            background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%);
+            box-shadow: 0 4px 15px rgba(234,67,53,0.3);
+        }
+        
+        /* الروابط المخصصة */
+        .custom-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            font-size: 13px;
+        }
+        
+        .footer a {
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .views {
+            margin-top: 15px;
+            font-size: 11px;
+        }
+        
         @media (max-width: 600px) {
             body { padding: 15px; }
             .container { padding: 25px 15px; }
-            .account-btn { width: 95%; }
+            h1 { font-size: 24px; }
+            .account-btn { width: 95%; padding: 10px 15px; }
             .avatar-container { width: 100px; height: 100px; }
         }
+        
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .container { animation: fadeInUp 0.6s ease-out; }
+        
+        .container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
         #loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
             transition: opacity 0.5s ease-out;
         }
+        
         .loader {
             width: 60px;
             height: 60px;
@@ -116,11 +297,17 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .loading-text { margin-top: 20px; color: white; }
+        
+        .loading-text {
+            margin-top: 20px;
+            color: white;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -130,15 +317,20 @@
             <div class="loading-text">جاري تحميل صفحة البايو...</div>
         </div>
     </div>
+    
     <div class="container" id="mainContent" style="display:none;">
         <div class="avatar-container" id="avatarContainer">
             <div id="avatarContent"></div>
         </div>
+        
         <h1 id="displayName"></h1>
         <div class="username" id="username"></div>
         <div class="bio" id="bio"></div>
+        
         <div id="accountsContainer"></div>
         <div id="customLinksContainer"></div>
+        <div id="contactsContainer"></div>
+        
         <div class="footer">
             لإنشاء صفحة بايو مثل هذه 
             <a href="https://t.me/Social_Media_tools_bot" target="_blank">اضغط هنا</a>
@@ -150,6 +342,19 @@
     <script>
         const pageUrl = window.PAGE_URL;
         let supabaseClient = null;
+        
+        const platformNames = { 
+            youtube: 'يوتيوب', 
+            instagram: 'انستقرام', 
+            tiktok: 'تيك توك', 
+            facebook: 'فيسبوك', 
+            twitter: 'X',
+            snapchat: 'سناب شات',
+            linkedin: 'لينكد إن',
+            github: 'جيت هاب',
+            telegram: 'تيليجرام',
+            whatsapp: 'واتساب'
+        };
         
         function initSupabaseClient() {
             supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
@@ -165,64 +370,211 @@
                     .eq('is_active', true)
                     .single();
                 
+                if (error) throw error;
+                
                 if (data) {
                     document.title = `${data.display_name || 'صفحة بايو'} | صفحات بايو`;
                     document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
-                    document.getElementById('username').innerText = `@${data.user_id}`;
+                    document.getElementById('username').innerText = `@${data.user_id || 'user'}`;
                     document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
                     document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
                     
-                    await supabaseClient.rpc('increment_bio_views', { page_url_param: pageUrl });
-                    
+                    // تطبيق الثيم
                     const theme = data.theme_name || 'default';
-                    const themes = {
-                        default: { bg: '#f7fafc', text: '#2d3748', containerBg: 'white' },
-                        dark: { bg: '#1a202c', text: '#f7fafc', containerBg: '#2d3748' },
-                        green: { bg: '#f0fff4', text: '#22543d', containerBg: 'white' },
-                        pink: { bg: '#fff5f5', text: '#742a2a', containerBg: 'white' },
-                        ocean: { bg: '#ebf8ff', text: '#2c5282', containerBg: 'white' }
-                    };
-                    const t = themes[theme] || themes.default;
-                    document.body.style.background = t.bg;
-                    document.body.style.color = t.text;
-                    document.querySelector('.container').style.background = t.containerBg;
+                    applyTheme(theme);
                     
-                    const avatarContainer = document.getElementById('avatarContent');
-                    if (data.avatar_url) {
-                        avatarContainer.innerHTML = `<img src="${data.avatar_url}" class="avatar" alt="avatar" onerror="this.parentElement.innerHTML='<div class=\"avatar-fallback\"><span>${(data.display_name || '?').charAt(0)}</span></div>'">`;
-                    } else {
-                        avatarContainer.innerHTML = `<div class="avatar-fallback"><span>${(data.display_name || '?').charAt(0)}</span></div>`;
-                    }
+                    // عرض الصورة الشخصية
+                    displayAvatar(data.avatar_url, data.display_name);
                     
-                    const accounts = data.accounts || {};
-                    const platformNames = { youtube: 'يوتيوب', instagram: 'انستقرام', tiktok: 'تيك توك', facebook: 'فيسبوك', twitter: 'X' };
-                    const accountsHtml = [];
-                    for (const [platform, info] of Object.entries(accounts)) {
-                        if (info?.account_identifier) {
-                            const identifier = info.account_identifier.replace('@', '');
-                            const url = platform === 'twitter' ? `https://twitter.com/${identifier}` : `https://${platform}.com/@${identifier}`;
-                            accountsHtml.push(`<a href="${url}" class="account-btn platform-${platform}" target="_blank"><i class="fab fa-${platform}"></i><span>${platformNames[platform] || platform}</span></a>`);
-                        }
-                    }
-                    document.getElementById('accountsContainer').innerHTML = accountsHtml.join('');
+                    // عرض حسابات التواصل الاجتماعي
+                    displayAccounts(data.accounts || {});
                     
-                    const customLinks = data.custom_links || [];
-                    if (customLinks.length) {
-                        const linksHtml = customLinks.map(link => `<a href="${link.url}" class="account-btn custom-link" target="_blank"><i class="fas fa-link"></i><span>${link.title}</span></a>`).join('');
-                        document.getElementById('customLinksContainer').innerHTML = linksHtml;
-                    }
+                    // عرض الروابط المخصصة
+                    displayCustomLinks(data.custom_links || []);
                     
-                    document.getElementById('loading-screen').style.opacity = '0';
+                    // عرض جهات الاتصال (رقم الجوال والبريد الإلكتروني)
+                    displayContacts(data.contacts || {});
+                    
+                    // زيادة عدد المشاهدات
+                    await incrementViews(pageUrl);
+                    
+                    // إخفاء شاشة التحميل
                     setTimeout(() => {
-                        document.getElementById('loading-screen').style.display = 'none';
-                        document.getElementById('mainContent').style.display = 'block';
-                    }, 500);
+                        document.getElementById('loading-screen').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('loading-screen').style.display = 'none';
+                            document.getElementById('mainContent').style.display = 'block';
+                        }, 500);
+                    }, 300);
                 } else {
-                    document.getElementById('loading-screen').innerHTML = '<div style="text-align:center;color:white;"><h2>❌ الصفحة غير موجودة</h2><p>عذراً، لم نتمكن من العثور على هذه الصفحة</p><a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a></div>';
+                    showError('الصفحة غير موجودة');
                 }
             } catch (error) {
-                document.getElementById('loading-screen').innerHTML = '<div style="text-align:center;color:white;"><h2>❌ خطأ</h2><p>حدث خطأ في تحميل الصفحة</p><a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a></div>';
+                console.error('Error loading bio:', error);
+                showError('حدث خطأ في تحميل الصفحة');
             }
+        }
+        
+        function applyTheme(themeName) {
+            const themes = {
+                default: { bg: '#f7fafc', text: '#2d3748', containerBg: 'white' },
+                dark: { bg: '#1a202c', text: '#f7fafc', containerBg: '#2d3748' },
+                green: { bg: '#f0fff4', text: '#22543d', containerBg: 'white' },
+                pink: { bg: '#fff5f5', text: '#742a2a', containerBg: 'white' },
+                ocean: { bg: '#ebf8ff', text: '#2c5282', containerBg: 'white' }
+            };
+            const t = themes[themeName] || themes.default;
+            document.body.style.background = t.bg;
+            document.body.style.color = t.text;
+            document.querySelector('.container').style.background = t.containerBg;
+        }
+        
+        function displayAvatar(avatarUrl, displayName) {
+            const avatarContent = document.getElementById('avatarContent');
+            if (avatarUrl && avatarUrl.trim()) {
+                avatarContent.innerHTML = `<img src="${avatarUrl}" class="avatar" alt="avatar" onerror="this.parentElement.innerHTML='<div class=\"avatar-fallback\"><span>${(displayName || '?').charAt(0)}</span></div>'">`;
+            } else {
+                const firstLetter = displayName ? displayName.charAt(0) : '?';
+                avatarContent.innerHTML = `<div class="avatar-fallback"><span>${firstLetter}</span></div>`;
+            }
+        }
+        
+        function displayAccounts(accounts) {
+            const container = document.getElementById('accountsContainer');
+            if (!container) return;
+            
+            let html = '';
+            for (const [platform, identifier] of Object.entries(accounts)) {
+                let username = null;
+                
+                // دعم شكلين من البيانات
+                if (typeof identifier === 'string') {
+                    username = identifier;
+                } else if (identifier && typeof identifier === 'object' && identifier.account_identifier) {
+                    username = identifier.account_identifier;
+                }
+                
+                if (username) {
+                    const cleanIdentifier = username.replace('@', '');
+                    let url = '';
+                    
+                    switch(platform) {
+                        case 'youtube':
+                            url = `https://youtube.com/@${cleanIdentifier}`;
+                            break;
+                        case 'instagram':
+                            url = `https://instagram.com/${cleanIdentifier}`;
+                            break;
+                        case 'tiktok':
+                            url = `https://tiktok.com/@${cleanIdentifier}`;
+                            break;
+                        case 'facebook':
+                            url = `https://facebook.com/${cleanIdentifier}`;
+                            break;
+                        case 'twitter':
+                            url = `https://twitter.com/${cleanIdentifier}`;
+                            break;
+                        case 'snapchat':
+                            url = `https://snapchat.com/add/${cleanIdentifier}`;
+                            break;
+                        case 'linkedin':
+                            url = `https://linkedin.com/in/${cleanIdentifier}`;
+                            break;
+                        case 'github':
+                            url = `https://github.com/${cleanIdentifier}`;
+                            break;
+                        case 'telegram':
+                            url = `https://t.me/${cleanIdentifier}`;
+                            break;
+                        case 'whatsapp':
+                            url = `https://wa.me/${cleanIdentifier}`;
+                            break;
+                        default:
+                            continue;
+                    }
+                    
+                    html += `
+                        <a href="${url}" class="account-btn platform-${platform}" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-${platform}"></i>
+                            <span>${platformNames[platform] || platform}</span>
+                        </a>
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+        
+        function displayCustomLinks(links) {
+            const container = document.getElementById('customLinksContainer');
+            if (!container) return;
+            
+            if (links && links.length > 0) {
+                let html = '';
+                for (const link of links) {
+                    if (link.url && link.title) {
+                        html += `
+                            <a href="${link.url}" class="account-btn custom-link" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-link"></i>
+                                <span>${link.title}</span>
+                            </a>
+                        `;
+                    }
+                }
+                container.innerHTML = html;
+            }
+        }
+        
+        function displayContacts(contacts) {
+            const container = document.getElementById('contactsContainer');
+            if (!container) return;
+            
+            let html = '';
+            
+            // رقم الجوال
+            if (contacts.phone && contacts.phone.trim()) {
+                const phone = contacts.phone.replace(/\s/g, '');
+                html += `
+                    <a href="tel:${phone}" class="account-btn platform-phone" target="_blank">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>اتصال: ${contacts.phone}</span>
+                    </a>
+                    <a href="https://wa.me/${phone}" class="account-btn platform-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>واتساب</span>
+                    </a>
+                `;
+            }
+            
+            // البريد الإلكتروني
+            if (contacts.email && contacts.email.trim()) {
+                html += `
+                    <a href="mailto:${contacts.email}" class="account-btn platform-email" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                        <span>${contacts.email}</span>
+                    </a>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        async function incrementViews(pageUrlParam) {
+            try {
+                await supabaseClient.rpc('increment_bio_views', { page_url_param: pageUrlParam });
+            } catch (error) {
+                console.error('Error incrementing views:', error);
+            }
+        }
+        
+        function showError(message) {
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.innerHTML = `
+                <div style="text-align:center;color:white;">
+                    <h2>❌ ${message}</h2>
+                    <p>عذراً، لم نتمكن من العثور على هذه الصفحة</p>
+                    <a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a>
+                </div>
+            `;
         }
         
         initSupabaseClient();
