@@ -1108,20 +1108,24 @@ async function savePaymentMethods(bioPageId) {
         // =====================================================
         
         async function init() {
-            if (!checkSessionValidity()) return;
-            
-            const userLoaded = await loadUserData();
-            if (!userLoaded) return;
-            
-            await loadBioData();
-            
-            history.pushState(null, null, location.href);
-            window.onpopstate = function () {
-                history.go(1);
-            };
-            
-            console.log('تم تهيئة لوحة التحكم بنجاح');
-        }
+    // التحقق من صحة الجلسة أولاً
+    if (!checkSessionValidity()) return;
+    
+    // تحميل بيانات المستخدم
+    const userLoaded = await loadUserData();
+    if (!userLoaded) return;
+    
+    // تحميل بيانات البايو
+    await loadBioData();
+    
+    // تعطيل منع الرجوع مؤقتاً لحل مشكلة الأخطاء
+    // history.pushState(null, null, location.href);
+    // window.onpopstate = function () {
+    //     history.go(1);
+    // };
+    
+    console.log('تم تهيئة لوحة التحكم بنجاح');
+}
         
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
