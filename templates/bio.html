@@ -527,22 +527,56 @@
         // =====================================================
         
         function getPaymentScheme(methodKey) {
-            const schemes = {
-                'jaib': 'jaib://',
-                'floosak': 'floosak://',
-                'jawaly': 'jawaly://',
-                'mahfazti': 'mahfazti://',
-                'mobilemoney': 'mobilmoney://',
-                'yemenwallet': 'yemenwallet://',
-                'shilling': 'shilling://',
-                'easywallet': 'easywallet://',
-                'onecash': 'onecash://',
-                'kremi': 'kremi://',
-                'cash': 'cash://',
-                'mtnmomo': 'mtnmomo://'
-            };
-            return schemes[methodKey] || '';
+    const schemes = {
+        'jaib': 'jaib://',           // تطبيق جيب
+        'floosak': 'floosak://',     // تطبيق فلوسك
+        'jawaly': 'jawaly://',       // تطبيق جوالي
+        'mahfazti': 'mahfazti://',   // تطبيق محفظتي
+        'mobilemoney': 'mobilmoney://', // تطبيق موبايل موني
+        'yemenwallet': 'yemenwallet://', // تطبيق يمن والت
+        'shilling': 'shilling://',   // تطبيق شلن
+        'easywallet': 'easywallet://', // تطبيق سهل
+        'onecash': 'onecash://',     // تطبيق ون كاش
+        'kremi': 'kremi://',         // تطبيق كريمي
+        'cash': 'cash://',           // تطبيق كاش
+        'mtnmomo': 'mtnmomo://'      // تطبيق MTN Mobile Money
+    };
+    return schemes[methodKey] || '';
+}
+
+// إضافة روابط متجر التطبيقات للتحويل إذا لم يكن التطبيق مثبتاً
+function getAppStoreUrl(methodKey) {
+    const storeUrls = {
+        'jaib': 'https://play.google.com/store/apps/details?id=com.jaib.app', // رابط جيب في المتجر
+        'yemenwallet': 'https://play.google.com/store/apps/details?id=com.s2m.yemenpost.customer.android', // رابط يمن والت في المتجر [citation:4]
+        // أضف باقي الروابط حسب توفرها
+    };
+    return storeUrls[methodKey] || '';
+}
+
+// دالة محسنة لفتح التطبيق أو الانتقال للمتجر
+function openPaymentApp(methodKey, accountNumber) {
+    const scheme = getPaymentScheme(methodKey);
+    const appUrl = `${scheme}${accountNumber}`;
+    const storeUrl = getAppStoreUrl(methodKey);
+    
+    // محاولة فتح التطبيق
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = appUrl;
+    document.body.appendChild(iframe);
+    
+    // إذا لم يفتح التطبيق خلال ثانية، انتقل إلى المتجر
+    setTimeout(() => {
+        document.body.removeChild(iframe);
+        if (storeUrl) {
+            window.location.href = storeUrl;
+        } else {
+            // إذا لم يوجد رابط متجر، نفتح صفحة بحث جوجل
+            window.location.href = `https://www.google.com/search?q=${methodKey}+تطبيق`;
         }
+    }, 1000);
+}
         
         // =====================================================
         // دالة تتبع النقرات
