@@ -83,29 +83,32 @@
         
         async function showSuccess(message) {
             statusDiv.innerHTML = `<div class="success-box">✅ ${message}<br><button onclick="window.location.href='/dashboard'">الدخول للوحة التحكم</button></div>`;
-            // إخفاء loader
             document.querySelector('.loader').style.display = 'none';
         }
         
         if (!userId || !hash) {
             showError('بيانات المصادقة غير مكتملة. الرجاء المحاولة مرة أخرى.');
         } else {
-            // حفظ بيانات المصادقة في localStorage
+            // =====================================================
+            // تحسين الأمان: إضافة صلاحية للجلسة (7 أيام)
+            // =====================================================
             const localToken = btoa(`${userId}:${Date.now()}`);
+            const expiresIn = 7 * 24 * 60 * 60 * 1000; // 7 أيام
+            const expiresAt = Date.now() + expiresIn;
+            
             localStorage.setItem('bio_token', localToken);
             localStorage.setItem('bio_user_id', userId);
             localStorage.setItem('bio_username', username || firstName || `user_${userId}`);
             localStorage.setItem('bio_first_name', firstName || '');
             localStorage.setItem('bio_last_name', lastName || '');
+            localStorage.setItem('bio_expires_at', expiresAt.toString());
             
-            console.log('تم حفظ بيانات المستخدم محلياً:', { userId, username, firstName });
+            console.log('تم حفظ بيانات المستخدم محلياً مع صلاحية 7 أيام');
             
             async function setupUserInDatabase() {
                 try {
-                    // إنشاء عميل Supabase
                     const supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
                     
-                    // 1. التحقق من وجود المستخدم في جدول app_users
                     statusDiv.innerText = 'جاري التحقق من حسابك...';
                     
                     const { data: existingUser, error: selectError } = await supabaseClient
@@ -120,12 +123,9 @@
                     }
                     
                     if (existingUser) {
-                        // المستخدم موجود
                         console.log('المستخدم موجود مسبقاً:', existingUser);
-                        statusDiv.innerText = 'مرحباً بعودتك! جاري توجيهك...';
                         showSuccess('تم تسجيل الدخول بنجاح! مرحباً بعودتك.');
                     } else {
-                        // المستخدم غير موجود، نقوم بإنشائه
                         statusDiv.innerText = 'جاري إنشاء حسابك الجديد...';
                         
                         const newUser = {
@@ -137,8 +137,6 @@
                             updated_at: new Date().toISOString()
                         };
                         
-                        console.log('جاري إنشاء مستخدم جديد:', newUser);
-                        
                         const { data: insertedUser, error: insertError } = await supabaseClient
                             .from('app_users')
                             .insert([newUser])
@@ -146,9 +144,6 @@
                         
                         if (insertError) {
                             console.error('خطأ في إنشاء المستخدم:', insertError);
-                            
-                            // محاولة بديلة: استخدام API الخادم
-                            statusDiv.innerText = 'محاولة طريقة بديلة...';
                             
                             const response = await fetch('/api/user/create', {
                                 method: 'POST',
@@ -177,20 +172,12 @@
                         }
                     }
                     
-                    // إذا وصلنا لهنا بدون showSuccess (لأنه تم استدعاؤه بالفعل)
-                    if (!existingUser && !insertError) {
-                        showSuccess('تم إنشاء حسابك بنجاح! مرحباً بك.');
-                    } else if (existingUser && document.querySelector('.loader').style.display !== 'none') {
-                        showSuccess('تم تسجيل الدخول بنجاح! مرحباً بعودتك.');
-                    }
-                    
                 } catch (error) {
                     console.error('خطأ في المصادقة:', error);
-                    showError(error.message || 'حدث خطأ أثناء تسجيل الدخول. الرجاء المحاولة مرة أخرى.');
+                    showError(error.message || 'حدث خطأ أثناء تسجيل الدخول');
                 }
             }
             
-            // بدء عملية إنشاء المستخدم
             setupUserInDatabase();
         }
     </script>
