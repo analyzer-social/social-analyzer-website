@@ -75,7 +75,7 @@
         }
         
         h1 { font-size: 28px; margin-bottom: 8px; }
-        .username { font-size: 14px; margin-bottom: 20px; direction: ltr; }
+        .username { font-size: 14px; margin-bottom: 20px; color: #718096; }
         
         .bio {
             padding: 15px 20px;
@@ -202,6 +202,39 @@
         .loader { width: 60px; height: 60px; border: 5px solid rgba(255,255,255,0.3); border-top: 5px solid white; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { margin-top: 20px; color: white; font-size: 16px; }
+        
+        /* نافذة منبثقة لنسخ الرقم */
+        .payment-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; justify-content: center;
+            align-items: center; z-index: 10000; backdrop-filter: blur(5px);
+        }
+        .payment-modal-content {
+            background: white; border-radius: 28px; padding: 30px 25px;
+            max-width: 340px; width: 90%; text-align: center; direction: rtl;
+            font-family: 'Tajawal', sans-serif; animation: fadeInUp 0.3s ease;
+        }
+        .payment-modal-icon { font-size: 55px; margin-bottom: 10px; }
+        .payment-modal-title { color: #2d3748; margin-bottom: 15px; font-size: 20px; }
+        .payment-modal-number {
+            background: #f0f4ff; padding: 18px; border-radius: 20px; margin: 20px 0;
+            direction: ltr; word-break: break-all;
+        }
+        .payment-modal-number span:first-child {
+            font-size: 12px; color: #718096; display: block; margin-bottom: 8px;
+        }
+        .payment-modal-number span:last-child {
+            font-size: 22px; font-weight: bold; color: #667eea;
+        }
+        .payment-modal-btn {
+            border: none; padding: 14px 20px; border-radius: 60px;
+            font-size: 16px; font-weight: bold; width: 100%; margin-bottom: 12px;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .payment-modal-btn:hover { transform: translateY(-2px); opacity: 0.95; }
+        .btn-copy { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-store { background: #48bb78; color: white; }
+        .btn-close { background: transparent; color: #a0aec0; border: none; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -266,34 +299,28 @@
         let supabaseClient = null;
         
         // =====================================================
-        // قائمة المحافظ الإلكترونية
+        // قائمة المحافظ الإلكترونية مع روابط المتاجر
         // =====================================================
         
         const paymentWallets = [
-            { id: 'jaib', name: 'جيب' },
-            { id: 'floosak', name: 'فلوسك' },
-            { id: 'jawaly', name: 'جوالي' },
-            { id: 'mahfazti', name: 'محفظتي' },
-            { id: 'mobilemoney', name: 'موبايل موني' },
-            { id: 'yemenwallet', name: 'يمن والت' },
-            { id: 'shilling', name: 'شلن' },
-            { id: 'easywallet', name: 'سهل' },
-            { id: 'onecash', name: 'ون كاش' },
-            { id: 'kremi', name: 'كريمي' },
-            { id: 'cash', name: 'كاش' },
-            { id: 'mtnmomo', name: 'MTN Mobile Money' }
+            { id: 'jaib', name: 'جيب', storeUrl: 'https://play.google.com/store/apps/details?id=com.jaib.app' },
+            { id: 'floosak', name: 'فلوسك', storeUrl: 'https://play.google.com/store/apps/details?id=co.ysys.floosak' },
+            { id: 'jawaly', name: 'جوالي', storeUrl: '' },
+            { id: 'mahfazti', name: 'محفظتي', storeUrl: '' },
+            { id: 'mobilemoney', name: 'موبايل موني', storeUrl: 'https://play.google.com/store/apps/details?id=cac.mobilemoney.app' },
+            { id: 'yemenwallet', name: 'يمن والت', storeUrl: 'https://play.google.com/store/apps/details?id=com.s2m.yemenpost.customer.android' },
+            { id: 'shilling', name: 'شلن', storeUrl: '' },
+            { id: 'easywallet', name: 'سهل', storeUrl: '' },
+            { id: 'onecash', name: 'ون كاش', storeUrl: '' },
+            { id: 'kremi', name: 'كريمي', storeUrl: 'https://play.google.com/store/apps/details?id=com.KuraimiBank' },
+            { id: 'cash', name: 'كاش', storeUrl: '' },
+            { id: 'mtnmomo', name: 'MTN Mobile Money', storeUrl: '' }
         ];
         
         const platformNames = { 
-            youtube: 'يوتيوب', 
-            instagram: 'انستقرام', 
-            tiktok: 'تيك توك', 
-            facebook: 'فيسبوك', 
-            twitter: 'X',
-            snapchat: 'سناب شات',
-            linkedin: 'لينكد إن',
-            github: 'جيت هاب',
-            telegram: 'تيليجرام',
+            youtube: 'يوتيوب', instagram: 'انستقرام', tiktok: 'تيك توك',
+            facebook: 'فيسبوك', twitter: 'X', snapchat: 'سناب شات',
+            linkedin: 'لينكد إن', github: 'جيت هاب', telegram: 'تيليجرام',
             whatsapp: 'واتساب'
         };
         
@@ -303,10 +330,8 @@
         
         function applyTheme(themeName) {
             const themeMap = {
-                'default': '/static/themes/default.css',
-                'dark': '/static/themes/dark.css',
-                'green': '/static/themes/green.css',
-                'pink': '/static/themes/pink.css',
+                'default': '/static/themes/default.css', 'dark': '/static/themes/dark.css',
+                'green': '/static/themes/green.css', 'pink': '/static/themes/pink.css',
                 'ocean': '/static/themes/ocean.css'
             };
             const themeUrl = themeMap[themeName] || themeMap['default'];
@@ -420,27 +445,8 @@
         }
         
         // =====================================================
-        // دوال وسائل الدفع (الانتقال إلى التطبيق مع تتبع النقرات)
+        // دالة تتبع النقرات
         // =====================================================
-        
-        function getPaymentScheme(methodKey) {
-            const schemes = {
-                'jaib': 'jaib://', 'floosak': 'floosak://', 'jawaly': 'jawaly://',
-                'mahfazti': 'mahfazti://', 'mobilemoney': 'mobilmoney://',
-                'yemenwallet': 'yemenwallet://', 'shilling': 'shilling://',
-                'easywallet': 'easywallet://', 'onecash': 'onecash://',
-                'kremi': 'kremi://', 'cash': 'cash://', 'mtnmomo': 'mtnmomo://'
-            };
-            return schemes[methodKey] || '';
-        }
-        
-        function getAppStoreUrl(methodKey) {
-            const storeUrls = {
-                'jaib': 'https://play.google.com/store/apps/details?id=com.jaib.app',
-                'yemenwallet': 'https://play.google.com/store/apps/details?id=com.s2m.yemenpost.customer.android'
-            };
-            return storeUrls[methodKey] || '';
-        }
         
         async function trackPaymentClick(methodKey, accountNumber) {
             try {
@@ -452,30 +458,70 @@
             } catch (error) { console.error('Error tracking click:', error); }
         }
         
-        async function openPaymentApp(methodKey, accountNumber, methodName) {
-            const scheme = getPaymentScheme(methodKey);
-            const appUrl = `${scheme}${accountNumber}`;
-            const storeUrl = getAppStoreUrl(methodKey);
+        // =====================================================
+        // نافذة نسخ الرقم (الحل الأمثل)
+        // =====================================================
+        
+        function showPaymentModal(methodName, accountNumber, storeUrl) {
+            // إنشاء النافذة المنبثقة
+            const modal = document.createElement('div');
+            modal.className = 'payment-modal';
+            modal.innerHTML = `
+                <div class="payment-modal-content">
+                    <div class="payment-modal-icon">💰</div>
+                    <h3 class="payment-modal-title">التحويل عبر ${methodName}</h3>
+                    <div class="payment-modal-number">
+                        <span>📱 رقم المحفظة</span>
+                        <span>${accountNumber}</span>
+                    </div>
+                    <button class="payment-modal-btn btn-copy" id="modalCopyBtn">
+                        📋 نسخ الرقم
+                    </button>
+                    <button class="payment-modal-btn btn-store" id="modalStoreBtn">
+                        📲 تحميل التطبيق
+                    </button>
+                    <button class="payment-modal-btn btn-close" id="modalCloseBtn">
+                        إغلاق
+                    </button>
+                </div>
+            `;
             
-            // تتبع النقرة أولاً
-            await trackPaymentClick(methodKey, accountNumber);
+            document.body.appendChild(modal);
             
-            // محاولة فتح التطبيق
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = appUrl;
-            document.body.appendChild(iframe);
-            
-            setTimeout(() => {
-                document.body.removeChild(iframe);
-                if (storeUrl) {
-                    if (confirm(`⚠️ لم يتم فتح تطبيق ${methodName}\nهل تريد التوجه إلى متجر التحميل؟`)) {
-                        window.location.href = storeUrl;
-                    }
-                } else {
-                    alert(`الرجاء تثبيت تطبيق ${methodName} أولاً للقيام بالتحويل.`);
+            // نسخ الرقم
+            document.getElementById('modalCopyBtn').onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(accountNumber);
+                    const copyBtn = document.getElementById('modalCopyBtn');
+                    copyBtn.innerHTML = '✅ تم النسخ!';
+                    copyBtn.style.background = '#28a745';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '📋 نسخ الرقم';
+                        copyBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    }, 2000);
+                } catch (err) {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = accountNumber;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('✅ تم نسخ الرقم!');
                 }
-            }, 1000);
+            };
+            
+            // فتح المتجر
+            document.getElementById('modalStoreBtn').onclick = () => {
+                if (storeUrl) {
+                    window.open(storeUrl, '_blank');
+                } else {
+                    window.open(`https://play.google.com/store/search?q=${methodName}`, '_blank');
+                }
+            };
+            
+            // إغلاق النافذة
+            document.getElementById('modalCloseBtn').onclick = () => modal.remove();
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
         
         // =====================================================
@@ -506,7 +552,7 @@
                 for (const wallet of activeWallets) {
                     const accountNumber = result.payment_methods[wallet.id];
                     html += `
-                        <div class="payment-item" onclick="openPaymentApp('${wallet.id}', '${accountNumber}', '${wallet.name}')">
+                        <div class="payment-item" onclick="handlePaymentClick('${wallet.id}', '${accountNumber}', '${wallet.name}', '${wallet.storeUrl}')">
                             <img src="/static/assets/payment-icons/${wallet.id}.webp" 
                                  alt="${wallet.name}" class="payment-icon"
                                  onerror="this.src='/static/assets/payment-icons/placeholder.png'">
@@ -522,6 +568,12 @@
                 section.style.display = 'none';
             }
         }
+        
+        // دالة معالجة النقر على وسيلة الدفع
+        window.handlePaymentClick = async function(methodKey, accountNumber, methodName, storeUrl) {
+            await trackPaymentClick(methodKey, accountNumber);
+            showPaymentModal(methodName, accountNumber, storeUrl);
+        };
         
         // =====================================================
         // دالة زيادة المشاهدات
@@ -551,7 +603,8 @@
                 if (data) {
                     document.title = `${data.display_name || 'صفحة بايو'} | صفحات بايو`;
                     document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
-                    document.getElementById('username').innerText = `@${data.user_id || 'user'}`;
+                    // إخفاء user_id تماماً وعدم عرضه للعامة
+                    document.getElementById('username').innerText = '';
                     document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
                     document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
                     
@@ -583,12 +636,6 @@
             const loadingScreen = document.getElementById('loading-screen');
             loadingScreen.innerHTML = `<div style="text-align:center;color:white;"><h2>❌ ${message}</h2><p>عذراً، لم نتمكن من العثور على هذه الصفحة</p><a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a></div>`;
         }
-        
-        // =====================================================
-        // ربط الدوال للنطاق العام
-        // =====================================================
-        
-        window.openPaymentApp = openPaymentApp;
         
         // =====================================================
         // تهيئة Supabase
