@@ -805,89 +805,150 @@
         // =====================================================
         
         async function saveBioPage() {
-            if (!currentUserId) {
-                showError('الرجاء تسجيل الدخول أولاً');
-                window.location.href = '/';
-                return;
+    if (!currentUserId) {
+        showError('الرجاء تسجيل الدخول أولاً');
+        window.location.href = '/';
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        // جمع البيانات من النماذج
+        const accounts = {};
+        const youtube = document.getElementById('youtube').value.trim();
+        const instagram = document.getElementById('instagram').value.trim();
+        const tiktok = document.getElementById('tiktok').value.trim();
+        const facebook = document.getElementById('facebook').value.trim();
+        const twitter = document.getElementById('twitter').value.trim();
+        
+        if (youtube) accounts.youtube = youtube.replace('@', '');
+        if (instagram) accounts.instagram = instagram.replace('@', '');
+        if (tiktok) accounts.tiktok = tiktok.replace('@', '');
+        if (facebook) accounts.facebook = facebook;
+        if (twitter) accounts.twitter = twitter;
+        
+        const bioData = {
+            avatar_url: document.getElementById('avatarUrl').value || null,
+            display_name: document.getElementById('displayName').value || userData.username || 'مستخدم',
+            bio: document.getElementById('bio').value || null,
+            theme_name: document.getElementById('theme').value,
+            accounts: accounts,
+            custom_links: customLinks,
+            contacts: getContacts(),
+            updated_at: new Date().toISOString()
+        };
+        
+        let bioPageId = null;
+        
+        if (currentPageUrl) {
+            // تحديث صفحة موجودة
+            const { data, error } = await supabaseClient
+                .from('bio_pages')
+                .update(bioData)
+                .eq('user_id', parseInt(currentUserId))
+                .select();
+            
+            if (error) throw error;
+            
+            if (data && data[0]) {
+                bioPageId = data[0].id;
             }
+            showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
             
-            if (!checkSessionValidity()) return;
+        } else {
+            // إنشاء صفحة جديدة - رابط عشوائي
+            const randomId = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 4);
+            const pageUrl = randomId;
             
-            showLoading();
+            const newData = {
+                user_id: parseInt(currentUserId),
+                page_url: pageUrl,
+                ...bioData,
+                is_active: true,
+                views_count: 0,
+                created_at: new Date().toISOString()
+            };
             
-            try {
-                const accounts = {};
-                const youtube = document.getElementById('youtube').value.trim();
-                const instagram = document.getElementById('instagram').value.trim();
-                const tiktok = document.getElementById('tiktok').value.trim();
-                const facebook = document.getElementById('facebook').value.trim();
-                const twitter = document.getElementById('twitter').value.trim();
-                
-                if (youtube) accounts.youtube = youtube.replace('@', '');
-                if (instagram) accounts.instagram = instagram.replace('@', '');
-                if (tiktok) accounts.tiktok = tiktok.replace('@', '');
-                if (facebook) accounts.facebook = facebook;
-                if (twitter) accounts.twitter = twitter;
-                
-                const bioData = {
-                    avatar_url: document.getElementById('avatarUrl').value || null,
-                    display_name: document.getElementById('displayName').value || userData.username || 'مستخدم',
-                    bio: document.getElementById('bio').value || null,
-                    theme_name: document.getElementById('theme').value,
-                    accounts: accounts,
-                    custom_links: customLinks,
-                    contacts: getContacts(),
-                    updated_at: new Date().toISOString()
-                };
-                
-                console.log('جاري حفظ البيانات:', bioData);
-                
-                if (currentPageUrl) {
-                    const { data, error } = await supabaseClient
-                        .from('bio_pages')
-                        .update(bioData)
-                        .eq('user_id', parseInt(currentUserId))
-                        .select();
-                    
-                    if (error) throw error;
-                    showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
-                    
-                } else {
-                    const randomId = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 4);
-                    const pageUrl = randomId;
-                    
-                    const newData = {
-                        user_id: parseInt(currentUserId),
-                        page_url: pageUrl,
-                        ...bioData,
-                        is_active: true,
-                        views_count: 0,
-                        created_at: new Date().toISOString()
-                    };
-                    
-                    const { data, error } = await supabaseClient
-                        .from('bio_pages')
-                        .insert([newData])
-                        .select();
-                    
-                    if (error) throw error;
-                    
-                    currentPageUrl = pageUrl;
-                    document.getElementById('pageUrlValue').innerText = currentPageUrl;
-                    showSuccess('✅ تم إنشاء صفحة البايو بنجاح!');
-                }
-                
-                // حفظ وسائل الدفع
-                await savePaymentMethods();
-                await loadPaymentStats();
-                
-            } catch (error) {
-                console.error('خطأ في الحفظ:', error);
-                showError(error.message || 'حدث خطأ أثناء حفظ البيانات');
-            } finally {
-                hideLoading();
+            const { data, error } = await supabaseClient
+                .from('bio_pages')
+                .insert([newData])
+                .select();
+            
+            if (error) throw error;
+            
+            if (data && data[0]) {
+                bioPageId = data[0].id;
+                currentPageUrl = pageUrl;
+                document.getElementById('pageUrlValue').innerText = currentPageUrl;
+            }
+            showSuccess('✅ تم إنشاء صفحة البايو بنجاح!');
+        }
+        
+        // حفظ وسائل الدفع مع bio_page_id الصحيح
+        if (bioPageId) {
+            await savePaymentMethods(bioPageId);
+        } else {
+            // محاولة الحصول على bio_page_id مرة أخرى
+            const { data } = await supabaseClient
+                .from('bio_pages')
+                .select('id')
+                .eq('user_id', parseInt(currentUserId))
+                .single();
+            
+            if (data) {
+                await savePaymentMethods(data.id);
             }
         }
+        
+    } catch (error) {
+        console.error('خطأ في الحفظ:', error);
+        showError(error.message || 'حدث خطأ أثناء حفظ البيانات');
+    } finally {
+        hideLoading();
+    }
+}
+
+// تحديث دالة savePaymentMethods لاستقبال bio_page_id
+async function savePaymentMethods(bioPageId) {
+    try {
+        const paymentData = getPaymentData();
+        
+        // التحقق من وجود بيانات للحفظ
+        const hasData = Object.values(paymentData).some(value => value && value.trim() !== '');
+        if (!hasData) {
+            console.log('لا توجد بيانات وسائل دفع للحفظ');
+            return;
+        }
+        
+        console.log('جاري حفظ وسائل الدفع:', paymentData);
+        console.log('Bio Page ID:', bioPageId);
+        
+        const response = await fetch('/api/payment/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-Id': currentUserId
+            },
+            body: JSON.stringify({
+                payment_methods: paymentData,
+                bio_page_id: bioPageId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('تم حفظ وسائل الدفع بنجاح');
+        } else {
+            console.error('خطأ في حفظ وسائل الدفع:', result.error);
+            showError('حدث خطأ في حفظ وسائل الدفع: ' + (result.error || 'غير معروف'));
+        }
+    } catch (error) {
+        console.error('Error saving payment methods:', error);
+        showError('فشل الاتصال بالخادم لحفظ وسائل الدفع');
+    }
+}
         
         // =====================================================
         // تحميل البيانات من قاعدة البيانات
