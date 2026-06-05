@@ -483,7 +483,51 @@ def get_payment_stats(user_id):
         return jsonify({'success': True, 'stats': result.data})
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500    
+        return jsonify({'error': str(e)}), 500 
+# =====================================================        
+@app.route('/api/payment/load-page', methods=['GET'])
+def load_payment_methods_for_page():
+    """تحميل وسائل الدفع لصفحة عامة (للعرض العام)"""
+    try:
+        page_url = request.args.get('page_url')
+        
+        if not page_url:
+            return jsonify({'error': 'page_url required'}), 400
+        
+        print(f"🔍 جلب وسائل الدفع للصفحة: {page_url}")
+        
+        # الحصول على bio_page_id من page_url
+        bio_result = supabase.table('bio_pages')\
+            .select('id')\
+            .eq('page_url', page_url)\
+            .execute()
+        
+        if not bio_result.data or len(bio_result.data) == 0:
+            print(f"❌ لم يتم العثور على الصفحة: {page_url}")
+            return jsonify({'success': False, 'error': 'Page not found'}), 404
+        
+        bio_page_id = bio_result.data[0]['id']
+        print(f"🔍 bio_page_id: {bio_page_id}")
+        
+        # جلب وسائل الدفع
+        result = supabase.table('payment_methods')\
+            .select('method_key, account_number')\
+            .eq('bio_page_id', bio_page_id)\
+            .eq('is_active', True)\
+            .execute()
+        
+        payment_methods = {}
+        if result.data:
+            for item in result.data:
+                if item.get('account_number'):
+                    payment_methods[item['method_key']] = item['account_number']
+        
+        print(f"✅ تم تحميل وسائل الدفع: {payment_methods}")
+        return jsonify({'success': True, 'payment_methods': payment_methods})
+        
+    except Exception as e:
+        print(f"❌ خطأ في تحميل وسائل الدفع للصفحة: {str(e)}")
+        return jsonify({'error': str(e)}), 500           
 # =====================================================
 # تشغيل التطبيق
 # =====================================================
