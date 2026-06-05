@@ -503,7 +503,8 @@
                 return;
             }
             
-            const fullUrl = `https://social-analyzer-bio.onrender.com/bio/${currentPageUrl}`;
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            const fullUrl = `${baseUrl}/bio/${currentPageUrl}`;
             
             try {
                 await navigator.clipboard.writeText(fullUrl);
@@ -601,6 +602,9 @@
                 window.location.href = '/';
                 return;
             }
+            
+            // التحقق من صحة الجلسة قبل الحفظ
+            if (!checkSessionValidity()) return;
             
             showLoading();
             
@@ -786,31 +790,91 @@
             }
         }
         
+        // =====================================================
+        // دوال الأمان والجلسات
+        // =====================================================
+        
+        function checkSessionValidity() {
+            const expiresAt = localStorage.getItem('bio_expires_at');
+            if (!expiresAt || Date.now() > parseInt(expiresAt)) {
+                // الجلسة منتهية
+                console.log('الجلسة منتهية، يتم تسجيل الخروج');
+                localStorage.clear();
+                window.location.replace('/');
+                return false;
+            }
+            return true;
+        }
+        
+        // =====================================================
+        // دالة تسجيل الخروج المحسنة
+        // =====================================================
+        
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                // مسح فقط بيانات الجلسة
+                localStorage.removeItem('bio_token');
+                localStorage.removeItem('bio_user_id');
+                localStorage.removeItem('bio_username');
+                localStorage.removeItem('bio_expires_at');
+                localStorage.removeItem('bio_first_name');
+                localStorage.removeItem('bio_last_name');
+                
+                // منع العودة للخلف باستخدام replace
+                window.location.replace('/');
+            }
+        }
+        
+        // =====================================================
+        // دالة معاينة الصفحة المحسنة
+        // =====================================================
+        
         function previewBioPage() {
             if (!currentPageUrl) {
                 showError('⚠️ لا يوجد رابط لصفحة البايو بعد\nيرجى حفظ البيانات أولاً');
                 return;
             }
-            window.open(`https://bio.analyzer.social/bio/${currentPageUrl}`, '_blank');
-        }
-        
-        function logout() {
-            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.clear();
-                window.location.href = '/';
-            }
+            
+            // التحقق من صحة الجلسة قبل المعاينة
+            if (!checkSessionValidity()) return;
+            
+            // استخدام الدومين الحالي تلقائياً بدلاً من الثابت
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            window.open(`${baseUrl}/bio/${currentPageUrl}`, '_blank');
         }
         
         // =====================================================
-        // تهيئة الصفحة
+        // تهيئة الصفحة مع التحقق من الجلسة
         // =====================================================
         
         async function init() {
+            // التحقق من صحة الجلسة أولاً
+            if (!checkSessionValidity()) return;
+            
+            // تحميل بيانات المستخدم
             const userLoaded = await loadUserData();
             if (!userLoaded) return;
+            
+            // تحميل بيانات البايو
             await loadBioData();
+            
+            // منع استخدام زر الرجوع بعد تسجيل الخروج
+            history.pushState(null, null, location.href);
+            window.onpopstate = function () {
+                history.go(1);
+            };
+            
             console.log('تم تهيئة لوحة التحكم بنجاح');
         }
+        
+        // منع حفظ الصفحة في ذاكرة التخزين المؤقت (للمتصفحات)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // الصفحة تم تحميلها من ذاكرة التخزين المؤقت
+                console.log('تم تحميل الصفحة من cache، جاري التحقق من الجلسة');
+                checkSessionValidity();
+            }
+        });
         
         // ربط الدوال للنطاق العام
         window.addCustomLink = addCustomLink;
