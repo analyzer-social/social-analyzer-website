@@ -1,0 +1,368 @@
+<!-- ================================================================================= -->
+<!-- تبويب: توصيات AI (AI Recommendations Tab) - متوافق مع موقع الويب الجديد           -->
+<!-- ================================================================================= -->
+
+<!-- القسم 1: بطاقة توصيات الذكاء الاصطناعي -->
+<div class="card">
+    <h3><i class="fas fa-robot"></i> 🧠 توصيات AI</h3>
+    
+    <!-- إحصائيات سريعة -->
+    <div class="rec-stats" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        <div style="background: linear-gradient(135deg, #667eea20, #764ba220); border-radius: 12px; padding: 8px 12px; text-align: center; flex: 1;">
+            <div id="totalRecs" style="font-size: 18px; font-weight: bold; color: #667eea;">0</div>
+            <div style="font-size: 10px; color: #888;">📊 إجمالي التوصيات</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #ed893620, #dd6b2020); border-radius: 12px; padding: 8px 12px; text-align: center; flex: 1;">
+            <div id="remainingRecs" style="font-size: 18px; font-weight: bold; color: #ed8936;">0</div>
+            <div style="font-size: 10px; color: #888;">⚡ توصيات متاحة</div>
+        </div>
+    </div>
+    
+    <!-- قائمة التوصيات -->
+    <div id="recommendationsList">
+        <div style="text-align: center; padding: 40px;">
+            <i class="fas fa-spinner fa-spin"></i> جاري تحميل التوصيات...
+        </div>
+    </div>
+</div>
+
+<style>
+    .recommendation-card {
+        background: var(--card-bg, white);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 16px;
+        border-right: 4px solid var(--primary, #667eea);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow, 0 2px 8px rgba(0,0,0,0.05));
+    }
+    
+    .recommendation-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .recommendation-platform {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .recommendation-text-full {
+        scrollbar-width: thin;
+        max-height: 150px;
+        overflow-y: auto;
+        background: var(--hover-bg, #f8f9fa);
+        border-radius: 12px;
+        padding: 12px;
+        margin: 10px 0;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+    
+    .recommendation-text-full::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .recommendation-text-full::-webkit-scrollbar-track {
+        background: var(--border, #e2e8f0);
+        border-radius: 10px;
+    }
+    
+    .recommendation-text-full::-webkit-scrollbar-thumb {
+        background: var(--primary, #667eea);
+        border-radius: 10px;
+    }
+    
+    .btn-view {
+        background: linear-gradient(135deg, var(--primary, #667eea), var(--secondary, #764ba2));
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-view:hover {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
+    
+    .btn-download-recommendation {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-download-recommendation:hover {
+        background: #218838;
+        transform: scale(1.02);
+    }
+    
+    .btn-download-recommendation:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    body.dark .recommendation-card {
+        background: var(--card-bg, #2d3748);
+    }
+    
+    body.dark .recommendation-text-full {
+        background: var(--hover-bg, #374151);
+        color: var(--text, #f7fafc);
+    }
+</style>
+
+<script>
+(function() {
+    let allRecommendations = [];
+    let currentToken = localStorage.getItem('social_analyzer_token');
+    if (!currentToken) {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentToken = urlParams.get('token');
+        if (currentToken) localStorage.setItem('social_analyzer_token', currentToken);
+    }
+    
+    const platformColors = {
+        youtube: '#ff0000',
+        instagram: '#e1306c',
+        tiktok: '#000000',
+        facebook: '#1877f2',
+        snapchat: '#fffc00'
+    };
+    
+    const platformNames = {
+        youtube: 'يوتيوب',
+        instagram: 'انستقرام',
+        tiktok: 'تيك توك',
+        facebook: 'فيسبوك',
+        snapchat: 'سناب شات'
+    };
+    
+    const platformIcons = {
+        youtube: 'fab fa-youtube',
+        instagram: 'fab fa-instagram',
+        tiktok: 'fab fa-tiktok',
+        facebook: 'fab fa-facebook-f',
+        snapchat: 'fab fa-snapchat'
+    };
+    
+    function showToast(message, isError = false) {
+        let toast = document.getElementById('recToastMessage');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'recToastMessage';
+            toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 20px; border-radius: 30px; font-size: 14px; z-index: 1002; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-width: 200px;';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.background = isError ? '#dc3545' : '#28a745';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+    
+    function updateRecStats() {
+        const totalEl = document.getElementById('totalRecs');
+        const remainingEl = document.getElementById('remainingRecs');
+        
+        const total = allRecommendations.length;
+        if (totalEl) totalEl.innerHTML = total;
+        
+        let remaining = 0;
+        if (window.userData) {
+            const geminiLimit = window.userData.gemini_limit || 0;
+            const geminiUsed = window.userData.gemini_used || 0;
+            remaining = Math.max(0, geminiLimit - geminiUsed);
+        } else if (window.userPermissions) {
+            const geminiLimit = window.userPermissions.gemini_limit || 0;
+            const geminiUsed = window.userPermissions.gemini_used || 0;
+            remaining = Math.max(0, geminiLimit - geminiUsed);
+        }
+        if (remainingEl) remainingEl.innerHTML = remaining;
+    }
+    
+    function displayRecommendations() {
+        const container = document.getElementById('recommendationsList');
+        if (!container) return;
+        
+        const filtered = [...allRecommendations].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        if (!filtered.length) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:60px 20px; color:var(--text-light, #888);">
+                    <i class="fas fa-robot" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                    <p>لا توجد توصيات حتى الآن</p>
+                    <p style="font-size: 12px; margin-top: 10px;">💎 هذه الميزة متاحة للمستخدمين المميزين فقط</p>
+                    <p style="font-size: 12px;">قم بالاشتراك في الخطة المميزة للحصول على توصيات الذكاء الاصطناعي</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = filtered.map(rec => {
+            let accountName = rec.account_identifier || 'غير محدد';
+            if (accountName.startsWith('@@')) accountName = accountName.substring(1);
+            if (!accountName.startsWith('@')) accountName = '@' + accountName;
+            
+            let fullText = rec.recommendation_text || rec.recommendation_summary || '';
+            fullText = fullText.replace(/📊 \*\*المتبقي اليوم:.*?\*\*/g, '');
+            fullText = fullText.replace(/💎 \*\*مستوى التوصية:.*?\*\*/g, '');
+            fullText = fullText.replace(/━━━━━━━━━━━━━━━━━━━━━━/g, '');
+            fullText = fullText.replace(/\n\s*\n\s*\n/g, '\n\n');
+            
+            let shortText = fullText.substring(0, 200);
+            if (fullText.length > 200) shortText += '...';
+            
+            let formattedText = shortText
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+            
+            const recDate = new Date(rec.created_at);
+            const formattedDate = recDate.toLocaleDateString('ar-EG', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            const platformColor = platformColors[rec.platform] || '#667eea';
+            const recId = rec.id || 'rec_' + Date.now() + '_' + Math.random();
+            
+            return `
+                <div class="recommendation-card" data-recid="${recId}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span class="recommendation-platform" style="background: ${platformColor}; color: white;">
+                                <i class="${platformIcons[rec.platform] || 'fas fa-robot'}"></i>
+                                ${platformNames[rec.platform] || rec.platform}
+                            </span>
+                            <span style="font-size: 11px; color: var(--text-light, #888);">
+                                <i class="fas fa-calendar"></i> ${formattedDate}
+                            </span>
+                        </div>
+                        <button class="btn-download-recommendation" onclick="downloadRecommendationHandler(${JSON.stringify(recId)})">
+                            <i class="fas fa-download"></i> تنزيل
+                        </button>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong><i class="fas fa-at"></i> الحساب:</strong> 
+                        <span style="color: ${platformColor};">${accountName}</span>
+                    </div>
+                    <div class="recommendation-text-full">
+                        ${formattedText}
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                        <button class="btn-view" onclick="showFullRecommendationModalHandler(${JSON.stringify(fullText)})">
+                            <i class="fas fa-expand"></i> عرض التوصية كاملة
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    window.downloadRecommendationHandler = async function(recId) {
+        const button = event?.target?.closest?.('.btn-download-recommendation') || document.querySelector(`.btn-download-recommendation[data-recid="${recId}"]`);
+        if (button) {
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+            
+            showToast('⏳ جاري إرسال التوصية إلى البوت...');
+            
+            try {
+                const response = await fetch('/api/send-recommendation-to-bot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: currentToken, recommendation_id: recId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('✅ تم إرسال التوصية إلى البوت! تحقق من الدردشة');
+                } else {
+                    showToast('❌ فشل إرسال التوصية: ' + (result.error || 'حدث خطأ'), true);
+                }
+            } catch (error) {
+                showToast('❌ حدث خطأ أثناء إرسال التوصية', true);
+            } finally {
+                button.innerHTML = originalHtml;
+                button.disabled = false;
+            }
+        }
+    };
+    
+    window.showFullRecommendationModalHandler = function(text) {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; justify-content: center; align-items: center;';
+        modal.innerHTML = `
+            <div style="background: var(--card-bg, white); border-radius: 20px; max-width: 90%; max-height: 80%; overflow-y: auto; padding: 20px; margin: 20px;">
+                <h3 style="color: var(--primary, #667eea); margin-bottom: 15px;">📋 التوصية كاملة</h3>
+                <div style="white-space: pre-wrap; line-height: 1.6;">${text.replace(/\n/g, '<br>')}</div>
+                <button onclick="this.closest('div').parentElement.remove()" style="margin-top: 15px; background: var(--primary, #667eea); color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer;">إغلاق</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    };
+    
+    async function loadRecommendations() {
+        if (!currentToken) return;
+        try {
+            const response = await fetch(`/api/user_recommendations?token=${encodeURIComponent(currentToken)}`);
+            const result = await response.json();
+            if (result.success && result.recommendations) {
+                allRecommendations = result.recommendations.map((rec, idx) => {
+                    if (!rec.id) rec.id = 'rec_' + Date.now() + '_' + idx;
+                    return rec;
+                });
+                updateRecStats();
+                displayRecommendations();
+            } else {
+                document.getElementById('recommendationsList').innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--text-light, #888);">
+                        <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p>${result.error || 'لا توجد توصيات متاحة'}</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading recommendations:', error);
+            document.getElementById('recommendationsList').innerHTML = `
+                <div style="text-align:center; padding:40px; color:#dc3545;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                    <p>حدث خطأ في تحميل التوصيات</p>
+                </div>
+            `;
+        }
+    }
+    
+    window.updateAITab = function(data) {
+        if (data && data.recommendations) {
+            allRecommendations = data.recommendations;
+            updateRecStats();
+            displayRecommendations();
+        } else {
+            loadRecommendations();
+        }
+    };
+    
+    window.addEventListener('refreshUserData', () => {
+        if (window.userData && window.userData.recommendations) {
+            allRecommendations = window.userData.recommendations;
+            updateRecStats();
+            displayRecommendations();
+        } else {
+            loadRecommendations();
+        }
+    });
+    
+    loadRecommendations();
+})();
+</script>

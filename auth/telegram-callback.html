@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جاري تسجيل الدخول - Social Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success-icon {
+            font-size: 64px;
+            color: #48bb78;
+            margin: 20px 0;
+        }
+        .error-icon {
+            font-size: 64px;
+            color: #f56565;
+            margin: 20px 0;
+        }
+        h2 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="statusContainer">
+        <div class="spinner"></div>
+        <h2>جاري تسجيل الدخول...</h2>
+        <p>يرجى الانتظار، سيتم توجيهك تلقائياً</p>
+    </div>
+
+    <script>
+        // =================================================================================
+        // استلام بيانات المستخدم من تلغرام
+        // =================================================================================
+        
+        const API_BASE = 'https://social-analyzer-flask-3.onrender.com';
+        
+        // استخراج البيانات من URL
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        const userData = {
+            id: urlParams.get('id'),
+            first_name: urlParams.get('first_name'),
+            last_name: urlParams.get('last_name'),
+            username: urlParams.get('username'),
+            photo_url: urlParams.get('photo_url'),
+            auth_date: urlParams.get('auth_date'),
+            hash: urlParams.get('hash')
+        };
+        
+        console.log('📱 بيانات المستخدم من تلغرام:', userData);
+        
+        // التحقق من وجود user_id
+        if (!userData.id) {
+            showError('لم يتم استلام بيانات المستخدم من تلغرام');
+        } else {
+            // إنشاء توكن جديد
+            createAndSaveToken();
+        }
+        
+        // =================================================================================
+        // إنشاء توكن وحفظه
+        // =================================================================================
+        
+        async function createAndSaveToken() {
+            console.log('🔑 جاري إنشاء توكن جديد للمستخدم:', userData.id);
+            
+            try {
+                // طلب إنشاء توكن من السيرفر
+                const response = await fetch(`${API_BASE}/api/create_token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: parseInt(userData.id),
+                        source: 'website'
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('📡 نتيجة إنشاء التوكن:', result);
+                
+                if (result.success) {
+                    // حفظ التوكن في localStorage
+                    localStorage.setItem('social_analyzer_token', result.token);
+                    localStorage.setItem('user_data', JSON.stringify({
+                        id: userData.id,
+                        username: userData.username,
+                        first_name: userData.first_name
+                    }));
+                    
+                    console.log('✅ تم حفظ التوكن بنجاح');
+                    showSuccess('تم تسجيل الدخول بنجاح!');
+                    
+                    // التوجيه إلى لوحة التحكم بعد 1.5 ثانية
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+                } else {
+                    console.error('❌ فشل إنشاء التوكن:', result.error);
+                    showError(result.error || 'فشل إنشاء التوكن');
+                }
+                
+            } catch (error) {
+                console.error('❌ خطأ في الاتصال:', error);
+                showError('حدث خطأ في الاتصال بالخادم');
+            }
+        }
+        
+        // =================================================================================
+        // عرض رسائل النجاح والخطأ
+        // =================================================================================
+        
+        function showSuccess(message) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `
+                <div class="success-icon">✅</div>
+                <h2>تم تسجيل الدخول بنجاح!</h2>
+                <p>${message}</p>
+                <p>مرحباً ${userData.first_name || 'مستخدم'} 👋</p>
+                <p>جاري توجيهك إلى لوحة التحكم...</p>
+            `;
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `
+                <div class="error-icon">❌</div>
+                <h2>خطأ في تسجيل الدخول</h2>
+                <p>${message}</p>
+                <a href="/index.html" class="btn">العودة إلى الصفحة الرئيسية</a>
+            `;
+        }
+    </script>
+</body>
+</html>

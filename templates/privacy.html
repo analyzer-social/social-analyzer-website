@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Analyzer Privacy Policy</title>
+    <!-- إضافات PWA (من اقتراحك) -->
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/assets/icons/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/static/assets/icons/android-chrome-512x512.png">
+    <link rel="apple-touch-icon" href="/static/assets/icons/apple-touch-icon.png">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 45px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        
+        /* ========== Hero Header Section ========== */
+        .hero-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+        }
+        
+        /* ========== Logo & App Info ========== */
+        .app-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+        }
+        .app-details h3 {
+            margin: 0;
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+        .app-details p {
+            margin: 5px 0 0;
+            font-size: 0.8rem;
+            color: #718096;
+        }
+        .verified-badge {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        h1 { 
+            color: #667eea; 
+            margin-bottom: 15px; 
+            border-bottom: 3px solid #667eea; 
+            padding-bottom: 15px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .update-date {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+        h2 { 
+            color: #2c3e50; 
+            margin: 30px 0 15px 0; 
+            font-size: 1.25rem;
+            padding-right: 12px;
+            border-right: 3px solid #667eea;
+        }
+        h3 {
+            color: #4a5568;
+            margin: 20px 0 10px 0;
+            font-size: 1.1rem;
+            padding-right: 10px;
+            border-right: 2px solid #48bb78;
+        }
+        p { 
+            line-height: 1.8; 
+            color: #4a5568; 
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        ul { 
+            margin: 15px 0 15px 30px; 
+            color: #4a5568;
+        }
+        li { 
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .highlight {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 3px solid #667eea;
+        }
+        .tiktok-note, .snapchat-note {
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .tiktok-note {
+            background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+            border-right: 3px solid #000000;
+        }
+        .snapchat-note {
+            background: #fff8e7;
+            border-right: 3px solid #fffc00;
+        }
+        /* ========== القسم الجديد: الروابط الخارجية ========== */
+        .external-links-box {
+            background: #e8f0fe;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 25px 0;
+            border-right: 4px solid #1e88e5;
+        }
+        .external-links-box h3 {
+            color: #1e88e5;
+            margin-top: 0;
+            border-right: none;
+            padding-right: 0;
+            font-size: 1.2rem;
+        }
+        .external-links-box p {
+            margin-bottom: 12px;
+        }
+        .external-links-box ul {
+            margin-bottom: 5px;
+        }
+        .external-links-box li {
+            margin: 8px 0;
+        }
+        .note-highlight {
+            background: #ffffffcc;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 14px;
+            border: 1px solid #cbd5e0;
+        }
+        .contact-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 25px 0 15px;
+            justify-content: center;
+        }
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        .contact-btn.developer { background: #667eea; }
+        .contact-btn.channel { background: #48bb78; }
+        .contact-btn.bot { background: #1e88e5; }
+        .footer-links {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 11px;
+            color: #a0aec0;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 25px; }
+            .app-info { flex-direction: column; text-align: center; }
+            .logo-area { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Header -->
+        <div class="hero-header">
+            <img src="/static/assets/icons/Hero Header-2076×757.webp" 
+                 alt="Social Analyzer Banner" 
+                 class="hero-image"
+                 onerror="this.style.display='none'">
+        </div>
+        
+        <!-- Logo & App Info (متطلبات TikTok) -->
+        <div class="app-info">
+            <div class="logo-area">
+                <img src="/static/assets/icons/android-chrome-192x192.png" 
+                     alt="Social Analyzer Logo" 
+                     class="logo"
+                     onerror="this.src='https://cdn-icons-png.flaticon.com/512/906/906361.png'">
+                <div class="app-details">
+                    <h3>🤖 Social Analyzer Bot</h3>
+                    <p>@Social_Media_analyzer_bot | @Alshabany_Ai</p>
+                </div>
+            </div>
+            <div class="verified-badge">
+                Social Analyzer Privacy Policy
+            </div>
+        </div>
+        
+        <h1>🔐 سياسة الخصوصية</h1>
+        <div class="update-date">📅 آخر تحديث: <span id="currentDate"></span></div>
+        
+        <div class="highlight">
+            <p>نحن في <strong>Social Analyzer</strong> نلتزم بحماية خصوصيتك وسرية بياناتك. هذه السياسة توضح كيفية تعاملنا مع المعلومات.</p>
+        </div>
+        
+        <h2>1. المعلومات التي يتم تخزينها</h2>
+        <p>لتشغيل خدمات <strong>Social Analyzer (@Social_Media_analyzer_bot)</strong>، نقوم بتخزين...</p>
+        <ul>
+            <li><strong>معرف المستخدم</strong> - للتعرف عليك وتقديم الخدمات المخصصة</li>
+            <li><strong>اسم المستخدم والاسم الأول</strong> - للترحيب بك وعرضه في صفحة البايو</li>
+            <li><strong>حسابات التواصل الاجتماعي</strong> - التي تختار تسجيلها (يوتيوب، تيك توك، سناب شات، انستقرام، فيسبوك)</li>
+            <li><strong>سجل التحليلات</strong> - لتتبع تطور حساباتك وتحسين التوصيات</li>
+        </ul>
+        
+        <h2>2. استخدام معلوماتك</h2>
+        <p>نستخدم المعلومات المخزنة للأغراض التالية فقط:</p>
+        <ul>
+            <li>تقديم خدمة تحليل حسابات التواصل الاجتماعي</li>
+            <li>إنشاء وإدارة صفحة البايو الشخصية الخاصة بك</li>
+            <li>تقديم توصيات ذكاء اصطناعي مخصصة لتحسين قنواتك</li>
+            <li>تحسين أداء البوت وتجربة المستخدم</li>
+        </ul>
+        
+        <!-- ========== قسم TikTok API (متطلبات تيك توك) ========== -->
+        <h2>3. تكامل تيك توك (TikTok API)</h2>
+        <div class="tiktok-note">
+            <p><strong>🎵 TikTok API Integration</strong></p>
+            <p>يقدم بوت <strong>Social Analyzer (@Social_Media_analyzer_bot)</strong> خدمة تحليل حسابات تيك توك من خلال TikTok API الرسمي.</p>
+        </div>
+        
+        <h3>3.1 البيانات التي نحصل عليها</h3>
+        <ul>
+            <li>البيانات العامة للملف الشخصي (الاسم، الصورة الرمزية، السيرة الذاتية، عدد المتابعين)</li>
+            <li>إحصائيات الأداء (المشاهدات، الإعجابات، التعليقات، المشاركات)</li>
+            <li>قائمة الفيديوهات المنشورة (آخر 10 فيديوهات)</li>
+        </ul>
+        
+        <h3>3.2 كيفية الاستخدام</h3>
+        <ul>
+            <li>إنشاء تقارير تحليلية شاملة</li>
+            <li>تقديم توصيات مخصصة لتحسين الأداء</li>
+            <li>تتبع النمو والتطور بمرور الوقت</li>
+        </ul>
+        
+        <h3>3.3 تخزين البيانات وأمانها</h3>
+        <ul>
+            <li>مدة التخزين: 30 يوماً من آخر تحليل</li>
+            <li>نقل البيانات عبر تشفير HTTPS</li>
+            <li>لا يتم تخزين كلمات المرور أو بيانات تسجيل الدخول</li>
+        </ul>
+        
+        <!-- ========== قسم Snapchat ========== -->
+        <h2>4. تكامل سناب شات (Snapchat Kit)</h2>
+        <div class="snapchat-note">
+            <p><strong>📸 Snapchat Kit Integration</strong></p>
+            <p>نوفر ميزة تحليل حسابات سناب شات من خلال Snapchat Kit API الرسمي.</p>
+        </div>
+        
+        <h3>4.1 البيانات التي نحصل عليها</h3>
+        <ul>
+            <li>البيانات العامة للملف الشخصي (الاسم، المعرف، الصورة الرمزية)</li>
+            <li>إحصائيات الأداء الأساسية (المتابعين، مشاهدات القصص)</li>
+        </ul>
+        
+        <!-- ========== القسم الجديد: الروابط الخارجية وخدمات فحص اليوزرنيم ========== -->
+        <h2>5. 🔗 الروابط الخارجية وخدمات فحص اليوزرنيم</h2>
+        <div class="external-links-box">
+            <h3>📌 تنبيه خاص بخدمة فحص اليوزرنيم (Username Availability Check)</h3>
+            <p>
+                يوفر بوتنا زراً أو رابطاً مختصراً لموقع <strong>instantusername.com</strong> كخدمة مجانية لتسهيل الوصول إلى أداة فحص توافر اليوزرنيم على منصات متعددة.
+            </p>
+            <ul>
+                <li>🔍 <strong>طريقة الفتح:</strong> يتم فتح الرابط في <strong>المتصفح الداخلي لتطبيق تلجرام (In-App Browser)</strong>، وليس عبر خوادم البوت.</li>
+                <li>🤖 <strong>دور البوت محدود:</strong> البوت <strong>لا يشارك</strong> في عملية البحث، ولا يقوم بتحميل النتائج، <strong>ولا يخزن</strong> أي بيانات تدخلها في الموقع الخارجي.</li>
+                <li>🌐 <strong>استقلالية البيانات:</strong> بمجرد فتح الرابط، ينتقل اتصالك مباشرة إلى موقع <strong>instantusername.com</strong>. جميع البيانات التي تدخلها أو تبحث عنها تصبح خاضعة تماماً لـ <strong>سياسة الخصوصية وشروط الخدمة الخاصة بالموقع الخارجي</strong>، وليس لسياسة بوتنا.</li>
+                <li>⚖️ <strong>إخلاء مسؤولية:</strong> بوت Social Analyzer ومطوروه <strong>غير مسؤولين</strong> عن توفر الخدمة، دقة النتائج، استمرارية الموقع، أو أي ضرر ناتج عن استخدام موقع instantusername.com. كما أن البوت لا يتحمل أي مسؤولية عن كيفية جمع أو استخدام الموقع الخارجي لبياناتك.</li>
+            </ul>
+            <div class="note-highlight">
+                <strong>📖 ملخص للشفافية:</strong> الرابط يُفتح داخل تلجرام مباشرة (متصفح داخلي) ← أنت من يتفاعل مع الموقع بنفسك ← البوت لا يعرف ماذا تبحث ولا يخزن شيئاً. استخدامك للموقع يعني موافقتك على سياسات <strong>instantusername.com</strong>.
+            </div>
+        </div>
+        
+        <h2>6. مشاركة المعلومات</h2>
+        <p>نحن لا نبيع أو نشارك معلوماتك الشخصية مع أي طرف ثالث.</p>
+        
+        <h2>7. حماية البيانات</h2>
+        <ul>
+            <li>تشفير البيانات أثناء النقل والتخزين</li>
+            <li>سياسات التحكم في الوصول (RLS)</li>
+            <li>مراقبة مستمرة للأنظمة</li>
+        </ul>
+        
+        <h2>8. صلاحية البيانات</h2>
+        <p>يمكنك في أي وقت: طلب نسخة من بياناتك، حذف بياناتك بالكامل، إلغاء اشتراكك المميز، أو إلغاء صلاحية تطبيقنا على تيك توك/سناب شات.</p>
+        
+        <!-- أزرار التواصل -->
+        <div class="contact-buttons">
+            <a href="https://t.me/Alshabany_Ai" target="_blank" class="contact-btn developer">
+                👨‍💻 المطور
+            </a>
+            <a href="https://t.me/Social_Media_Analysis" target="_blank" class="contact-btn channel">
+                📢 قناة التحديثات
+            </a>
+            <a href="https://t.me/Social_Media_analyzer_bot" target="_blank" class="contact-btn bot">
+                🤖 البوت الرئيسي
+            </a>
+        </div>
+        
+        <div class="footer-links">
+            <a href="/terms" class="footer-link">📜 شروط الخدمة</a>
+            <a href="/" class="footer-link">🏠 الرئيسية</a>
+            <a href="/dashboard" class="footer-link">📊 لوحة التحكم</a>
+        </div>
+        
+        <div class="copyright">
+            © 2026 Social Analyzer | @Social_Media_analyzer_bot | جميع الحقوق محفوظة
+        </div>
+    </div>
+    
+    <script>
+        const today = new Date();
+        const arabicMonths = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        document.getElementById('currentDate').innerText = `${today.getDate()} ${arabicMonths[today.getMonth()]} ${today.getFullYear()}`;
+    </script>
+</body>
+</html>

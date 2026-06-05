@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">صفحة بايو</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        window.SUPABASE_URL = '{{ SUPABASE_URL }}';
+        window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
+        window.PAGE_URL = '{{ page_url }}';
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 35px 25px;
+            border-radius: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .avatar-container {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .avatar { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .username { font-size: 14px; margin-bottom: 20px; direction: ltr; }
+        .bio {
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.7;
+            font-size: 14px;
+            background: rgba(0,0,0,0.03);
+        }
+        .account-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 85%;
+            margin: 12px auto;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        .account-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
+        .platform-youtube { background: linear-gradient(135deg, #ff0000, #cc0000); }
+        .platform-instagram { background: linear-gradient(135deg, #f77737, #e1306c, #833ab4); }
+        .platform-tiktok { background: linear-gradient(135deg, #000000, #2d2d2d); }
+        .platform-tiktok i { color: #25f4ee; }
+        .platform-facebook { background: linear-gradient(135deg, #1877f2, #0d65d4); }
+        .platform-twitter { background: linear-gradient(135deg, #1da1f2, #0d8bd9); }
+        .custom-link { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .footer { margin-top: 30px; padding-top: 20px; font-size: 13px; }
+        .footer a { text-decoration: none; font-weight: bold; }
+        .views { margin-top: 15px; font-size: 11px; }
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            .container { padding: 25px 15px; }
+            .account-btn { width: 95%; }
+            .avatar-container { width: 100px; height: 100px; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .container { animation: fadeInUp 0.6s ease-out; }
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text { margin-top: 20px; color: white; }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div style="text-align:center;">
+            <div class="loader"></div>
+            <div class="loading-text">جاري تحميل صفحة البايو...</div>
+        </div>
+    </div>
+    <div class="container" id="mainContent" style="display:none;">
+        <div class="avatar-container" id="avatarContainer">
+            <div id="avatarContent"></div>
+        </div>
+        <h1 id="displayName"></h1>
+        <div class="username" id="username"></div>
+        <div class="bio" id="bio"></div>
+        <div id="accountsContainer"></div>
+        <div id="customLinksContainer"></div>
+        <div class="footer">
+            لإنشاء صفحة بايو مثل هذه 
+            <a href="https://t.me/Social_Media_tools_bot" target="_blank">اضغط هنا</a>
+        </div>
+        <div class="views" id="views"></div>
+    </div>
+    
+    <script src="/static/config.js"></script>
+    <script>
+        const pageUrl = window.PAGE_URL;
+        let supabaseClient = null;
+        
+        function initSupabaseClient() {
+            supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+            loadBioPage();
+        }
+        
+        async function loadBioPage() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('bio_pages')
+                    .select('*')
+                    .eq('page_url', pageUrl)
+                    .eq('is_active', true)
+                    .single();
+                
+                if (data) {
+                    document.title = `${data.display_name || 'صفحة بايو'} | صفحات بايو`;
+                    document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
+                    document.getElementById('username').innerText = `@${data.user_id}`;
+                    document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
+                    document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
+                    
+                    await supabaseClient.rpc('increment_bio_views', { page_url_param: pageUrl });
+                    
+                    const theme = data.theme_name || 'default';
+                    const themes = {
+                        default: { bg: '#f7fafc', text: '#2d3748', containerBg: 'white' },
+                        dark: { bg: '#1a202c', text: '#f7fafc', containerBg: '#2d3748' },
+                        green: { bg: '#f0fff4', text: '#22543d', containerBg: 'white' },
+                        pink: { bg: '#fff5f5', text: '#742a2a', containerBg: 'white' },
+                        ocean: { bg: '#ebf8ff', text: '#2c5282', containerBg: 'white' }
+                    };
+                    const t = themes[theme] || themes.default;
+                    document.body.style.background = t.bg;
+                    document.body.style.color = t.text;
+                    document.querySelector('.container').style.background = t.containerBg;
+                    
+                    const avatarContainer = document.getElementById('avatarContent');
+                    if (data.avatar_url) {
+                        avatarContainer.innerHTML = `<img src="${data.avatar_url}" class="avatar" alt="avatar" onerror="this.parentElement.innerHTML='<div class=\"avatar-fallback\"><span>${(data.display_name || '?').charAt(0)}</span></div>'">`;
+                    } else {
+                        avatarContainer.innerHTML = `<div class="avatar-fallback"><span>${(data.display_name || '?').charAt(0)}</span></div>`;
+                    }
+                    
+                    const accounts = data.accounts || {};
+                    const platformNames = { youtube: 'يوتيوب', instagram: 'انستقرام', tiktok: 'تيك توك', facebook: 'فيسبوك', twitter: 'X' };
+                    const accountsHtml = [];
+                    for (const [platform, info] of Object.entries(accounts)) {
+                        if (info?.account_identifier) {
+                            const identifier = info.account_identifier.replace('@', '');
+                            const url = platform === 'twitter' ? `https://twitter.com/${identifier}` : `https://${platform}.com/@${identifier}`;
+                            accountsHtml.push(`<a href="${url}" class="account-btn platform-${platform}" target="_blank"><i class="fab fa-${platform}"></i><span>${platformNames[platform] || platform}</span></a>`);
+                        }
+                    }
+                    document.getElementById('accountsContainer').innerHTML = accountsHtml.join('');
+                    
+                    const customLinks = data.custom_links || [];
+                    if (customLinks.length) {
+                        const linksHtml = customLinks.map(link => `<a href="${link.url}" class="account-btn custom-link" target="_blank"><i class="fas fa-link"></i><span>${link.title}</span></a>`).join('');
+                        document.getElementById('customLinksContainer').innerHTML = linksHtml;
+                    }
+                    
+                    document.getElementById('loading-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.getElementById('mainContent').style.display = 'block';
+                    }, 500);
+                } else {
+                    document.getElementById('loading-screen').innerHTML = '<div style="text-align:center;color:white;"><h2>❌ الصفحة غير موجودة</h2><p>عذراً، لم نتمكن من العثور على هذه الصفحة</p><a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a></div>';
+                }
+            } catch (error) {
+                document.getElementById('loading-screen').innerHTML = '<div style="text-align:center;color:white;"><h2>❌ خطأ</h2><p>حدث خطأ في تحميل الصفحة</p><a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a></div>';
+            }
+        }
+        
+        initSupabaseClient();
+    </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!-- ================================================================================= -->
+<!-- تبويب: احصائيات (History Tab) - متوافق مع موقع الويب الجديد                       -->
+<!-- ================================================================================= -->
+
+<!-- القسم 1: بطاقة إحصائيات التحليلات (شريط أفقي قابل للتمرير) -->
+<div class="card">
+    <h3><i class="fas fa-chart-simple"></i> 📊 توزيع التحليلات</h3>
+    <div id="statsGridModern" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+        <div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>
+    </div>
+</div>
+
+<!-- القسم 2: الرسم البياني الشريطي (جميع المنصات) -->
+<div class="card">
+    <h3><i class="fas fa-chart-bar"></i> توزيع التحليلات حسب المنصة</h3>
+    <div class="chart-container">
+        <canvas id="platformChart"></canvas>
+    </div>
+</div>
+
+<!-- القسم 3: يوتيوب - الرسم البياني الخطي -->
+<div class="card platform-section" data-platform="youtube">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fab fa-youtube" style="color: #ff0000; font-size: 24px;"></i>
+            <h3 style="margin: 0; color: #ff0000;">تطور تحليلات يوتيوب</h3>
+        </div>
+        <select id="youtubeFilter" onchange="filterYoutubeData()" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text);">
+            <option value="7">آخر 7 أيام</option>
+            <option value="30" selected>آخر 30 يوماً</option>
+            <option value="90">آخر 3 أشهر</option>
+        </select>
+    </div>
+    <div class="chart-container">
+        <canvas id="youtubeTrendChart"></canvas>
+    </div>
+    
+    <div class="line-controls" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px;">
+        <button class="line-toggle" data-platform="youtube" data-line="views" data-color="#3b82f6">📈 المشاهدات</button>
+        <button class="line-toggle" data-platform="youtube" data-line="subscribers" data-color="#22c55e">👥 المتابعين</button>
+        <button class="line-toggle" data-platform="youtube" data-line="likes" data-color="#ef4444">❤️ الإعجابات</button>
+        <button class="line-toggle" data-platform="youtube" data-line="posts" data-color="#f97316">📹 المنشورات</button>
+        <button class="line-toggle" data-platform="youtube" data-line="engagement" data-color="#a855f7">📊 نسبة التفاعل</button>
+    </div>
+    
+    <div id="youtubeMessage" class="no-data-message" style="display: none; text-align: center; padding: 20px; color: var(--text-light, #888);">
+        ⚠️ لا توجد تحليلات يوتيوب بعد. قم بتحليل قناتك الأولى لظهور البيانات.
+    </div>
+</div>
+
+<!-- القسم 4: تيك توك - الرسم البياني الخطي -->
+<div class="card platform-section" data-platform="tiktok">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fab fa-tiktok" style="color: #000000; font-size: 24px;"></i>
+            <h3 style="margin: 0; color: #000000;">تطور تحليلات تيك توك</h3>
+        </div>
+        <select id="tiktokFilter" onchange="filterTiktokData()" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text);">
+            <option value="7">آخر 7 أيام</option>
+            <option value="30" selected>آخر 30 يوماً</option>
+            <option value="90">آخر 3 أشهر</option>
+        </select>
+    </div>
+    <div class="chart-container">
+        <canvas id="tiktokTrendChart"></canvas>
+    </div>
+    
+    <div class="line-controls" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px;">
+        <button class="line-toggle-tiktok" data-platform="tiktok" data-line="views" data-color="#3b82f6">📈 المشاهدات</button>
+        <button class="line-toggle-tiktok" data-platform="tiktok" data-line="subscribers" data-color="#22c55e">👥 المتابعين</button>
+        <button class="line-toggle-tiktok" data-platform="tiktok" data-line="likes" data-color="#ef4444">❤️ الإعجابات</button>
+        <button class="line-toggle-tiktok" data-platform="tiktok" data-line="posts" data-color="#f97316">📹 المنشورات</button>
+        <button class="line-toggle-tiktok" data-platform="tiktok" data-line="engagement" data-color="#a855f7">📊 نسبة التفاعل</button>
+    </div>
+    
+    <div id="tiktokMessage" class="no-data-message" style="display: none; text-align: center; padding: 20px; color: var(--text-light, #888);">
+        ⚠️ لا توجد تحليلات تيك توك بعد. قم بتحليل حسابك الأول لظهور البيانات.
+    </div>
+</div>
+
+<!-- القسم 5: فيسبوك - قيد التطوير -->
+<div class="card platform-section" data-platform="facebook">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <i class="fab fa-facebook-f" style="color: #1877f2; font-size: 24px;"></i>
+        <h3 style="margin: 0; color: #1877f2;">تطور تحليلات فيسبوك</h3>
+    </div>
+    <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, var(--hover-bg), var(--card-bg)); border-radius: 16px;">
+        <i class="fas fa-code-branch" style="font-size: 48px; color: var(--text-light, #888);"></i>
+        <p style="margin-top: 15px; color: var(--text-light, #888);">⚠️ ميزة تحليل فيسبوك قيد التطوير<br>ستكون متاحة قريباً 🚀</p>
+    </div>
+</div>
+
+<!-- القسم 6: انستقرام - قيد التطوير -->
+<div class="card platform-section" data-platform="instagram">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <i class="fab fa-instagram" style="color: #e1306c; font-size: 24px;"></i>
+        <h3 style="margin: 0; color: #e1306c;">تطور تحليلات انستقرام</h3>
+    </div>
+    <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, var(--hover-bg), var(--card-bg)); border-radius: 16px;">
+        <i class="fas fa-code-branch" style="font-size: 48px; color: var(--text-light, #888);"></i>
+        <p style="margin-top: 15px; color: var(--text-light, #888);">⚠️ ميزة تحليل انستقرام قيد التطوير<br>ستكون متاحة قريباً 🚀</p>
+    </div>
+</div>
+
+<!-- القسم 7: سناب شات - قيد التطوير -->
+<div class="card platform-section" data-platform="snapchat">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <i class="fab fa-snapchat" style="color: #fffc00; text-shadow: 0 0 2px #000; font-size: 24px;"></i>
+        <h3 style="margin: 0; color: #fffc00; text-shadow: 0 0 1px #000;">تطور تحليلات سناب شات</h3>
+    </div>
+    <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, var(--hover-bg), var(--card-bg)); border-radius: 16px;">
+        <i class="fas fa-code-branch" style="font-size: 48px; color: var(--text-light, #888);"></i>
+        <p style="margin-top: 15px; color: var(--text-light, #888);">⚠️ ميزة تحليل سناب شات قيد التطوير<br>ستكون متاحة قريباً 🚀</p>
+    </div>
+</div>
+
+<style>
+    .pie-chart-container canvas { max-height: 200px; width: 100%; }
+    .pie-legend { font-size: 12px; }
+    .pie-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .chart-container canvas { max-height: 220px; width: 100%; }
+    .platform-section { margin-bottom: 20px; }
+    .no-data-message { font-size: 12px; margin-top: 10px; }
+    
+    .line-controls button {
+        transition: all 0.2s ease;
+        position: relative;
+        background: var(--hover-bg, #f0f0f0);
+        color: var(--text, #2d3748);
+        border: 1px solid var(--border, #ddd);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        cursor: pointer;
+    }
+    
+    .line-controls button.active {
+        background: var(--primary, #667eea);
+        color: white;
+        border-color: var(--primary, #667eea);
+    }
+    
+    body.dark select {
+        background: #2d3748;
+        color: #f7fafc;
+        border-color: #4a5568;
+    }
+</style>
+
+<script>
+(function() {
+    let platformChartInstance = null;
+    let youtubeChartInstance = null;
+    let tiktokChartInstance = null;
+    let rawPlatformData = { youtube: null, tiktok: null };
+    
+    let lineStates = {
+        youtube: { views: true, subscribers: true, likes: true, posts: true, engagement: true },
+        tiktok: { views: true, subscribers: true, likes: true, posts: true, engagement: true }
+    };
+    
+    let currentToken = localStorage.getItem('social_analyzer_token');
+    if (!currentToken) {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentToken = urlParams.get('token');
+        if (currentToken) localStorage.setItem('social_analyzer_token', currentToken);
+    }
+    
+    function formatNumber(num) {
+        if (!num && num !== 0) return '0';
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+    
+    function renderStatsGridModern(data) {
+        const container = document.getElementById('statsGridModern');
+        if (!container) return;
+        
+        const stats = data.stats || {};
+        const total = stats.total_uses || 0;
+        const geminiUses = data.gemini_uses || 0;
+        
+        const youtubePercent = total > 0 ? ((stats.youtube_uses || 0) / total * 100).toFixed(1) : 0;
+        const tiktokPercent = total > 0 ? ((stats.tiktok_uses || 0) / total * 100).toFixed(1) : 0;
+        const geminiPercent = total > 0 ? (geminiUses / total * 100).toFixed(1) : 0;
+        
+        container.innerHTML = `
+            <div style="min-width: 100px; background: linear-gradient(135deg, #ff000010, #ff000005); border-radius: 14px; padding: 8px; text-align: center;">
+                <div style="font-size: 13px; font-weight: bold; color: #ff0000;">🎬 يوتيوب</div>
+                <div style="font-size: 18px; font-weight: bold; color: #ff0000;">${formatNumber(stats.youtube_uses || 0)}</div>
+                <div style="font-size: 10px; color: var(--text-light);">تحليل</div>
+                <div style="font-size: 11px; margin-top: 3px;">${youtubePercent}%</div>
+            </div>
+            <div style="min-width: 100px; background: linear-gradient(135deg, #00000010, #00000005); border-radius: 14px; padding: 8px; text-align: center;">
+                <div style="font-size: 13px; font-weight: bold; color: #000000;">🎵 تيك توك</div>
+                <div style="font-size: 18px; font-weight: bold; color: #000000;">${formatNumber(stats.tiktok_uses || 0)}</div>
+                <div style="font-size: 10px; color: var(--text-light);">تحليل</div>
+                <div style="font-size: 11px; margin-top: 3px;">${tiktokPercent}%</div>
+            </div>
+            ${geminiUses > 0 ? `
+            <div style="min-width: 100px; background: linear-gradient(135deg, #9b59b610, #9b59b605); border-radius: 14px; padding: 8px; text-align: center;">
+                <div style="font-size: 13px; font-weight: bold; color: #9b59b6;">🤖 توصيات AI</div>
+                <div style="font-size: 18px; font-weight: bold; color: #9b59b6;">${formatNumber(geminiUses)}</div>
+                <div style="font-size: 10px; color: var(--text-light);">توصية</div>
+                <div style="font-size: 11px; margin-top: 3px;">${geminiPercent}%</div>
+            </div>
+            ` : ''}
+            <div style="min-width: 100px; background: linear-gradient(135deg, var(--primary)10, var(--secondary)05); border-radius: 14px; padding: 8px; text-align: center;">
+                <div style="font-size: 13px; font-weight: bold; color: var(--primary);">📊 الإجمالي</div>
+                <div style="font-size: 18px; font-weight: bold; color: var(--primary);">${formatNumber(total)}</div>
+                <div style="font-size: 10px; color: var(--text-light);">تحليل</div>
+                <div style="font-size: 11px; margin-top: 3px;">100%</div>
+            </div>
+        `;
+    }
+    
+    function renderPlatformChart(data) {
+        const ctx = document.getElementById('platformChart');
+        if (!ctx) return;
+        
+        const stats = data.stats || {};
+        if (platformChartInstance) platformChartInstance.destroy();
+        
+        platformChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['🎬 يوتيوب', '🎵 تيك توك'],
+                datasets: [{
+                    label: 'عدد التحليلات',
+                    data: [stats.youtube_uses || 0, stats.tiktok_uses || 0],
+                    backgroundColor: ['#ff0000', '#000000'],
+                    borderRadius: 8,
+                    barPercentage: 0.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'عدد التحليلات', font: { size: 10 } } } }
+            }
+        });
+    }
+    
+    function filterDataByDays(data, days) {
+        if (!data || !data.labels || data.labels.length === 0) return data;
+        const totalPoints = data.labels.length;
+        const pointsToKeep = Math.min(days, totalPoints);
+        if (pointsToKeep === totalPoints) return data;
+        const startIndex = totalPoints - pointsToKeep;
+        return {
+            ...data,
+            labels: data.labels.slice(startIndex),
+            subscribers: data.subscribers?.slice(startIndex),
+            views: data.views?.slice(startIndex),
+            likes: data.likes?.slice(startIndex),
+            posts: data.posts?.slice(startIndex),
+            engagement_rates: data.engagement_rates?.slice(startIndex)
+        };
+    }
+    
+    function createMultiLineChart(canvasId, platformData, lineState) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx || !platformData || !platformData.has_data) return null;
+        
+        const formattedDates = platformData.labels.map(date => {
+            const d = new Date(date);
+            return `${d.getDate()}/${d.getMonth() + 1}`;
+        });
+        
+        const datasets = [];
+        if (lineState.views && platformData.views) datasets.push({ label: '📈 المشاهدات', data: platformData.views, borderColor: '#3b82f6', borderWidth: 2, fill: false, tension: 0.3 });
+        if (lineState.subscribers && platformData.subscribers) datasets.push({ label: '👥 المتابعين', data: platformData.subscribers, borderColor: '#22c55e', borderWidth: 2, fill: false, tension: 0.3 });
+        if (lineState.likes && platformData.likes) datasets.push({ label: '❤️ الإعجابات', data: platformData.likes, borderColor: '#ef4444', borderWidth: 2, fill: false, tension: 0.3 });
+        if (lineState.posts && platformData.posts) datasets.push({ label: '📹 المنشورات', data: platformData.posts, borderColor: '#f97316', borderWidth: 2, fill: false, tension: 0.3 });
+        if (lineState.engagement && platformData.engagement_rates) datasets.push({ label: '📊 نسبة التفاعل %', data: platformData.engagement_rates, borderColor: '#a855f7', borderWidth: 2, fill: false, tension: 0.3 });
+        
+        if (datasets.length === 0) return null;
+        
+        return new Chart(ctx, {
+            type: 'line',
+            data: { labels: formattedDates, datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'top', labels: { font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'القيمة', font: { size: 9 } } } }
+            }
+        });
+    }
+    
+    function updateYoutubeChart() {
+        if (!rawPlatformData.youtube) return;
+        const filterDays = parseInt(document.getElementById('youtubeFilter')?.value || 30);
+        const filteredData = filterDataByDays(rawPlatformData.youtube, filterDays);
+        if (youtubeChartInstance) youtubeChartInstance.destroy();
+        youtubeChartInstance = createMultiLineChart('youtubeTrendChart', filteredData, lineStates.youtube);
+    }
+    
+    function updateTiktokChart() {
+        if (!rawPlatformData.tiktok) return;
+        const filterDays = parseInt(document.getElementById('tiktokFilter')?.value || 30);
+        const filteredData = filterDataByDays(rawPlatformData.tiktok, filterDays);
+        if (tiktokChartInstance) tiktokChartInstance.destroy();
+        tiktokChartInstance = createMultiLineChart('tiktokTrendChart', filteredData, lineStates.tiktok);
+    }
+    
+    function toggleLine(platform, lineName, buttonElement) {
+        lineStates[platform][lineName] = !lineStates[platform][lineName];
+        if (lineStates[platform][lineName]) buttonElement.classList.add('active');
+        else buttonElement.classList.remove('active');
+        if (platform === 'youtube') updateYoutubeChart();
+        else updateTiktokChart();
+    }
+    
+    function bindLineButtons() {
+        document.querySelectorAll('.line-toggle').forEach(btn => {
+            const platform = btn.dataset.platform;
+            const line = btn.dataset.line;
+            btn.classList.add('active');
+            btn.onclick = () => toggleLine(platform, line, btn);
+        });
+        document.querySelectorAll('.line-toggle-tiktok').forEach(btn => {
+            const platform = btn.dataset.platform;
+            const line = btn.dataset.line;
+            btn.classList.add('active');
+            btn.onclick = () => toggleLine(platform, line, btn);
+        });
+    }
+    
+    window.filterYoutubeData = updateYoutubeChart;
+    window.filterTiktokData = updateTiktokChart;
+    
+    async function updateStatsTab(data) {
+        if (!data) return;
+        renderStatsGridModern(data);
+        renderPlatformChart(data);
+        
+        if (currentToken) {
+            try {
+                const response = await fetch(`/api/platform_trends?token=${encodeURIComponent(currentToken)}`);
+                const trendData = await response.json();
+                if (trendData.success) {
+                    if (trendData.youtube) rawPlatformData.youtube = trendData.youtube;
+                    if (trendData.tiktok) rawPlatformData.tiktok = trendData.tiktok;
+                    
+                    if (trendData.youtube?.has_data) {
+                        document.getElementById('youtubeMessage').style.display = 'none';
+                        updateYoutubeChart();
+                    } else {
+                        document.getElementById('youtubeMessage').style.display = 'block';
+                    }
+                    if (trendData.tiktok?.has_data) {
+                        document.getElementById('tiktokMessage').style.display = 'none';
+                        updateTiktokChart();
+                    } else {
+                        document.getElementById('tiktokMessage').style.display = 'block';
+                    }
+                    bindLineButtons();
+                }
+            } catch (error) {
+                console.error('Error loading trends:', error);
+                bindLineButtons();
+            }
+        }
+    }
+    
+    window.updateHistoryTab = updateStatsTab;
+    window.addEventListener('refreshUserData', () => {
+        if (window.userData) updateStatsTab(window.userData);
+    });
+    if (window.userData) updateStatsTab(window.userData);
+})();
+</script>
