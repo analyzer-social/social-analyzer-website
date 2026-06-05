@@ -17,8 +17,17 @@
     <!-- Font Awesome للأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
+    <!-- تحميل الثيم الديناميكي -->
+    <link id="themeStylesheet" rel="stylesheet" href="/static/themes/default.css">
+    
+    <!-- أيقونات الموقع -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    
     <style>
-        /* ===== القواعد الأساسية ===== */
+        /* ===== القواعد الأساسية (ثابتة لجميع القوالب) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -41,7 +50,7 @@
             transition: all 0.3s ease;
         }
         
-        /* ===== الصورة الشخصية ===== */
+        /* الصورة الشخصية */
         .avatar-container {
             position: relative;
             width: 140px;
@@ -49,7 +58,6 @@
             margin: 0 auto 20px;
             border-radius: 50%;
             overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         
@@ -72,8 +80,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             font-size: 48px;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
@@ -111,7 +117,6 @@
             line-height: 1.7;
             font-size: 14px;
             text-align: center;
-            background: rgba(0,0,0,0.03);
             word-wrap: break-word;
             white-space: pre-wrap;
         }
@@ -125,7 +130,7 @@
             margin: 25px 0;
         }
         
-        /* ===== أزرار الحسابات ===== */
+        /* أزرار الحسابات */
         .account-btn {
             display: flex;
             align-items: center;
@@ -176,65 +181,80 @@
         }
         
         /* ألوان المنصات */
-        .platform-youtube { 
-            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
-            box-shadow: 0 4px 15px rgba(255,0,0,0.3);
-        }
-        .platform-instagram { 
-            background: linear-gradient(135deg, #f77737 0%, #e1306c 50%, #833ab4 100%);
-            box-shadow: 0 4px 15px rgba(225,48,108,0.3);
-        }
-        .platform-tiktok { 
-            background: linear-gradient(135deg, #000000 0%, #161616 50%, #2d2d2d 100%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .platform-tiktok i { 
-            color: #25f4ee;
-        }
-        .platform-facebook { 
-            background: linear-gradient(135deg, #1877f2 0%, #0d65d4 100%);
-            box-shadow: 0 4px 15px rgba(24,119,242,0.3);
-        }
-        .platform-snapchat { 
-            background: linear-gradient(135deg, #fffc00 0%, #ffe600 100%);
-            color: #000000 !important;
-        }
-        .platform-snapchat i {
-            color: #000000;
-        }
-        .platform-twitter { 
-            background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
-            box-shadow: 0 4px 15px rgba(29,161,242,0.3);
-        }
-        .platform-linkedin { 
-            background: linear-gradient(135deg, #0077b5 0%, #005e8c 100%);
-            box-shadow: 0 4px 15px rgba(0,119,181,0.3);
-        }
-        .platform-github { 
-            background: linear-gradient(135deg, #333333 0%, #242424 100%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .platform-telegram { 
-            background: linear-gradient(135deg, #0088cc 0%, #006699 100%);
-            box-shadow: 0 4px 15px rgba(0,136,204,0.3);
-        }
-        .platform-whatsapp { 
-            background: linear-gradient(135deg, #25d366 0%, #128C7E 100%);
-            box-shadow: 0 4px 15px rgba(37,211,102,0.3);
-        }
-        .platform-phone { 
-            background: linear-gradient(135deg, #34b7f1 0%, #1e88e5 100%);
-            box-shadow: 0 4px 15px rgba(52,183,241,0.3);
-        }
-        .platform-email { 
-            background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%);
-            box-shadow: 0 4px 15px rgba(234,67,53,0.3);
-        }
+        .platform-youtube { background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); }
+        .platform-instagram { background: linear-gradient(135deg, #f77737 0%, #e1306c 50%, #833ab4 100%); }
+        .platform-tiktok { background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%); }
+        .platform-tiktok i { color: #25f4ee; }
+        .platform-facebook { background: linear-gradient(135deg, #1877f2 0%, #0d65d4 100%); }
+        .platform-snapchat { background: linear-gradient(135deg, #fffc00 0%, #ffe600 100%); color: #000000 !important; }
+        .platform-snapchat i { color: #000000; }
+        .platform-twitter { background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); }
+        .platform-linkedin { background: linear-gradient(135deg, #0077b5 0%, #005e8c 100%); }
+        .platform-github { background: linear-gradient(135deg, #333333 0%, #242424 100%); }
+        .platform-telegram { background: linear-gradient(135deg, #0088cc 0%, #006699 100%); }
+        .platform-whatsapp { background: linear-gradient(135deg, #25d366 0%, #128C7E 100%); }
         
         /* الروابط المخصصة */
         .custom-link {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        
+        /* قسم وسائل الدفع */
+        .payment-section {
+            margin: 30px 0 20px;
+            padding: 20px 0;
+        }
+        .payment-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .payment-title i {
+            font-size: 18px;
+        }
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 15px 10px;
+            justify-items: center;
+            align-items: center;
+        }
+        .payment-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+        .payment-item:hover {
+            transform: translateY(-5px);
+        }
+        .payment-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            object-fit: contain;
+            background: white;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .payment-item:hover .payment-icon {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transform: scale(1.02);
+        }
+        .payment-name {
+            font-size: 10px;
+            margin-top: 6px;
+            font-weight: 500;
+            text-align: center;
         }
         
         .footer {
@@ -264,6 +284,17 @@
             h1 { font-size: 24px; }
             .account-btn { width: 95%; padding: 10px 15px; }
             .avatar-container { width: 100px; height: 100px; }
+            .avatar-fallback { font-size: 36px; }
+            .payment-icon { width: 48px; height: 48px; padding: 6px; }
+            .payment-name { font-size: 9px; }
+            .payment-grid { gap: 12px 8px; }
+        }
+        
+        @media (min-width: 601px) and (max-width: 900px) {
+            .payment-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+        @media (min-width: 901px) {
+            .payment-grid { grid-template-columns: repeat(6, 1fr); }
         }
         
         @keyframes fadeInUp {
@@ -275,6 +306,7 @@
             animation: fadeInUp 0.6s ease-out;
         }
         
+        /* شاشة التحميل */
         #loading-screen {
             position: fixed;
             top: 0;
@@ -329,7 +361,15 @@
         
         <div id="accountsContainer"></div>
         <div id="customLinksContainer"></div>
-        <div id="contactsContainer"></div>
+        
+        <!-- قسم وسائل الدفع الإلكتروني -->
+        <div id="paymentSection" class="payment-section" style="display: none;">
+            <div class="payment-title">
+                <i class="fas fa-credit-card"></i>
+                <span>💳 طرق الدفع الإلكتروني</span>
+            </div>
+            <div id="paymentGrid" class="payment-grid"></div>
+        </div>
         
         <div class="footer">
             لإنشاء صفحة بايو مثل هذه 
@@ -342,6 +382,25 @@
     <script>
         const pageUrl = window.PAGE_URL;
         let supabaseClient = null;
+        
+        // =====================================================
+        // قائمة المحافظ الإلكترونية
+        // =====================================================
+        
+        const paymentWallets = [
+            { id: 'jaib', name: 'جيب', scheme: 'jaib://' },
+            { id: 'floosak', name: 'فلوسك', scheme: 'floosak://' },
+            { id: 'jawaly', name: 'جوالي', scheme: 'jawaly://' },
+            { id: 'mahfazti', name: 'محفظتي', scheme: 'mahfazti://' },
+            { id: 'mobilemoney', name: 'موبايل موني', scheme: 'mobilmoney://' },
+            { id: 'yemenwallet', name: 'يمن والت', scheme: 'yemenwallet://' },
+            { id: 'shilling', name: 'شلن', scheme: 'shilling://' },
+            { id: 'easywallet', name: 'سهل', scheme: 'easywallet://' },
+            { id: 'onecash', name: 'ون كاش', scheme: 'onecash://' },
+            { id: 'kremi', name: 'كريمي', scheme: 'kremi://' },
+            { id: 'cash', name: 'كاش', scheme: 'cash://' },
+            { id: 'mtnmomo', name: 'MTN Mobile Money', scheme: 'mtnmomo://' }
+        ];
         
         const platformNames = { 
             youtube: 'يوتيوب', 
@@ -356,78 +415,31 @@
             whatsapp: 'واتساب'
         };
         
-        function initSupabaseClient() {
-            supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-            loadBioPage();
-        }
+        // =====================================================
+        // دالة تطبيق الثيم
+        // =====================================================
         
-        async function loadBioPage() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('bio_pages')
-                    .select('*')
-                    .eq('page_url', pageUrl)
-                    .eq('is_active', true)
-                    .single();
-                
-                if (error) throw error;
-                
-                if (data) {
-                    document.title = `${data.display_name || 'صفحة بايو'} | صفحات بايو`;
-                    document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
-                    document.getElementById('username').innerText = `@${data.user_id || 'user'}`;
-                    document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
-                    document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
-                    
-                    // تطبيق الثيم
-                    const theme = data.theme_name || 'default';
-                    applyTheme(theme);
-                    
-                    // عرض الصورة الشخصية
-                    displayAvatar(data.avatar_url, data.display_name);
-                    
-                    // عرض حسابات التواصل الاجتماعي
-                    displayAccounts(data.accounts || {});
-                    
-                    // عرض الروابط المخصصة
-                    displayCustomLinks(data.custom_links || []);
-                    
-                    // عرض جهات الاتصال (رقم الجوال والبريد الإلكتروني)
-                    displayContacts(data.contacts || {});
-                    
-                    // زيادة عدد المشاهدات
-                    await incrementViews(pageUrl);
-                    
-                    // إخفاء شاشة التحميل
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.opacity = '0';
-                        setTimeout(() => {
-                            document.getElementById('loading-screen').style.display = 'none';
-                            document.getElementById('mainContent').style.display = 'block';
-                        }, 500);
-                    }, 300);
-                } else {
-                    showError('الصفحة غير موجودة');
-                }
-            } catch (error) {
-                console.error('Error loading bio:', error);
-                showError('حدث خطأ في تحميل الصفحة');
+        function applyTheme(themeName) {
+            const themeMap = {
+                'default': '/static/themes/default.css',
+                'dark': '/static/themes/dark.css',
+                'green': '/static/themes/green.css',
+                'pink': '/static/themes/pink.css',
+                'ocean': '/static/themes/ocean.css'
+            };
+            
+            const themeUrl = themeMap[themeName] || themeMap['default'];
+            const themeLink = document.getElementById('themeStylesheet');
+            
+            if (themeLink) {
+                themeLink.href = themeUrl;
+                console.log(`تم تطبيق الثيم: ${themeName}`);
             }
         }
         
-        function applyTheme(themeName) {
-            const themes = {
-                default: { bg: '#f7fafc', text: '#2d3748', containerBg: 'white' },
-                dark: { bg: '#1a202c', text: '#f7fafc', containerBg: '#2d3748' },
-                green: { bg: '#f0fff4', text: '#22543d', containerBg: 'white' },
-                pink: { bg: '#fff5f5', text: '#742a2a', containerBg: 'white' },
-                ocean: { bg: '#ebf8ff', text: '#2c5282', containerBg: 'white' }
-            };
-            const t = themes[themeName] || themes.default;
-            document.body.style.background = t.bg;
-            document.body.style.color = t.text;
-            document.querySelector('.container').style.background = t.containerBg;
-        }
+        // =====================================================
+        // دالة عرض الصورة الشخصية
+        // =====================================================
         
         function displayAvatar(avatarUrl, displayName) {
             const avatarContent = document.getElementById('avatarContent');
@@ -439,6 +451,10 @@
             }
         }
         
+        // =====================================================
+        // دالة عرض حسابات التواصل
+        // =====================================================
+        
         function displayAccounts(accounts) {
             const container = document.getElementById('accountsContainer');
             if (!container) return;
@@ -447,7 +463,6 @@
             for (const [platform, identifier] of Object.entries(accounts)) {
                 let username = null;
                 
-                // دعم شكلين من البيانات
                 if (typeof identifier === 'string') {
                     username = identifier;
                 } else if (identifier && typeof identifier === 'object' && identifier.account_identifier) {
@@ -459,38 +474,17 @@
                     let url = '';
                     
                     switch(platform) {
-                        case 'youtube':
-                            url = `https://youtube.com/@${cleanIdentifier}`;
-                            break;
-                        case 'instagram':
-                            url = `https://instagram.com/${cleanIdentifier}`;
-                            break;
-                        case 'tiktok':
-                            url = `https://tiktok.com/@${cleanIdentifier}`;
-                            break;
-                        case 'facebook':
-                            url = `https://facebook.com/${cleanIdentifier}`;
-                            break;
-                        case 'twitter':
-                            url = `https://twitter.com/${cleanIdentifier}`;
-                            break;
-                        case 'snapchat':
-                            url = `https://snapchat.com/add/${cleanIdentifier}`;
-                            break;
-                        case 'linkedin':
-                            url = `https://linkedin.com/in/${cleanIdentifier}`;
-                            break;
-                        case 'github':
-                            url = `https://github.com/${cleanIdentifier}`;
-                            break;
-                        case 'telegram':
-                            url = `https://t.me/${cleanIdentifier}`;
-                            break;
-                        case 'whatsapp':
-                            url = `https://wa.me/${cleanIdentifier}`;
-                            break;
-                        default:
-                            continue;
+                        case 'youtube': url = `https://youtube.com/@${cleanIdentifier}`; break;
+                        case 'instagram': url = `https://instagram.com/${cleanIdentifier}`; break;
+                        case 'tiktok': url = `https://tiktok.com/@${cleanIdentifier}`; break;
+                        case 'facebook': url = `https://facebook.com/${cleanIdentifier}`; break;
+                        case 'twitter': url = `https://twitter.com/${cleanIdentifier}`; break;
+                        case 'snapchat': url = `https://snapchat.com/add/${cleanIdentifier}`; break;
+                        case 'linkedin': url = `https://linkedin.com/in/${cleanIdentifier}`; break;
+                        case 'github': url = `https://github.com/${cleanIdentifier}`; break;
+                        case 'telegram': url = `https://t.me/${cleanIdentifier}`; break;
+                        case 'whatsapp': url = `https://wa.me/${cleanIdentifier}`; break;
+                        default: continue;
                     }
                     
                     html += `
@@ -503,6 +497,10 @@
             }
             container.innerHTML = html;
         }
+        
+        // =====================================================
+        // دالة عرض الروابط المخصصة
+        // =====================================================
         
         function displayCustomLinks(links) {
             const container = document.getElementById('customLinksContainer');
@@ -524,45 +522,117 @@
             }
         }
         
-        function displayContacts(contacts) {
-            const container = document.getElementById('contactsContainer');
-            if (!container) return;
+        // =====================================================
+        // دالة عرض وسائل الدفع
+        // =====================================================
+        
+        function displayPaymentMethods(paymentMethodsData) {
+            const section = document.getElementById('paymentSection');
+            const grid = document.getElementById('paymentGrid');
+            
+            if (!section || !grid) return;
+            
+            const activeWallets = paymentWallets.filter(wallet => {
+                return paymentMethodsData && paymentMethodsData[wallet.id];
+            });
+            
+            if (activeWallets.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
             
             let html = '';
-            
-            // رقم الجوال
-            if (contacts.phone && contacts.phone.trim()) {
-                const phone = contacts.phone.replace(/\s/g, '');
+            for (const wallet of activeWallets) {
+                const accountNumber = paymentMethodsData[wallet.id];
+                const appUrl = `${wallet.scheme}${accountNumber}`;
+                
                 html += `
-                    <a href="tel:${phone}" class="account-btn platform-phone" target="_blank">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>اتصال: ${contacts.phone}</span>
-                    </a>
-                    <a href="https://wa.me/${phone}" class="account-btn platform-whatsapp" target="_blank">
-                        <i class="fab fa-whatsapp"></i>
-                        <span>واتساب</span>
+                    <a href="${appUrl}" 
+                       class="payment-item" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       data-wallet="${wallet.id}"
+                       data-number="${accountNumber}">
+                        <img src="/static/assets/payment-icons/${wallet.id}.webp" 
+                             alt="${wallet.name}"
+                             class="payment-icon"
+                             onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                        <span class="payment-name">${wallet.name}</span>
                     </a>
                 `;
             }
             
-            // البريد الإلكتروني
-            if (contacts.email && contacts.email.trim()) {
-                html += `
-                    <a href="mailto:${contacts.email}" class="account-btn platform-email" target="_blank">
-                        <i class="fas fa-envelope"></i>
-                        <span>${contacts.email}</span>
-                    </a>
-                `;
-            }
-            
-            container.innerHTML = html;
+            grid.innerHTML = html;
+            section.style.display = 'block';
+            console.log('تم عرض وسائل الدفع:', activeWallets.map(w => w.name));
         }
+        
+        // =====================================================
+        // دالة زيادة المشاهدات
+        // =====================================================
         
         async function incrementViews(pageUrlParam) {
             try {
                 await supabaseClient.rpc('increment_bio_views', { page_url_param: pageUrlParam });
             } catch (error) {
                 console.error('Error incrementing views:', error);
+            }
+        }
+        
+        // =====================================================
+        // دالة تحميل الصفحة الرئيسية
+        // =====================================================
+        
+        async function loadBioPage() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('bio_pages')
+                    .select('*')
+                    .eq('page_url', pageUrl)
+                    .eq('is_active', true)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (data) {
+                    document.title = `${data.display_name || 'صفحة بايو'} | صفحات بايو`;
+                    document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
+                    document.getElementById('username').innerText = `@${data.user_id || 'user'}`;
+                    document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
+                    document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
+                    
+                    // تطبيق الثيم
+                    applyTheme(data.theme_name || 'default');
+                    
+                    // عرض الصورة الشخصية
+                    displayAvatar(data.avatar_url, data.display_name);
+                    
+                    // عرض حسابات التواصل
+                    displayAccounts(data.accounts || {});
+                    
+                    // عرض الروابط المخصصة
+                    displayCustomLinks(data.custom_links || []);
+                    
+                    // عرض وسائل الدفع
+                    displayPaymentMethods(data.payment_methods || {});
+                    
+                    // زيادة عدد المشاهدات
+                    await incrementViews(pageUrl);
+                    
+                    // إخفاء شاشة التحميل
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('loading-screen').style.display = 'none';
+                            document.getElementById('mainContent').style.display = 'block';
+                        }, 500);
+                    }, 300);
+                } else {
+                    showError('الصفحة غير موجودة');
+                }
+            } catch (error) {
+                console.error('Error loading bio:', error);
+                showError('حدث خطأ في تحميل الصفحة');
             }
         }
         
@@ -575,6 +645,15 @@
                     <a href="/" style="color:white;margin-top:20px;display:inline-block;">← العودة للرئيسية</a>
                 </div>
             `;
+        }
+        
+        // =====================================================
+        // تهيئة Supabase
+        // =====================================================
+        
+        function initSupabaseClient() {
+            supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+            loadBioPage();
         }
         
         initSupabaseClient();

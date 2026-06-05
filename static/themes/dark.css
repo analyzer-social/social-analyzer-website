@@ -1,0 +1,54 @@
+/* dark.css - الثيم الداكن لصفحة البايو */
+
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.container {
+    background: #1e1e2e;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    color: #ffffff;
+}
+
+.username {
+    color: #a0a0a0;
+}
+
+.bio {
+    background: #2a2a3a;
+    color: #d0d0d0;
+    border: 1px solid #3a3a4a;
+}
+
+.divider {
+    background: linear-gradient(to right, transparent, #3a3a4a, transparent);
+}
+
+.stat-card {
+    background: #2a2a3a;
+    border: 1px solid #3a3a4a;
+}
+
+.stat-value {
+    color: #4facfe;
+}
+
+.stat-label {
+    color: #888888;
+}
+
+.footer {
+    border-top-color: #3a3a4a;
+    color: #666666;
+}
+
+.footer a {
+    color: #4facfe;
+}
+
+.views {
+    color: #555555;
+}

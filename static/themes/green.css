@@ -1,0 +1,54 @@
+/* green.css - الثيم الأخضر لصفحة البايو */
+
+body {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.container {
+    background: #f0fff4;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #22543d;
+}
+
+.username {
+    color: #48bb78;
+}
+
+.bio {
+    background: #e6fffa;
+    color: #234e52;
+    border: 1px solid #9ae6b4;
+}
+
+.divider {
+    background: linear-gradient(to right, transparent, #9ae6b4, transparent);
+}
+
+.stat-card {
+    background: #e6fffa;
+    border: 1px solid #c6f6d5;
+}
+
+.stat-value {
+    color: #38a169;
+}
+
+.stat-label {
+    color: #48bb78;
+}
+
+.footer {
+    border-top-color: #c6f6d5;
+    color: #9ae6b4;
+}
+
+.footer a {
+    color: #38a169;
+}
+
+.views {
+    color: #9ae6b4;
+}

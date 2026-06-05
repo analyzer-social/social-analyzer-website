@@ -1,0 +1,54 @@
+/* pink.css - الثيم الوردي لصفحة البايو */
+
+body {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.container {
+    background: #fff5f5;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #742a2a;
+}
+
+.username {
+    color: #ed64a6;
+}
+
+.bio {
+    background: #fed7e2;
+    color: #702459;
+    border: 1px solid #fbb6ce;
+}
+
+.divider {
+    background: linear-gradient(to right, transparent, #fbb6ce, transparent);
+}
+
+.stat-card {
+    background: #fed7e2;
+    border: 1px solid #feb2b2;
+}
+
+.stat-value {
+    color: #d53f8c;
+}
+
+.stat-label {
+    color: #ed64a6;
+}
+
+.footer {
+    border-top-color: #fbb6ce;
+    color: #fbb6ce;
+}
+
+.footer a {
+    color: #d53f8c;
+}
+
+.views {
+    color: #fbb6ce;
+}

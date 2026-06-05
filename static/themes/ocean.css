@@ -1,0 +1,54 @@
+/* ocean.css - الثيم المحيط (أزرق) لصفحة البايو */
+
+body {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+.container {
+    background: #ebf8ff;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #2c5282;
+}
+
+.username {
+    color: #4299e1;
+}
+
+.bio {
+    background: #e2e8f0;
+    color: #2a4365;
+    border: 1px solid #bee3f8;
+}
+
+.divider {
+    background: linear-gradient(to right, transparent, #bee3f8, transparent);
+}
+
+.stat-card {
+    background: #e2e8f0;
+    border: 1px solid #90cdf4;
+}
+
+.stat-value {
+    color: #3182ce;
+}
+
+.stat-label {
+    color: #4299e1;
+}
+
+.footer {
+    border-top-color: #bee3f8;
+    color: #90cdf4;
+}
+
+.footer a {
+    color: #3182ce;
+}
+
+.views {
+    color: #90cdf4;
+}
