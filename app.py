@@ -288,19 +288,21 @@ def save_payment_methods():
         payment_methods = data.get('payment_methods', {})
         bio_page_id = data.get('bio_page_id')
         
-        # الحصول على الصفحة الحالية
-        result = supabase.table('bio_pages')\
-            .select('id')\
-            .eq('user_id', int(user_id))\
-            .maybe_single()\
-            .execute()
+        # 1. التحقق من bio_page_id
+        if not bio_page_id:
+            # محاولة الحصول على bio_page_id من user_id إذا لم يُرسل
+            page_result = supabase.table('bio_pages')\
+                .select('id')\
+                .eq('user_id', int(user_id))\
+                .maybe_single()\
+                .execute()
+            
+            if page_result.data:
+                bio_page_id = page_result.data['id']
+            else:
+                return jsonify({'error': 'Bio page not found for this user'}), 404
         
-        if not result.data:
-            return jsonify({'error': 'Bio page not found'}), 404
-        
-        bio_page_id = result.data['id']
-        
-        # قائمة المحافظ
+        # قائمة المحافظ (تأكد من تطابق المفاتيح مع frontend)
         payment_wallets = [
             {'key': 'jaib', 'name': 'جيب'},
             {'key': 'floosak', 'name': 'فلوسك'},
@@ -319,24 +321,34 @@ def save_payment_methods():
         for wallet in payment_wallets:
             account_number = payment_methods.get(wallet['key'], '')
             
-            if account_number:
-                # تحديث أو إنشاء
-                existing = supabase.table('payment_methods')\
-                    .select('id')\
-                    .eq('user_id', int(user_id))\
-                    .eq('method_key', wallet['key'])\
-                    .maybe_single()\
-                    .execute()
-                
-                if existing.data:
+            # البحث عن سجل موجود
+            existing_result = supabase.table('payment_methods')\
+                .select('id')\
+                .eq('user_id', int(user_id))\
+                .eq('method_key', wallet['key'])\
+                .maybe_single()\
+                .execute()
+            
+            # التحقق الآمن: هل وجدنا بيانات؟
+            if existing_result.data:
+                # يوجد سجل => نقوم بالتحديث
+                if account_number:
                     supabase.table('payment_methods')\
                         .update({
                             'account_number': account_number,
                             'updated_at': 'now()'
                         })\
-                        .eq('id', existing.data['id'])\
+                        .eq('id', existing_result.data['id'])\
                         .execute()
                 else:
+                    # الحقل فارغ => نحذف السجل
+                    supabase.table('payment_methods')\
+                        .delete()\
+                        .eq('id', existing_result.data['id'])\
+                        .execute()
+            else:
+                # لا يوجد سجل => نقوم بالإدراج إذا كان هناك رقم
+                if account_number:
                     supabase.table('payment_methods')\
                         .insert({
                             'user_id': int(user_id),
@@ -347,18 +359,11 @@ def save_payment_methods():
                             'created_at': 'now()'
                         })\
                         .execute()
-            else:
-                # إذا كان الحقل فارغاً، احذف السجل
-                supabase.table('payment_methods')\
-                    .delete()\
-                    .eq('user_id', int(user_id))\
-                    .eq('method_key', wallet['key'])\
-                    .execute()
         
         return jsonify({'success': True})
         
     except Exception as e:
-        print(f"Error saving payment methods: {str(e)}")
+        print(f"❌ خطأ في حفظ وسائل الدفع: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
