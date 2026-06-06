@@ -408,7 +408,7 @@ def load_payment_methods():
 
 @app.route('/api/payment/click', methods=['POST'])
 def track_payment_click():
-    """تسجيل نقرة على وسيلة دفع"""
+    """تسجيل نقرة على وسيلة دفع - يجمع بين التحديث الفوري والتسجيل التفصيلي"""
     try:
         data = request.json
         method_key = data.get('method_key')
@@ -442,8 +442,10 @@ def track_payment_click():
             payment_method_id = pm_result.data[0]['id']
             print(f"🔍 payment_method_id={payment_method_id}")
             
-            # --- التصحيح هنا: تحديث عدد النقرات باستخدام Python ---
-            # 3. استعلم عن العدد الحالي
+            # =====================================================
+            # 3. تحديث إجمالي النقرات في جدول payment_methods
+            # =====================================================
+            # استعلم عن العدد الحالي
             current_record = supabase.table('payment_methods')\
                 .select('clicks_count')\
                 .eq('id', payment_method_id)\
@@ -453,7 +455,7 @@ def track_payment_click():
                 current_clicks = current_record.data[0].get('clicks_count', 0)
                 new_clicks = current_clicks + 1
                 
-                # 4. قم بالتحديث بالقيمة الجديدة
+                # قم بالتحديث بالقيمة الجديدة
                 supabase.table('payment_methods')\
                     .update({
                         'clicks_count': new_clicks,
@@ -461,9 +463,12 @@ def track_payment_click():
                     })\
                     .eq('id', payment_method_id)\
                     .execute()
-            # -------------------------------------------------
+                print(f"✅ تم تحديث عدد النقرات إلى {new_clicks}")
+            # =====================================================
             
-            # 5. تسجيل النقرة في جدول payment_clicks
+            # =====================================================
+            # 4. تسجيل التفاصيل في جدول payment_clicks (للتحليل)
+            # =====================================================
             supabase.table('payment_clicks')\
                 .insert({
                     'payment_method_id': payment_method_id,
@@ -475,8 +480,9 @@ def track_payment_click():
                     'clicked_at': 'now()'
                 })\
                 .execute()
+            print(f"✅ تم تسجيل تفاصيل النقرة في payment_clicks")
+            # =====================================================
             
-            print(f"✅ تم تسجيل نقرة على {method_key}")
             return jsonify({'success': True})
         else:
             print(f"⚠️ لم يتم العثور على payment_method_id للمفتاح: {method_key}")
