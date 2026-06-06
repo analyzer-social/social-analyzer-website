@@ -576,88 +576,8 @@ def verify_admin(password):
     return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
 
 # =====================================================
-# API لتسجيل نقرات وسائل الدفع
+# 
 # =====================================================
-
-@app.route('/api/payment/click', methods=['POST'])
-def track_payment_click():
-    """تسجيل نقرة على وسيلة دفع - تحديث العداد + تسجيل التفاصيل"""
-    try:
-        data = request.json
-        method_key = data.get('method_key')
-        account_number = data.get('account_number')
-        page_url = data.get('page_url')
-        
-        if not supabase:
-            return jsonify({'error': 'Database not configured'}), 500
-        
-        print(f"🔍 تسجيل نقرة: {method_key} - {account_number} - {page_url}")
-        
-        # الحصول على bio_page_id و user_id من page_url
-        bio_result = supabase.table('bio_pages')\
-            .select('id, user_id')\
-            .eq('page_url', page_url)\
-            .execute()
-        
-        if not bio_result.data or len(bio_result.data) == 0:
-            return jsonify({'error': 'Bio page not found'}), 404
-        
-        bio_page_id = bio_result.data[0]['id']
-        user_id = bio_result.data[0]['user_id']
-        
-        # الحصول على payment_method_id
-        pm_result = supabase.table('payment_methods')\
-            .select('id')\
-            .eq('user_id', user_id)\
-            .eq('method_key', method_key)\
-            .eq('bio_page_id', bio_page_id)\
-            .execute()
-        
-        if pm_result.data and len(pm_result.data) > 0:
-            payment_method_id = pm_result.data[0]['id']
-            
-            # تحديث عدد النقرات في جدول payment_methods
-            current_record = supabase.table('payment_methods')\
-                .select('clicks_count')\
-                .eq('id', payment_method_id)\
-                .execute()
-            
-            if current_record.data:
-                current_clicks = current_record.data[0].get('clicks_count', 0)
-                new_clicks = current_clicks + 1
-                
-                supabase.table('payment_methods')\
-                    .update({
-                        'clicks_count': new_clicks,
-                        'last_click_at': 'now()'
-                    })\
-                    .eq('id', payment_method_id)\
-                    .execute()
-                print(f"✅ تم تحديث عدد النقرات إلى {new_clicks}")
-            
-            # تسجيل التفاصيل في جدول payment_clicks
-            supabase.table('payment_clicks')\
-                .insert({
-                    'payment_method_id': payment_method_id,
-                    'user_id': user_id,
-                    'bio_page_id': bio_page_id,
-                    'method_key': method_key,
-                    'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
-                    'clicker_user_agent': request.headers.get('User-Agent'),
-                    'clicked_at': 'now()'
-                })\
-                .execute()
-            print(f"✅ تم تسجيل تفاصيل النقرة في payment_clicks")
-            
-            return jsonify({'success': True})
-        else:
-            return jsonify({'error': 'Payment method not found'}), 404
-        
-    except Exception as e:
-        print(f"❌ خطأ في تسجيل النقرة: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/payment/load-page', methods=['GET'])
