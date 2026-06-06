@@ -415,18 +415,22 @@ def track_payment_click():
         account_number = data.get('account_number')
         page_url = data.get('page_url')
         
+        print(f"🔍 تسجيل نقرة: method_key={method_key}, account={account_number}, page_url={page_url}")
+        
         # الحصول على bio_page_id من page_url
         bio_result = supabase.table('bio_pages')\
             .select('id, user_id')\
             .eq('page_url', page_url)\
-            .maybe_single()\
             .execute()
         
-        if not bio_result.data:
+        if not bio_result.data or len(bio_result.data) == 0:
+            print(f"❌ لم يتم العثور على الصفحة: {page_url}")
             return jsonify({'error': 'Bio page not found'}), 404
         
-        bio_page_id = bio_result.data['id']
-        user_id = bio_result.data['user_id']
+        bio_page_id = bio_result.data[0]['id']
+        user_id = bio_result.data[0]['user_id']
+        
+        print(f"🔍 bio_page_id={bio_page_id}, user_id={user_id}")
         
         # الحصول على payment_method_id
         pm_result = supabase.table('payment_methods')\
@@ -434,13 +438,13 @@ def track_payment_click():
             .eq('user_id', user_id)\
             .eq('method_key', method_key)\
             .eq('bio_page_id', bio_page_id)\
-            .maybe_single()\
             .execute()
         
-        if pm_result.data:
-            payment_method_id = pm_result.data['id']
+        if pm_result.data and len(pm_result.data) > 0:
+            payment_method_id = pm_result.data[0]['id']
+            print(f"🔍 payment_method_id={payment_method_id}")
             
-            # تحديث عدد النقرات
+            # تحديث عدد النقرات في جدول payment_methods
             supabase.table('payment_methods')\
                 .update({
                     'clicks_count': supabase.raw('clicks_count + 1'),
@@ -449,7 +453,7 @@ def track_payment_click():
                 .eq('id', payment_method_id)\
                 .execute()
             
-            # تسجيل النقرة
+            # تسجيل النقرة في جدول payment_clicks
             supabase.table('payment_clicks')\
                 .insert({
                     'payment_method_id': payment_method_id,
@@ -458,14 +462,20 @@ def track_payment_click():
                     'method_key': method_key,
                     'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
                     'clicker_user_agent': request.headers.get('User-Agent'),
-                    'clicked_at': 'now()'  # <-- تم إغلاق النص هنا بشكل صحيح
+                    'clicked_at': 'now()'
                 })\
                 .execute()
-        
-        return jsonify({'success': True})
+            
+            print(f"✅ تم تسجيل نقرة على {method_key}")
+            return jsonify({'success': True})
+        else:
+            print(f"⚠️ لم يتم العثور على payment_method_id للمفتاح: {method_key}")
+            return jsonify({'error': 'Payment method not found'}), 404
         
     except Exception as e:
-        print(f"Error tracking click: {str(e)}")
+        print(f"❌ خطأ في تسجيل النقرة: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 
