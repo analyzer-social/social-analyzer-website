@@ -576,6 +576,10 @@ def verify_admin(password):
     return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
 
 # =====================================================
+@app.route('/report')
+def report():
+    """صفحة التقرير الشامل للمشروع"""
+    return render_template('report.html')
 # =====================================================
 # مصادقة Google OAuth
 # =====================================================
