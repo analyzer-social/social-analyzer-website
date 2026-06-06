@@ -255,6 +255,94 @@ def bio_page(page_url):
                          page_url=page_url)
 
 # =====================================================
+# لوحة تحكم المدير
+# =====================================================
+
+import os
+import hashlib
+from datetime import datetime
+
+ADMIN_PASSWORD_HASH = hashlib.sha256(os.environ.get('ADMIN_PASSWORD', 'admin123').encode()).hexdigest()
+
+def verify_admin(password):
+    return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        if verify_admin(request.form.get('password', '')):
+            session['admin_logged_in'] = True
+            return redirect('/admin/dashboard')
+        return render_template('admin_login.html', error='كلمة المرور غير صحيحة')
+    return render_template('admin_login.html')
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if not session.get('admin_logged_in'):
+        return redirect('/admin/login')
+    
+    # جلب جميع المستخدمين
+    users_result = supabase.table('app_users').select('*').order('created_at', desc=True).execute()
+    
+    users_data = []
+    total_views = 0
+    total_clicks = 0
+    total_payment_methods = 0
+    
+    for user in users_result.data:
+        # جلب صفحة البايو
+        bio_page = supabase.table('bio_pages')\
+            .select('*')\
+            .eq('user_id', user['id'])\
+            .maybe_single()\
+            .execute()
+        
+        # جلب إحصائيات الدفع
+        payment_stats = []
+        payment_clicks = 0
+        
+        if bio_page.data:
+            payment_stats_result = supabase.table('payment_methods')\
+                .select('method_name, clicks_count')\
+                .eq('user_id', user['id'])\
+                .execute()
+            payment_stats = payment_stats_result.data
+            payment_clicks = sum(p.get('clicks_count', 0) for p in payment_stats)
+            total_payment_methods += len([p for p in payment_stats if p.get('clicks_count', 0) > 0])
+        
+        views_count = bio_page.data.get('views_count', 0) if bio_page.data else 0
+        total_views += views_count
+        total_clicks += payment_clicks
+        
+        users_data.append({
+            'id': user['id'],
+            'username': user.get('username', ''),
+            'first_name': user.get('first_name', ''),
+            'created_at': user.get('created_at', ''),
+            'bio_page': bio_page.data,
+            'payment_stats': payment_stats,
+            'total_clicks': payment_clicks,
+            'views_count': views_count
+        })
+    
+    stats = {
+        'total_users': len(users_result.data),
+        'total_bio_pages': len([u for u in users_data if u['bio_page']]),
+        'total_views': total_views,
+        'total_clicks': total_clicks,
+        'total_payment_methods': total_payment_methods
+    }
+    
+    return render_template('admin_dashboard.html', 
+                         stats=stats, 
+                         users=users_data,
+                         now_date=datetime.now().strftime('%Y-%m-%d %H:%M'))
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    return redirect('/admin/login')
+# =====================================================
 # نقطة نهاية فحص الصحة (لـ Render)
 # =====================================================
 

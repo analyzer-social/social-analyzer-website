@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المدير - صفحات البايو</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* الهيدر */
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        /* بطاقات الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #667eea; }
+        .stat-label { color: #718096; font-size: 0.8rem; margin-top: 5px; }
+        
+        /* قسم المستخدمين */
+        .users-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-input {
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            width: 250px;
+            font-family: inherit;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8f9fa; color: #2d3748; font-weight: 600; }
+        tr:hover { background: #f8f9fa; cursor: pointer; }
+        
+        .bio-link {
+            background: #48bb78;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .bio-link:hover { background: #38a169; }
+        .badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .badge-click { background: #48bb78; }
+        
+        /* الصف المنسدل (تفاصيل المستخدم) */
+        .details-row { display: none; background: #f8f9fa; }
+        .details-row.show { display: table-row; }
+        .details-cell { padding: 20px; }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .detail-card h4 { color: #667eea; margin-bottom: 10px; font-size: 0.85rem; border-right: 3px solid #667eea; padding-right: 8px; }
+        
+        .footer { text-align: center; margin-top: 25px; color: #718096; font-size: 0.7rem; }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            th, td { font-size: 0.7rem; padding: 8px 4px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h2>📊 لوحة تحكم صفحات البايو</h2>
+                <p style="font-size: 0.8rem; opacity: 0.9;">@Social_Media_tools_bot | إدارة المستخدمين والإحصائيات</p>
+            </div>
+            <a href="/admin/logout" class="logout-btn">🚪 خروج</a>
+        </div>
+        
+        <!-- بطاقات الإحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number">{{ stats.total_users }}</div><div class="stat-label">👥 إجمالي المستخدمين</div></div>
+            <div class="stat-card"><div class="stat-number">{{ stats.total_bio_pages }}</div><div class="stat-label">📄 صفحات البايو</div></div>
+            <div class="stat-card"><div class="stat-number">{{ stats.total_views }}</div><div class="stat-label">👁️ إجمالي المشاهدات</div></div>
+            <div class="stat-card"><div class="stat-number">{{ stats.total_clicks }}</div><div class="stat-label">💰 نقرات الدفع</div></div>
+            <div class="stat-card"><div class="stat-number">{{ stats.total_payment_methods }}</div><div class="stat-label">💳 وسائل دفع مفعلة</div></div>
+        </div>
+        
+        <!-- جدول المستخدمين -->
+        <div class="users-section">
+            <div class="section-header">
+                <h3>📋 قائمة المستخدمين</h3>
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 بحث بالاسم أو المعرف..." onkeyup="filterUsers()">
+            </div>
+            
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>المعرف</th>
+                        <th>الاسم</th>
+                        <th>تاريخ التسجيل</th>
+                        <th>رابط الصفحة</th>
+                        <th>المشاهدات</th>
+                        <th>نقرات الدفع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr onclick="toggleDetails({{ loop.index0 }})" style="cursor: pointer;">
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.first_name or user.username or '-' }}</td>
+                        <td>{{ user.created_at[:10] if user.created_at else '-' }}</td>
+                        <td>
+                            {% if user.bio_page %}
+                            <a href="/bio/{{ user.bio_page.page_url }}" target="_blank" class="bio-link" onclick="event.stopPropagation()">🔗 فتح الصفحة</a>
+                            {% else %}
+                            <span class="badge" style="background: #cbd5e0;">لا توجد صفحة</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge">👁️ {{ user.views_count }}</span></td>
+                        <td><span class="badge badge-click">💰 {{ user.total_clicks }}</span></td>
+                    </tr>
+                    <tr class="details-row" id="details-{{ loop.index0 }}">
+                        <td colspan="6" class="details-cell">
+                            <div class="details-grid">
+                                <!-- حسابات التواصل -->
+                                <div class="detail-card">
+                                    <h4>📱 حسابات التواصل الاجتماعي</h4>
+                                    {% if user.bio_page and user.bio_page.accounts %}
+                                        {% for platform, username in user.bio_page.accounts.items() %}
+                                            <span class="badge">{{ platform }}: {{ username }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span style="color: #a0aec0;">لا توجد حسابات</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- وسائل الدفع -->
+                                <div class="detail-card">
+                                    <h4>💳 وسائل الدفع الإلكتروني</h4>
+                                    {% if user.payment_stats %}
+                                        {% for p in user.payment_stats %}
+                                            <span class="badge badge-click">{{ p.method_name }}: {{ p.clicks_count }} نقرة</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span style="color: #a0aec0;">لا توجد وسائل دفع</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- الروابط المخصصة -->
+                                <div class="detail-card">
+                                    <h4>🔗 الروابط المخصصة</h4>
+                                    {% if user.bio_page and user.bio_page.custom_links %}
+                                        {% for link in user.bio_page.custom_links %}
+                                            <span class="badge">{{ link.title }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span style="color: #a0aec0;">لا توجد روابط مخصصة</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- معلومات إضافية -->
+                                <div class="detail-card">
+                                    <h4>📝 السيرة الذاتية</h4>
+                                    {% if user.bio_page and user.bio_page.bio %}
+                                        <p style="font-size: 0.75rem; color: #4a5568;">{{ user.bio_page.bio[:100] }}{% if user.bio_page.bio|length > 100 %}...{% endif %}</p>
+                                    {% else %}
+                                        <span style="color: #a0aec0;">لا توجد سيرة ذاتية</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% if not users %}
+            <div style="text-align: center; padding: 40px; color: #718096;">
+                ❌ لا يوجد مستخدمين بعد
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            👨‍💻 @E_Alshabany | آخر تحديث: {{ now_date }}
+        </div>
+    </div>
+    
+    <script>
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#usersTable tbody tr.main-row');
+            let hasResults = false;
+            
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (searchTerm === '' || text.includes(searchTerm)) {
+                    row.style.display = '';
+                    hasResults = true;
+                } else {
+                    row.style.display = 'none';
+                    // إخفاء التفاصيل المرتبطة أيضاً
+                    const index = row.getAttribute('data-index');
+                    if (index) {
+                        const detailsRow = document.getElementById(`details-${index}`);
+                        if (detailsRow) detailsRow.classList.remove('show');
+                    }
+                }
+            });
+        }
+        
+        function toggleDetails(index) {
+            const detailsRow = document.getElementById(`details-${index}`);
+            if (detailsRow) {
+                detailsRow.classList.toggle('show');
+            }
+        }
+        
+        // إضافة خاصية البحث عند الضغط على Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') filterUsers();
+        });
+    </script>
+</body>
+</html>
