@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جاري تسجيل الدخول...</title>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin: 0;
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .container { text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <h2>جاري تسجيل الدخول عبر Google...</h2>
+        <p>يرجى الانتظار، جاري التحقق من بياناتك</p>
+    </div>
+
+    <script>
+        // حفظ بيانات المستخدم في localStorage
+        const userId = '{{ user_id }}';
+        const fullName = '{{ full_name }}';
+        const email = '{{ email }}';
+        
+        const expiresIn = 7 * 24 * 60 * 60 * 1000; // 7 أيام
+        const expiresAt = Date.now() + expiresIn;
+        const token = btoa(`${userId}:${Date.now()}`);
+        
+        localStorage.setItem('bio_token', token);
+        localStorage.setItem('bio_user_id', userId);
+        localStorage.setItem('bio_username', fullName || email.split('@')[0]);
+        localStorage.setItem('bio_first_name', fullName || '');
+        localStorage.setItem('bio_email', email);
+        localStorage.setItem('bio_expires_at', expiresAt.toString());
+        
+        // توجيه إلى لوحة التحكم
+        window.location.href = '/dashboard';
+    </script>
+</body>
+</html>

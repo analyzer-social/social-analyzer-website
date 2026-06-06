@@ -577,6 +577,104 @@ def verify_admin(password):
 
 # =====================================================
 # =====================================================
+# مصادقة Google OAuth
+# =====================================================
+
+@app.route('/auth/google-callback')
+def google_auth_callback():
+    """معالج رد الاتصال بعد مصادقة Google"""
+    try:
+        # الحصول على جلسة Supabase الحالية
+        supabase_client = create_client(SUPABASE_BIO_URL, SUPABASE_BIO_ANON_KEY)
+        
+        # الحصول على مستخدم Supabase من الرابط (access_token في الـ URL)
+        # ملاحظة: بعد إعادة التوجيه، Supabase يضع access_token في hash أو query
+        access_token = request.args.get('access_token')
+        refresh_token = request.args.get('refresh_token')
+        
+        if not access_token:
+            # محاولة الحصول من hash (طريقة Supabase الافتراضية)
+            return redirect('/auth/google-error?error=missing_token')
+        
+        # الحصول على معلومات المستخدم من Supabase
+        user_response = requests.get(
+            f'{SUPABASE_BIO_URL}/auth/v1/user',
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+        
+        if user_response.status_code != 200:
+            return redirect('/auth/google-error?error=failed_to_get_user')
+        
+        user_data = user_response.json()
+        user_id_from_supabase = user_data.get('id')
+        email = user_data.get('email')
+        user_metadata = user_data.get('user_metadata', {})
+        full_name = user_metadata.get('full_name', email.split('@')[0] if email else '')
+        avatar_url = user_metadata.get('avatar_url', '')
+        
+        # التحقق من وجود المستخدم في جدول app_users (باستخدام Supabase UID أو email)
+        # سنستخدم معرف Supabase UID كمفتاح أساسي جديد، أو نبحث عن email
+        
+        # نبحث أولاً عن مستخدم بنفس البريد الإلكتروني
+        existing_user = supabase.table('app_users')\
+            .select('*')\
+            .eq('email', email)\
+            .maybe_single()\
+            .execute()
+        
+        if existing_user.data:
+            # مستخدم موجود نستخدمه
+            app_user_id = existing_user.data['id']
+        else:
+            # إنشاء مستخدم جديد - نستخدم جزءاً من Supabase UID كـ id (أو نستخدم email)
+            # ملاحظة: app_users.id هو BIGINT، لكن Supabase UID هو UUID
+            # سنستخدم email للربط ونجعل id = نطاق UUID رقمي مبسط
+            import hashlib
+            # تحويل email إلى رقم BIGINT (جداً)
+            hash_digest = hashlib.md5(email.encode()).hexdigest()
+            numeric_id = int(hash_digest[:15], 16)  # 15 خانة سداسية عشرية
+            
+            new_user = {
+                'id': numeric_id,
+                'username': full_name.lower().replace(' ', '_'),
+                'first_name': full_name,
+                'email': email,
+                'avatar_url': avatar_url,
+                'created_at': 'now()',
+                'updated_at': 'now()'
+            }
+            
+            result = supabase.table('app_users')\
+                .insert(new_user)\
+                .execute()
+            
+            if result.data:
+                app_user_id = result.data[0]['id']
+            else:
+                return redirect('/auth/google-error?error=failed_to_create_user')
+        
+        # إنشاء جلسة للمستخدم
+        session['user_id'] = app_user_id
+        session['auth_provider'] = 'google'
+        session['user_email'] = email
+        
+        # حفظ في localStorage عبر رد الصفحة (سنرسل صفحة وسيطة)
+        return render_template('google_auth_callback.html', 
+                             user_id=app_user_id,
+                             full_name=full_name,
+                             email=email)
+        
+    except Exception as e:
+        print(f"❌ خطأ في مصادقة Google: {str(e)}")
+        return redirect('/auth/google-error?error=server_error')
+
+
+@app.route('/auth/google-error')
+def google_auth_error():
+    """صفحة خطأ مصادقة Google"""
+    error = request.args.get('error', 'unknown')
+    return render_template('google_error.html', error=error)
+# =====================================================
 # صفحات المعلومات (سياسة الخصوصية، شروط الخدمة، المساعدة)
 # =====================================================
 
