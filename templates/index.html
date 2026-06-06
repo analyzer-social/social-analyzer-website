@@ -73,14 +73,23 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 800;
         }
-        .logo i { font-size: 1.8rem; }
-        .logo span { background: linear-gradient(135deg, #fff, #e0d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-icon i { font-size: 1.2rem; color: #667eea; }
+        .logo span { font-size: 1.2rem; }
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
         }
         .nav-links a {
@@ -88,9 +97,9 @@
             text-decoration: none;
             transition: all 0.3s;
             font-size: 0.9rem;
-            opacity: 0.9;
+            font-weight: 500;
         }
-        .nav-links a:hover { opacity: 1; transform: translateY(-2px); }
+        .nav-links a:hover { opacity: 0.8; text-decoration: underline; }
         
         /* القسم الرئيسي (Hero) */
         .hero {
@@ -137,7 +146,6 @@
         }
         .btn-telegram:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,136,204,0.3); }
         
-        /* تخصيص زر Widget Telegram */
         .telegram-widget-wrapper {
             display: inline-block;
         }
@@ -160,17 +168,34 @@
             cursor: pointer;
         }
         .btn-google:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .hero-image {
-            background: linear-gradient(135deg, #667eea20, #764ba220);
-            border-radius: 30px;
-            padding: 30px;
-            text-align: center;
+        
+        .hero-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .hero-image .preview-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .hero-logo-circle {
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-logo-inner {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.3);
+        }
+        .hero-logo-inner i {
+            font-size: 100px;
+            color: white;
         }
         
         /* الميزات */
@@ -262,9 +287,9 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
         }
-        .footer-logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: bold; color: white; }
-        .footer-links h4 { color: white; margin-bottom: 15px; }
-        .footer-links a { display: block; color: #a0aec0; text-decoration: none; margin-bottom: 8px; font-size: 0.85rem; }
+        .footer-logo { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: bold; color: white; }
+        .footer-links h4 { color: white; margin-bottom: 15px; font-size: 1rem; }
+        .footer-links a { display: block; color: #a0aec0; text-decoration: none; margin-bottom: 10px; font-size: 0.85rem; }
         .footer-links a:hover { color: #667eea; }
         .footer-bottom { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2d3748; font-size: 0.7rem; }
         
@@ -272,24 +297,27 @@
             .hero { grid-template-columns: 1fr; text-align: center; padding: 50px 20px; }
             .hero-content h1 { font-size: 2rem; }
             .hero-buttons { justify-content: center; }
+            .hero-logo-circle { width: 200px; height: 200px; }
+            .hero-logo-inner { width: 140px; height: 140px; }
+            .hero-logo-inner i { font-size: 60px; }
             .features-grid { grid-template-columns: 1fr; }
             .payment-logos { gap: 15px; }
         }
     </style>
 </head>
 <body>
-    <!-- الهيدر مع الشعار والأزرار -->
+    <!-- الهيدر مع الشعار -->
     <div class="header">
         <div class="header-container">
             <div class="logo">
-                <i class="fas fa-link"></i>
+                <div class="logo-icon"><i class="fas fa-link"></i></div>
                 <span>analyzer.social</span>
             </div>
             <div class="nav-links">
-                <a href="/"><i class="fas fa-home"></i> الرئيسية</a>
-                <a href="/help"><i class="fas fa-question-circle"></i> المساعدة</a>
-                <a href="/privacy"><i class="fas fa-shield-alt"></i> الخصوصية</a>
-                <a href="/terms"><i class="fas fa-file-contract"></i> الشروط</a>
+                <a href="/">الرئيسية</a>
+                <a href="/privacy">سياسة الخصوصية</a>
+                <a href="/terms">شروط الخدمة</a>
+                <a href="/help">المساعدة</a>
             </div>
         </div>
     </div>
@@ -300,7 +328,6 @@
             <h1>أنشئ صفحة البايو الاحترافية الخاصة بك</h1>
             <p>منصة متكاملة تتيح لك عرض جميع حساباتك وروابطك ووسائل الدفع الإلكتروني في صفحة واحدة أنيقة وسهلة المشاركة.</p>
             <div class="hero-buttons">
-                <!-- زر Telegram Widget -->
                 <div class="telegram-widget-wrapper">
                     <script async src="https://telegram.org/js/telegram-widget.js?22"
                         data-telegram-login="Social_Media_analyzer_bot"
@@ -310,25 +337,18 @@
                         data-request-access="write">
                     </script>
                 </div>
-                <!-- زر Google -->
                 <button class="btn-google" onclick="signInWithGoogle()">
                     <i class="fab fa-google"></i> تسجيل الدخول عبر Google
                 </button>
             </div>
-            <div style="font-size: 0.8rem; color: #718096;">
-                ⚡ مجاني بالكامل | ✨ ثيمات متعددة | 💳 دعم وسائل الدفع اليمنية
+            <div style="font-size: 0.8rem; color: #718096; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                ⚡ مجاني بالكامل | ✨ ثيمات متعددة | 💳 دعم 12 محفظة إلكترونية
             </div>
         </div>
-        <div class="hero-image">
-            <div class="preview-card">
-                <i class="fas fa-user-circle" style="font-size: 60px; color: #667eea;"></i>
-                <h3 style="margin: 10px 0;">معرض الصفحات</h3>
-                <p style="font-size: 12px;">صفحة بايو احترافية تعرض حساباتك ووسائل الدفع</p>
-                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px;">
-                    <i class="fab fa-youtube" style="color: #ff0000;"></i>
-                    <i class="fab fa-instagram" style="color: #e1306c;"></i>
-                    <i class="fab fa-tiktok" style="color: #000;"></i>
-                    <i class="fab fa-facebook" style="color: #1877f2;"></i>
+        <div class="hero-logo">
+            <div class="hero-logo-circle">
+                <div class="hero-logo-inner">
+                    <i class="fas fa-link"></i>
                 </div>
             </div>
         </div>
@@ -391,15 +411,14 @@
                 <p style="margin-top: 5px; font-size: 0.7rem;">👨‍💻 @Alshabany_Ai</p>
             </div>
             <div class="footer-links">
-                <h4>روابط سريعة</h4>
-                <a href="/">الرئيسية</a>
-                <a href="/help">المساعدة</a>
-                <a href="/privacy">سياسة الخصوصية</a>
-                <a href="/terms">شروط الخدمة</a>
+                <h4>روابط مهمة</h4>
+                <a href="/privacy">🔒 سياسة الخصوصية</a>
+                <a href="/terms">⚖️ شروط الخدمة</a>
+                <a href="/help">📖 المساعدة والدعم</a>
             </div>
             <div class="footer-links">
                 <h4>تواصل معنا</h4>
-                <a href="https://t.me/Social_Media_tools_bot" target="_blank"><i class="fab fa-telegram"></i> بوت المساعدة</a>
+                <a href="https://t.me/analyzer_social_bot" target="_blank"><i class="fab fa-telegram"></i> بوت الدعم</a>
                 <a href="mailto:help@analyzer.social"><i class="fas fa-envelope"></i> help@analyzer.social</a>
             </div>
         </div>
@@ -416,9 +435,7 @@
             window.location.href = '/dashboard';
         }
         
-        // =====================================================
         // دالة تسجيل الدخول عبر Google
-        // =====================================================
         async function signInWithGoogle() {
             try {
                 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -435,9 +452,7 @@
             }
         }
         
-        // =====================================================
-        // عرض وسائل الدفع المدعومة
-        // =====================================================
+        // عرض وسائل الدفع
         const paymentMethods = [
             { name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
             { name: 'فلوسك', icon: '/static/assets/payment-icons/floosak.webp' },
@@ -469,7 +484,6 @@
             container.innerHTML = html;
         }
         
-        // ربط الدالة للنطاق العام
         window.signInWithGoogle = signInWithGoogle;
     </script>
 </body>
