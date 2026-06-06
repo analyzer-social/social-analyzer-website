@@ -132,8 +132,17 @@
             color: white;
             font-size: 22px;
         }
-        .platform-input input {
+        .platform-input .input-wrapper {
             flex: 1;
+        }
+        .platform-input input {
+            width: 100%;
+        }
+        .field-hint {
+            display: block;
+            font-size: 10px;
+            color: #718096;
+            margin-top: 4px;
         }
         .custom-link-item {
             display: flex;
@@ -423,23 +432,34 @@
             <h3><i class="fas fa-share-alt"></i> حسابات التواصل الاجتماعي</h3>
             <div class="platform-input">
                 <i class="fab fa-youtube" style="background:#ff0000;"></i>
-                <input type="text" id="youtube" placeholder="اسم المستخدم في يوتيوب">
+                <div class="input-wrapper">
+                    <input type="text" id="youtube" placeholder="اسم المستخدم في يوتيوب">
+                </div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-instagram" style="background:#e1306c;"></i>
-                <input type="text" id="instagram" placeholder="اسم المستخدم في انستقرام">
+                <div class="input-wrapper">
+                    <input type="text" id="instagram" placeholder="اسم المستخدم في انستقرام">
+                </div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-tiktok" style="background:#000000;"></i>
-                <input type="text" id="tiktok" placeholder="اسم المستخدم في تيك توك">
+                <div class="input-wrapper">
+                    <input type="text" id="tiktok" placeholder="اسم المستخدم في تيك توك">
+                </div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-facebook-f" style="background:#1877f2;"></i>
-                <input type="text" id="facebook" placeholder="اسم المستخدم في فيسبوك">
+                <div class="input-wrapper">
+                    <input type="text" id="facebook" placeholder="اسم المستخدم أو رابط الصفحة">
+                    <small class="field-hint">💡 يمكنك إدخال: اسم المستخدم (example) أو رابط الصفحة الكامل</small>
+                </div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-twitter" style="background:#1da1f2;"></i>
-                <input type="text" id="twitter" placeholder="اسم المستخدم في X">
+                <div class="input-wrapper">
+                    <input type="text" id="twitter" placeholder="اسم المستخدم في X">
+                </div>
             </div>
         </div>
 
@@ -465,15 +485,6 @@
             <div class="payment-grid-dashboard" id="paymentMethodsContainer"></div>
             <small>📌 أدخل رقم المحفظة أو الجوال لكل وسيلة دفع</small>
         </div>
-
-        <!-- إحصائيات النقرات - تم تعليقها مؤقتاً
-        <div class="card">
-            <h3><i class="fas fa-chart-line"></i> إحصائيات نقرات وسائل الدفع</h3>
-            <div id="paymentStatsContainer">
-                <p style="color: #718096; text-align: center;">📊 لا توجد إحصائيات بعد</p>
-            </div>
-        </div>
-        -->
 
         <button class="save-btn" onclick="saveBioPage()">
             <i class="fas fa-save"></i> حفظ التغييرات
@@ -555,6 +566,38 @@
             setTimeout(() => {
                 errorDiv.style.display = 'none';
             }, 5000);
+        }
+        
+        // =====================================================
+        // دالة معالجة رابط فيسبوك
+        // =====================================================
+        
+        function cleanFacebookInput(input) {
+            if (!input) return '';
+            
+            // إزالة المسافات الزائدة
+            input = input.trim();
+            
+            // إذا كان رابطاً كاملاً
+            if (input.includes('facebook.com') || input.includes('fb.com')) {
+                // محاولة استخراج username من الرابط
+                let match = input.match(/facebook\.com\/([^\/?]+)/);
+                if (match && match[1] && !match[1].includes('profile.php')) {
+                    return match[1];
+                }
+                // محاولة استخراج id من رابط profile.php
+                match = input.match(/id=([0-9]+)/);
+                if (match && match[1]) {
+                    return match[1];
+                }
+                // محاولة استخراج من رابط مختصر
+                match = input.match(/fb\.com\/([^\/?]+)/);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            // إرجاع النص كما هو (اسم مستخدم عادي)
+            return input;
         }
         
         // =====================================================
@@ -736,44 +779,6 @@
         }
         
         // =====================================================
-        // دوال الإحصائيات (تم تعليقها مؤقتاً)
-        // =====================================================
-        
-        /*
-        async function loadPaymentStats() {
-            try {
-                const response = await fetch(`/api/payment/stats/${currentUserId}`, {
-                    headers: { 'X-User-Id': currentUserId }
-                });
-                const result = await response.json();
-                
-                const container = document.getElementById('paymentStatsContainer');
-                if (result.success && result.stats && result.stats.length > 0) {
-                    const activeStats = result.stats.filter(s => s.account_number);
-                    if (activeStats.length > 0) {
-                        let html = '<div class="stats-table">';
-                        for (const stat of activeStats) {
-                            html += `
-                                <div class="stat-row">
-                                    <span class="stat-name">${stat.method_name}</span>
-                                    <span class="stat-clicks">👆 ${stat.clicks_count || 0} نقرة</span>
-                                    <span class="stat-last">${stat.last_click_at ? 'آخر نقرة: ' + new Date(stat.last_click_at).toLocaleDateString('ar') : 'لا توجد نقرات بعد'}</span>
-                                </div>
-                            `;
-                        }
-                        html += '</div>';
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<p style="color: #718096; text-align: center;">📊 لا توجد إحصائيات بعد</p>';
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading stats:', error);
-            }
-        }
-        */
-        
-        // =====================================================
         // دالة حفظ البيانات الرئيسية
         // =====================================================
         
@@ -791,13 +796,13 @@
                 const youtube = document.getElementById('youtube').value.trim();
                 const instagram = document.getElementById('instagram').value.trim();
                 const tiktok = document.getElementById('tiktok').value.trim();
-                const facebook = document.getElementById('facebook').value.trim();
+                const facebookRaw = document.getElementById('facebook').value.trim();
                 const twitter = document.getElementById('twitter').value.trim();
                 
                 if (youtube) accounts.youtube = youtube.replace('@', '');
                 if (instagram) accounts.instagram = instagram.replace('@', '');
                 if (tiktok) accounts.tiktok = tiktok.replace('@', '');
-                if (facebook) accounts.facebook = facebook;
+                if (facebookRaw) accounts.facebook = cleanFacebookInput(facebookRaw);
                 if (twitter) accounts.twitter = twitter;
                 
                 const bioData = {
@@ -912,9 +917,6 @@
                 
                 await loadPaymentData();
                 renderPaymentInputs();
-                
-                // تحميل الإحصائيات (تم تعليقه مؤقتاً)
-                // await loadPaymentStats();
                 
             } catch (error) {
                 console.error('خطأ في تحميل البيانات:', error);
