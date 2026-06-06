@@ -3,7 +3,9 @@ from flask import Flask, render_template, send_from_directory, request, jsonify
 from supabase import create_client, Client
 import os
 from functools import wraps
-
+from flask import Flask, render_template, send_from_directory, request, jsonify, session, redirect
+from datetime import datetime
+import hashlib
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'bio_social_analyzer_secret_key_2024_secure_9xK7mP2qR5tW8zL1')
 
@@ -255,93 +257,7 @@ def bio_page(page_url):
                          page_url=page_url)
 
 # =====================================================
-# لوحة تحكم المدير
-# =====================================================
 
-import os
-import hashlib
-from datetime import datetime
-
-ADMIN_PASSWORD_HASH = hashlib.sha256(os.environ.get('ADMIN_PASSWORD', 'admin123').encode()).hexdigest()
-
-def verify_admin(password):
-    return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
-
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        if verify_admin(request.form.get('password', '')):
-            session['admin_logged_in'] = True
-            return redirect('/admin/dashboard')
-        return render_template('admin_login.html', error='كلمة المرور غير صحيحة')
-    return render_template('admin_login.html')
-
-@app.route('/admin/dashboard')
-def admin_dashboard():
-    if not session.get('admin_logged_in'):
-        return redirect('/admin/login')
-    
-    # جلب جميع المستخدمين
-    users_result = supabase.table('app_users').select('*').order('created_at', desc=True).execute()
-    
-    users_data = []
-    total_views = 0
-    total_clicks = 0
-    total_payment_methods = 0
-    
-    for user in users_result.data:
-        # جلب صفحة البايو
-        bio_page = supabase.table('bio_pages')\
-            .select('*')\
-            .eq('user_id', user['id'])\
-            .maybe_single()\
-            .execute()
-        
-        # جلب إحصائيات الدفع
-        payment_stats = []
-        payment_clicks = 0
-        
-        if bio_page.data:
-            payment_stats_result = supabase.table('payment_methods')\
-                .select('method_name, clicks_count')\
-                .eq('user_id', user['id'])\
-                .execute()
-            payment_stats = payment_stats_result.data
-            payment_clicks = sum(p.get('clicks_count', 0) for p in payment_stats)
-            total_payment_methods += len([p for p in payment_stats if p.get('clicks_count', 0) > 0])
-        
-        views_count = bio_page.data.get('views_count', 0) if bio_page.data else 0
-        total_views += views_count
-        total_clicks += payment_clicks
-        
-        users_data.append({
-            'id': user['id'],
-            'username': user.get('username', ''),
-            'first_name': user.get('first_name', ''),
-            'created_at': user.get('created_at', ''),
-            'bio_page': bio_page.data,
-            'payment_stats': payment_stats,
-            'total_clicks': payment_clicks,
-            'views_count': views_count
-        })
-    
-    stats = {
-        'total_users': len(users_result.data),
-        'total_bio_pages': len([u for u in users_data if u['bio_page']]),
-        'total_views': total_views,
-        'total_clicks': total_clicks,
-        'total_payment_methods': total_payment_methods
-    }
-    
-    return render_template('admin_dashboard.html', 
-                         stats=stats, 
-                         users=users_data,
-                         now_date=datetime.now().strftime('%Y-%m-%d %H:%M'))
-
-@app.route('/admin/logout')
-def admin_logout():
-    session.pop('admin_logged_in', None)
-    return redirect('/admin/login')
 # =====================================================
 # نقطة نهاية فحص الصحة (لـ Render)
 # =====================================================
@@ -641,7 +557,386 @@ def load_payment_methods_for_page():
         
     except Exception as e:
         print(f"❌ خطأ في تحميل وسائل الدفع للصفحة: {str(e)}")
-        return jsonify({'error': str(e)}), 500           
+        return jsonify({'error': str(e)}), 500 
+# =====================================================
+# إعدادات الجلسات والأمان للمدير
+# =====================================================
+
+import hashlib
+from datetime import datetime
+from flask import session, redirect, url_for
+
+# كلمة مرور المدير (من متغيرات البيئة)
+ADMIN_PASSWORD_HASH = hashlib.sha256(
+    os.environ.get('ADMIN_PASSWORD', 'default_admin_password').encode()
+).hexdigest()
+
+def verify_admin(password):
+    """التحقق من كلمة مرور المدير"""
+    return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
+
+# =====================================================
+# API لتسجيل نقرات وسائل الدفع
+# =====================================================
+
+@app.route('/api/payment/click', methods=['POST'])
+def track_payment_click():
+    """تسجيل نقرة على وسيلة دفع - تحديث العداد + تسجيل التفاصيل"""
+    try:
+        data = request.json
+        method_key = data.get('method_key')
+        account_number = data.get('account_number')
+        page_url = data.get('page_url')
+        
+        if not supabase:
+            return jsonify({'error': 'Database not configured'}), 500
+        
+        print(f"🔍 تسجيل نقرة: {method_key} - {account_number} - {page_url}")
+        
+        # الحصول على bio_page_id و user_id من page_url
+        bio_result = supabase.table('bio_pages')\
+            .select('id, user_id')\
+            .eq('page_url', page_url)\
+            .execute()
+        
+        if not bio_result.data or len(bio_result.data) == 0:
+            return jsonify({'error': 'Bio page not found'}), 404
+        
+        bio_page_id = bio_result.data[0]['id']
+        user_id = bio_result.data[0]['user_id']
+        
+        # الحصول على payment_method_id
+        pm_result = supabase.table('payment_methods')\
+            .select('id')\
+            .eq('user_id', user_id)\
+            .eq('method_key', method_key)\
+            .eq('bio_page_id', bio_page_id)\
+            .execute()
+        
+        if pm_result.data and len(pm_result.data) > 0:
+            payment_method_id = pm_result.data[0]['id']
+            
+            # تحديث عدد النقرات في جدول payment_methods
+            current_record = supabase.table('payment_methods')\
+                .select('clicks_count')\
+                .eq('id', payment_method_id)\
+                .execute()
+            
+            if current_record.data:
+                current_clicks = current_record.data[0].get('clicks_count', 0)
+                new_clicks = current_clicks + 1
+                
+                supabase.table('payment_methods')\
+                    .update({
+                        'clicks_count': new_clicks,
+                        'last_click_at': 'now()'
+                    })\
+                    .eq('id', payment_method_id)\
+                    .execute()
+                print(f"✅ تم تحديث عدد النقرات إلى {new_clicks}")
+            
+            # تسجيل التفاصيل في جدول payment_clicks
+            supabase.table('payment_clicks')\
+                .insert({
+                    'payment_method_id': payment_method_id,
+                    'user_id': user_id,
+                    'bio_page_id': bio_page_id,
+                    'method_key': method_key,
+                    'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                    'clicker_user_agent': request.headers.get('User-Agent'),
+                    'clicked_at': 'now()'
+                })\
+                .execute()
+            print(f"✅ تم تسجيل تفاصيل النقرة في payment_clicks")
+            
+            return jsonify({'success': True})
+        else:
+            return jsonify({'error': 'Payment method not found'}), 404
+        
+    except Exception as e:
+        print(f"❌ خطأ في تسجيل النقرة: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/load-page', methods=['GET'])
+def load_payment_methods_for_page():
+    """تحميل وسائل الدفع لصفحة عامة (للعرض العام)"""
+    try:
+        page_url = request.args.get('page_url')
+        
+        if not page_url:
+            return jsonify({'error': 'page_url required'}), 400
+        
+        if not supabase:
+            return jsonify({'error': 'Database not configured'}), 500
+        
+        # الحصول على bio_page_id من page_url
+        bio_result = supabase.table('bio_pages')\
+            .select('id')\
+            .eq('page_url', page_url)\
+            .execute()
+        
+        if not bio_result.data or len(bio_result.data) == 0:
+            return jsonify({'success': False, 'error': 'Page not found'}), 404
+        
+        bio_page_id = bio_result.data[0]['id']
+        
+        # جلب وسائل الدفع
+        result = supabase.table('payment_methods')\
+            .select('method_key, account_number')\
+            .eq('bio_page_id', bio_page_id)\
+            .eq('is_active', True)\
+            .execute()
+        
+        payment_methods = {}
+        if result.data:
+            for item in result.data:
+                if item.get('account_number'):
+                    payment_methods[item['method_key']] = item['account_number']
+        
+        return jsonify({'success': True, 'payment_methods': payment_methods})
+        
+    except Exception as e:
+        print(f"❌ خطأ في تحميل وسائل الدفع: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/save', methods=['POST'])
+@require_auth
+def save_payment_methods():
+    """حفظ وسائل الدفع للمستخدم"""
+    try:
+        user_id = request.headers.get('X-User-Id')
+        data = request.json
+        payment_methods = data.get('payment_methods', {})
+        bio_page_id = data.get('bio_page_id')
+        
+        if not supabase:
+            return jsonify({'error': 'Database not configured'}), 500
+        
+        # الحصول على bio_page_id إذا لم يتم إرساله
+        if not bio_page_id:
+            page_result = supabase.table('bio_pages')\
+                .select('id')\
+                .eq('user_id', int(user_id))\
+                .maybe_single()\
+                .execute()
+            
+            if page_result.data:
+                bio_page_id = page_result.data['id']
+            else:
+                return jsonify({'error': 'Bio page not found for this user'}), 404
+        
+        # قائمة المحافظ
+        payment_wallets = [
+            {'key': 'jaib', 'name': 'جيب'},
+            {'key': 'floosak', 'name': 'فلوسك'},
+            {'key': 'jawaly', 'name': 'جوالي'},
+            {'key': 'mahfazti', 'name': 'محفظتي'},
+            {'key': 'mobilemoney', 'name': 'موبايل موني'},
+            {'key': 'yemenwallet', 'name': 'يمن والت'},
+            {'key': 'shilling', 'name': 'شلن'},
+            {'key': 'easywallet', 'name': 'سهل'},
+            {'key': 'onecash', 'name': 'ون كاش'},
+            {'key': 'kremi', 'name': 'كريمي'},
+            {'key': 'cash', 'name': 'كاش'},
+            {'key': 'mtnmomo', 'name': 'MTN Mobile Money'}
+        ]
+        
+        for wallet in payment_wallets:
+            account_number = payment_methods.get(wallet['key'], '')
+            
+            try:
+                # البحث عن سجل موجود
+                existing_result = supabase.table('payment_methods')\
+                    .select('id')\
+                    .eq('user_id', int(user_id))\
+                    .eq('method_key', wallet['key'])\
+                    .maybe_single()\
+                    .execute()
+                
+                if existing_result and existing_result.data:
+                    if account_number:
+                        supabase.table('payment_methods')\
+                            .update({
+                                'account_number': account_number,
+                                'updated_at': 'now()'
+                            })\
+                            .eq('id', existing_result.data['id'])\
+                            .execute()
+                    else:
+                        supabase.table('payment_methods')\
+                            .delete()\
+                            .eq('id', existing_result.data['id'])\
+                            .execute()
+                else:
+                    if account_number:
+                        supabase.table('payment_methods')\
+                            .insert({
+                                'user_id': int(user_id),
+                                'bio_page_id': bio_page_id,
+                                'method_key': wallet['key'],
+                                'method_name': wallet['name'],
+                                'account_number': account_number,
+                                'created_at': 'now()'
+                            })\
+                            .execute()
+            except Exception as inner_error:
+                print(f"⚠️ خطأ في معالجة {wallet['key']}: {str(inner_error)}")
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        print(f"❌ خطأ في حفظ وسائل الدفع: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/load', methods=['GET'])
+@require_auth
+def load_payment_methods():
+    """تحميل وسائل الدفع للمستخدم"""
+    try:
+        user_id = request.headers.get('X-User-Id')
+        
+        if not supabase:
+            return jsonify({'error': 'Database not configured'}), 500
+        
+        result = supabase.table('payment_methods')\
+            .select('method_key, account_number')\
+            .eq('user_id', int(user_id))\
+            .execute()
+        
+        payment_methods = {}
+        for item in result.data:
+            payment_methods[item['method_key']] = item['account_number']
+        
+        return jsonify({'success': True, 'payment_methods': payment_methods})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# =====================================================
+# لوحة تحكم المدير
+# =====================================================
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """صفحة تسجيل دخول المدير"""
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        if verify_admin(password):
+            session['admin_logged_in'] = True
+            return redirect('/admin/dashboard')
+        return render_template('admin_login.html', error='كلمة المرور غير صحيحة')
+    return render_template('admin_login.html')
+
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    """لوحة تحكم المدير"""
+    if not session.get('admin_logged_in'):
+        return redirect('/admin/login')
+    
+    if not supabase:
+        return render_template('admin_dashboard.html', stats={}, users=[], now_date=datetime.now().strftime('%Y-%m-%d %H:%M'), error='قاعدة البيانات غير متصلة')
+    
+    # جلب جميع المستخدمين
+    users_result = supabase.table('app_users').select('*').order('created_at', desc=True).execute()
+    
+    users_data = []
+    total_views = 0
+    total_clicks = 0
+    total_payment_methods = 0
+    
+    for user in users_result.data:
+        # جلب صفحة البايو
+        bio_page = supabase.table('bio_pages')\
+            .select('*')\
+            .eq('user_id', user['id'])\
+            .maybe_single()\
+            .execute()
+        
+        # جلب إحصائيات الدفع
+        payment_stats = []
+        payment_clicks = 0
+        
+        if bio_page.data:
+            payment_stats_result = supabase.table('payment_methods')\
+                .select('method_name, clicks_count')\
+                .eq('user_id', user['id'])\
+                .execute()
+            payment_stats = payment_stats_result.data
+            payment_clicks = sum(p.get('clicks_count', 0) for p in payment_stats)
+            total_payment_methods += len([p for p in payment_stats if p.get('clicks_count', 0) > 0])
+        
+        views_count = bio_page.data.get('views_count', 0) if bio_page.data else 0
+        total_views += views_count
+        total_clicks += payment_clicks
+        
+        users_data.append({
+            'id': user['id'],
+            'username': user.get('username', ''),
+            'first_name': user.get('first_name', ''),
+            'created_at': user.get('created_at', ''),
+            'bio_page': bio_page.data,
+            'payment_stats': payment_stats,
+            'total_clicks': payment_clicks,
+            'views_count': views_count
+        })
+    
+    stats = {
+        'total_users': len(users_result.data),
+        'total_bio_pages': len([u for u in users_data if u['bio_page']]),
+        'total_views': total_views,
+        'total_clicks': total_clicks,
+        'total_payment_methods': total_payment_methods
+    }
+    
+    return render_template('admin_dashboard.html', 
+                         stats=stats, 
+                         users=users_data,
+                         now_date=datetime.now().strftime('%Y-%m-%d %H:%M'))
+
+
+@app.route('/admin/logout')
+def admin_logout():
+    """تسجيل خروج المدير"""
+    session.pop('admin_logged_in', None)
+    return redirect('/admin/login')
+
+
+# =====================================================
+# API إضافية للوحة التحكم
+# =====================================================
+
+@app.route('/api/admin/stats', methods=['GET'])
+def admin_stats():
+    """API لجلب الإحصائيات العامة (للاستخدام في JavaScript)"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not supabase:
+        return jsonify({'error': 'Database not configured'}), 500
+    
+    # إحصائيات سريعة
+    users_count = supabase.table('app_users').select('*', count='exact').execute().count
+    bio_pages_count = supabase.table('bio_pages').select('*', count='exact').execute().count
+    
+    views_result = supabase.table('bio_pages').select('views_count').execute()
+    total_views = sum(v.get('views_count', 0) for v in views_result.data)
+    
+    clicks_result = supabase.table('payment_methods').select('clicks_count').execute()
+    total_clicks = sum(c.get('clicks_count', 0) for c in clicks_result.data)
+    
+    return jsonify({
+        'total_users': users_count or 0,
+        'total_bio_pages': bio_pages_count or 0,
+        'total_views': total_views,
+        'total_clicks': total_clicks
+    })                  
 # =====================================================
 # تشغيل التطبيق
 # =====================================================
