@@ -1,90 +1,526 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحات بايو - أنشئ صفحتك الشخصية</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- SEO & Open Graph -->
+    <title>analyzer.social | أنشئ صفحة البايو الاحترافية الخاصة بك</title>
+    <meta name="description" content="منصة متكاملة لإنشاء صفحات بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع الإلكتروني في مكان واحد. مجاني وسهل الاستخدام.">
+    <meta name="keywords" content="صفحة بايو, بايو, روابط, analyzer.social, صفحة روابط, سوشال ميديا">
+    <meta name="author" content="analyzer.social">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="analyzer.social | صفحة البايو الاحترافية">
+    <meta property="og:description" content="أنشئ صفحة بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد. مجاني وسهل الاستخدام.">
+    <meta property="og:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://analyzer.social">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="analyzer.social | منصة صفحات البايو الاحترافية">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="analyzer.social | صفحة البايو الاحترافية">
+    <meta name="twitter:description" content="أنشئ صفحة بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد.">
+    <meta name="twitter:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script>
-        // تمرير المتغيرات من Flask
-        window.SUPABASE_URL = '{{ SUPABASE_URL }}';
-        window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
-    </script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
             min-height: 100vh;
+        }
+        
+        /* الهيدر */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        .logo i { font-size: 1.8rem; }
+        .logo span { background: linear-gradient(135deg, #fff, #e0d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .nav-links a:hover { opacity: 1; transform: translateY(-2px); }
+        
+        /* القسم الرئيسي (Hero) */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .hero-content h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        .hero-content p {
+            color: #4a5568;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .btn-telegram {
+            background: linear-gradient(135deg, #0088cc, #006699);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-telegram:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,136,204,0.3); }
+        .btn-google {
+            background: white;
+            color: #2d3748;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .hero-image {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 30px;
+            padding: 30px;
+            text-align: center;
+        }
+        .hero-image .preview-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* إحصائيات سريعة */
+        .stats-bar {
+            background: white;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+        .stat-item .number { font-size: 2rem; font-weight: 800; color: #667eea; }
+        .stat-item .label { color: #718096; font-size: 0.85rem; }
+        
+        /* الميزات */
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: #2d3748;
+        }
+        .section-title span { color: #667eea; }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .feature-icon i { font-size: 2rem; color: #667eea; }
+        .feature-card h3 { margin-bottom: 15px; color: #2d3748; }
+        .feature-card p { color: #718096; font-size: 0.85rem; line-height: 1.6; }
+        
+        /* وسائل الدفع المدعومة */
+        .payment-section {
+            background: linear-gradient(135deg, #667eea08, #764ba208);
+            padding: 60px 30px;
+        }
+        .payment-logos {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        .logo { font-size: 60px; margin-bottom: 20px; }
-        h1 { color: #2d3748; margin-bottom: 10px; }
-        p { color: #718096; margin-bottom: 30px; }
-        .telegram-login-btn { margin: 20px 0; }
-        .features {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
             flex-wrap: wrap;
+            gap: 25px;
         }
-        .feature {
+        .payment-item {
             text-align: center;
-            font-size: 12px;
-            color: #718096;
+            width: 80px;
+            transition: all 0.3s;
         }
-        .feature i {
-            font-size: 24px;
-            color: #667eea;
-            margin-bottom: 5px;
-            display: block;
+        .payment-item:hover { transform: translateY(-5px); }
+        .payment-icon {
+            width: 55px;
+            height: 55px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 8px;
+        }
+        .payment-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .payment-name { font-size: 11px; color: #4a5568; }
+        
+        /* الفوتر */
+        .footer {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 40px 30px 20px;
+        }
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .footer-logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: bold; color: white; }
+        .footer-links h4 { color: white; margin-bottom: 15px; }
+        .footer-links a { display: block; color: #a0aec0; text-decoration: none; margin-bottom: 8px; font-size: 0.85rem; }
+        .footer-links a:hover { color: #667eea; }
+        .footer-bottom { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2d3748; font-size: 0.7rem; }
+        
+        /* نافذة منبثقة للتطوير */
+        .dev-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .dev-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+        }
+        .dev-modal-content i { font-size: 50px; color: #667eea; margin-bottom: 15px; }
+        .dev-modal-content h3 { margin-bottom: 10px; }
+        .dev-modal-content p { color: #718096; margin-bottom: 20px; }
+        .dev-modal-content button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .hero { grid-template-columns: 1fr; text-align: center; padding: 40px 20px; }
+            .hero-content h1 { font-size: 2rem; }
+            .hero-buttons { justify-content: center; }
+            .features-grid { grid-template-columns: 1fr; }
+            .payment-logos { gap: 15px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">📄</div>
-        <h1>صفحات بايو احترافية</h1>
-        <p>أنشئ صفحة شخصية تعرض جميع حساباتك في مكان واحد</p>
-        
-        <div class="telegram-login-btn">
-            <script async src="https://telegram.org/js/telegram-widget.js?22"
-                data-telegram-login="Social_Media_analyzer_bot"
-                data-size="large"
-                data-radius="12"
-                data-auth-url="https://social-analyzer-bio.onrender.com/auth"
-                data-request-access="write">
-            </script>
-        </div>
-        
-        <div class="features">
-            <div class="feature"><i class="fas fa-link"></i> روابط مخصصة</div>
-            <div class="feature"><i class="fas fa-palette"></i> ثيمات متعددة</div>
-            <div class="feature"><i class="fas fa-chart-line"></i> إحصائيات المشاهدات</div>
+    <!-- الهيدر مع الشعار والأزرار -->
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-link"></i>
+                <span>analyzer.social</span>
+            </div>
+            <div class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="/help"><i class="fas fa-question-circle"></i> المساعدة</a>
+                <a href="/privacy"><i class="fas fa-shield-alt"></i> الخصوصية</a>
+                <a href="/terms"><i class="fas fa-file-contract"></i> الشروط</a>
+            </div>
         </div>
     </div>
     
-    <script src="/static/config.js"></script>
+    <!-- القسم الرئيسي -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>أنشئ صفحة البايو الاحترافية الخاصة بك</h1>
+            <p>منصة متكاملة تتيح لك عرض جميع حساباتك وروابطك ووسائل الدفع الإلكتروني في صفحة واحدة أنيقة وسهلة المشاركة.</p>
+            <div class="hero-buttons">
+                <button class="btn-telegram" onclick="location.href='/auth'">
+                    <i class="fab fa-telegram"></i> تسجيل الدخول عبر Telegram
+                </button>
+                <button class="btn-google" onclick="showDevModal()">
+                    <i class="fab fa-google"></i> التسجيل عبر Google
+                </button>
+            </div>
+            <div style="font-size: 0.8rem; color: #718096;">
+                ⚡ مجاني بالكامل | ✨ ثيمات متعددة | 💳 دعم وسائل الدفع اليمنية
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="preview-card">
+                <i class="fas fa-user-circle" style="font-size: 60px; color: #667eea;"></i>
+                <h3 style="margin: 10px 0;">معرض الصفحات</h3>
+                <p style="font-size: 12px;">صفحة بايو احترافية تعرض حساباتك ووسائل الدفع</p>
+                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px;">
+                    <i class="fab fa-youtube" style="color: #ff0000;"></i>
+                    <i class="fab fa-instagram" style="color: #e1306c;"></i>
+                    <i class="fab fa-tiktok" style="color: #000;"></i>
+                    <i class="fab fa-facebook" style="color: #1877f2;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- إحصائيات سريعة -->
+    <div class="stats-bar">
+        <div class="stats-container">
+            <div class="stat-item"><div class="number" id="usersCount">+0</div><div class="label">مستخدم نشط</div></div>
+            <div class="stat-item"><div class="number" id="pagesCount">+0</div><div class="label">صفحة منشأة</div></div>
+            <div class="stat-item"><div class="number" id="viewsCount">+0</div><div class="label">مشاهدة</div></div>
+            <div class="stat-item"><div class="number">12+</div><div class="label">وسيلة دفع مدعومة</div></div>
+        </div>
+    </div>
+    
+    <!-- الميزات -->
+    <div class="features">
+        <h2 class="section-title">✨ <span>مميزات</span> المنصة</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                <h3>ثيمات متعددة</h3>
+                <p>اختر من 5 ثيمات مختلفة تناسب ذوقك (افتراضي، داكن، أخضر، وردي، محيط)</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-link"></i></div>
+                <h3>روابط مخصصة</h3>
+                <p>أضف روابط إضافية لمواقعك أو متاجرك أو أي رابط تريده</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+                <h3>وسائل دفع متعددة</h3>
+                <p>دعم جميع المحافظ الإلكترونية اليمنية (جيب، فلوسك، يمن والت، وغيرها)</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>إحصائيات دقيقة</h3>
+                <p>تتبع عدد زيارات صفحتك وعدد النقرات على وسائل الدفع</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>تصميم متجاوب</h3>
+                <p>صفحتك تظهر بشكل مثالي على جميع الأجهزة (جوال، تابلت، كمبيوتر)</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-share-alt"></i></div>
+                <h3>سهولة المشاركة</h3>
+                <p>انسخ رابط صفحتك وشاركها في أي مكان مع زر نسخ واحد</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- وسائل الدفع المدعومة -->
+    <div class="payment-section">
+        <h2 class="section-title">💳 <span>وسائل الدفع</span> المدعومة</h2>
+        <div class="payment-logos" id="paymentLogosContainer">
+            <!-- سيتم إضافة الأيقونات ديناميكياً -->
+        </div>
+        <p style="text-align: center; margin-top: 20px; color: #718096; font-size: 12px;">
+            <i class="fas fa-info-circle"></i> أكثر من 12 محفظة إلكترونية مدعومة في اليمن
+        </p>
+    </div>
+    
+    <!-- الفوتر -->
+    <div class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo"><i class="fas fa-link"></i> analyzer.social</div>
+                <p style="margin-top: 10px; font-size: 0.8rem;">منصة إنشاء صفحات البايو الاحترافية</p>
+                <p style="margin-top: 5px; font-size: 0.7rem;">👨‍💻 @Alshabany_Ai</p>
+            </div>
+            <div class="footer-links">
+                <h4>روابط سريعة</h4>
+                <a href="/">الرئيسية</a>
+                <a href="/help">المساعدة</a>
+                <a href="/privacy">سياسة الخصوصية</a>
+                <a href="/terms">شروط الخدمة</a>
+            </div>
+            <div class="footer-links">
+                <h4>تواصل معنا</h4>
+                <a href="https://t.me/Social_Media_tools_bot" target="_blank"><i class="fab fa-telegram"></i> بوت المساعدة</a>
+                <a href="mailto:help@analyzer.social"><i class="fas fa-envelope"></i> help@analyzer.social</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 analyzer.social | جميع الحقوق محفوظة
+        </div>
+    </div>
+    
+    <!-- نافذة منبثقة للتطوير -->
+    <div id="devModal" class="dev-modal">
+        <div class="dev-modal-content">
+            <i class="fas fa-tools"></i>
+            <h3>⚠️ قيد التطوير</h3>
+            <p>خدمة التسجيل عبر Google قيد الإعداد حالياً.<br>يرجى استخدام تسجيل الدخول عبر Telegram.</p>
+            <button onclick="closeDevModal()">حسناً</button>
+        </div>
+    </div>
+    
     <script>
-        const savedToken = localStorage.getItem('bio_token');
-        if (savedToken) {
-            window.location.href = '/dashboard';
+        // قائمة وسائل الدفع
+        const paymentMethods = [
+            { name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
+            { name: 'فلوسك', icon: '/static/assets/payment-icons/floosak.webp' },
+            { name: 'جوالي', icon: '/static/assets/payment-icons/jawaly.webp' },
+            { name: 'يمن والت', icon: '/static/assets/payment-icons/yemenwallet.webp' },
+            { name: 'موبايل موني', icon: '/static/assets/payment-icons/mobilemoney.webp' },
+            { name: 'كريمي', icon: '/static/assets/payment-icons/kremi.webp' },
+            { name: 'محفظتي', icon: '/static/assets/payment-icons/mahfazti.webp' },
+            { name: 'ون كاش', icon: '/static/assets/payment-icons/onecash.webp' },
+            { name: 'شلن', icon: '/static/assets/payment-icons/shilling.webp' },
+            { name: 'سهل', icon: '/static/assets/payment-icons/easywallet.webp' },
+            { name: 'كاش', icon: '/static/assets/payment-icons/cash.webp' },
+            { name: 'MTN', icon: '/static/assets/payment-icons/mtnmomo.webp' }
+        ];
+        
+        // عرض وسائل الدفع
+        const container = document.getElementById('paymentLogosContainer');
+        if (container) {
+            let html = '';
+            paymentMethods.forEach(method => {
+                html += `
+                    <div class="payment-item">
+                        <div class="payment-icon">
+                            <img src="${method.icon}" alt="${method.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                        </div>
+                        <div class="payment-name">${method.name}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        // نافذة التطوير
+        function showDevModal() {
+            document.getElementById('devModal').style.display = 'flex';
+        }
+        
+        function closeDevModal() {
+            document.getElementById('devModal').style.display = 'none';
+        }
+        
+        // إحصائيات (سيتم جلبها من API)
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('usersCount').innerText = `+${result.total_users || 0}`;
+                    document.getElementById('pagesCount').innerText = `+${result.total_bio_pages || 0}`;
+                    document.getElementById('viewsCount').innerText = `+${result.total_views || 0}`;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // إحصائيات تجريبية
+                document.getElementById('usersCount').innerText = '+28';
+                document.getElementById('pagesCount').innerText = '+22';
+                document.getElementById('viewsCount').innerText = '+156';
+            }
+        }
+        
+        loadStats();
+        
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function(event) {
+            const modal = document.getElementById('devModal');
+            if (event.target === modal) closeDevModal();
         }
     </script>
 </body>
