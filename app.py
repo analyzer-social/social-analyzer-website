@@ -576,36 +576,6 @@ def verify_admin(password):
     return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
 
 # =====================================================
-# 
-# =====================================================
-
-
-
-@app.route('/api/payment/load', methods=['GET'])
-@require_auth
-def load_payment_methods():
-    """تحميل وسائل الدفع للمستخدم"""
-    try:
-        user_id = request.headers.get('X-User-Id')
-        
-        if not supabase:
-            return jsonify({'error': 'Database not configured'}), 500
-        
-        result = supabase.table('payment_methods')\
-            .select('method_key, account_number')\
-            .eq('user_id', int(user_id))\
-            .execute()
-        
-        payment_methods = {}
-        for item in result.data:
-            payment_methods[item['method_key']] = item['account_number']
-        
-        return jsonify({'success': True, 'payment_methods': payment_methods})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
 # =====================================================
 # لوحة تحكم المدير
 # =====================================================
