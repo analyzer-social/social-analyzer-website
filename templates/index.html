@@ -36,6 +36,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
+    <!-- تمرير المتغيرات من Flask -->
+    <script>
+        window.SUPABASE_URL = '{{ SUPABASE_URL }}';
+        window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
+    </script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -130,6 +136,15 @@
             cursor: pointer;
         }
         .btn-telegram:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,136,204,0.3); }
+        
+        /* تخصيص زر Widget Telegram */
+        .telegram-widget-wrapper {
+            display: inline-block;
+        }
+        .telegram-widget-wrapper iframe {
+            border-radius: 50px !important;
+        }
+        
         .btn-google {
             background: white;
             color: #2d3748;
@@ -333,9 +348,16 @@
             <h1>أنشئ صفحة البايو الاحترافية الخاصة بك</h1>
             <p>منصة متكاملة تتيح لك عرض جميع حساباتك وروابطك ووسائل الدفع الإلكتروني في صفحة واحدة أنيقة وسهلة المشاركة.</p>
             <div class="hero-buttons">
-                <button class="btn-telegram" onclick="location.href='/auth'">
-                    <i class="fab fa-telegram"></i> تسجيل الدخول عبر Telegram
-                </button>
+                <!-- زر Telegram Widget الأصلي الذي يعمل -->
+                <div class="telegram-widget-wrapper">
+                    <script async src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="Social_Media_analyzer_bot"
+                        data-size="large"
+                        data-radius="50"
+                        data-auth-url="https://social-analyzer-bio.onrender.com/auth"
+                        data-request-access="write">
+                    </script>
+                </div>
                 <button class="btn-google" onclick="showDevModal()">
                     <i class="fab fa-google"></i> التسجيل عبر Google
                 </button>
@@ -453,7 +475,14 @@
         </div>
     </div>
     
+    <script src="/static/config.js"></script>
     <script>
+        // التحقق من وجود جلسة سابقة
+        const savedToken = localStorage.getItem('bio_token');
+        if (savedToken) {
+            window.location.href = '/dashboard';
+        }
+        
         // قائمة وسائل الدفع
         const paymentMethods = [
             { name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
@@ -508,7 +537,6 @@
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
-                // إحصائيات تجريبية
                 document.getElementById('usersCount').innerText = '+28';
                 document.getElementById('pagesCount').innerText = '+22';
                 document.getElementById('viewsCount').innerText = '+156';
