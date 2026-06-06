@@ -415,9 +415,9 @@ def track_payment_click():
         account_number = data.get('account_number')
         page_url = data.get('page_url')
         
-        print(f"🔍 تسجيل نقرة: method_key={method_key}, account={account_number}, page_url={page_url}")
+        print(f"🔍 تسجيل نقرة: {method_key} - {account_number} - {page_url}")
         
-        # الحصول على bio_page_id من page_url
+        # 1. الحصول على bio_page_id و user_id من page_url
         bio_result = supabase.table('bio_pages')\
             .select('id, user_id')\
             .eq('page_url', page_url)\
@@ -430,9 +430,7 @@ def track_payment_click():
         bio_page_id = bio_result.data[0]['id']
         user_id = bio_result.data[0]['user_id']
         
-        print(f"🔍 bio_page_id={bio_page_id}, user_id={user_id}")
-        
-        # الحصول على payment_method_id
+        # 2. الحصول على payment_method_id
         pm_result = supabase.table('payment_methods')\
             .select('id')\
             .eq('user_id', user_id)\
@@ -444,16 +442,28 @@ def track_payment_click():
             payment_method_id = pm_result.data[0]['id']
             print(f"🔍 payment_method_id={payment_method_id}")
             
-            # تحديث عدد النقرات في جدول payment_methods
-            supabase.table('payment_methods')\
-                .update({
-                    'clicks_count': supabase.raw('clicks_count + 1'),
-                    'last_click_at': 'now()'
-                })\
+            # --- التصحيح هنا: تحديث عدد النقرات باستخدام Python ---
+            # 3. استعلم عن العدد الحالي
+            current_record = supabase.table('payment_methods')\
+                .select('clicks_count')\
                 .eq('id', payment_method_id)\
                 .execute()
+
+            if current_record.data:
+                current_clicks = current_record.data[0].get('clicks_count', 0)
+                new_clicks = current_clicks + 1
+                
+                # 4. قم بالتحديث بالقيمة الجديدة
+                supabase.table('payment_methods')\
+                    .update({
+                        'clicks_count': new_clicks,
+                        'last_click_at': 'now()'
+                    })\
+                    .eq('id', payment_method_id)\
+                    .execute()
+            # -------------------------------------------------
             
-            # تسجيل النقرة في جدول payment_clicks
+            # 5. تسجيل النقرة في جدول payment_clicks
             supabase.table('payment_clicks')\
                 .insert({
                     'payment_method_id': payment_method_id,
