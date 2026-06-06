@@ -2,403 +2,310 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>📖 الدليل والمساعدة - Social Analyzer</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- أيقونات Font Awesome -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://use.fontawesome.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <!-- SEO & Open Graph -->
+    <title>📖 الدليل والمساعدة | منصة صفحات البايو analyzer.social</title>
+    <meta name="description" content="دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك. تعلم كيفية إضافة الحسابات، وسائل الدفع، الثيمات، والمزيد.">
+    <meta name="keywords" content="مساعدة, دليل, صفحة بايو, analyzer.social, شرحات, أسئلة شائعة">
+    <meta name="author" content="analyzer.social">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Open Graph / فيسبوك، واتساب، تليجرام -->
+    <meta property="og:title" content="📖 الدليل والمساعدة | analyzer.social">
+    <meta property="og:description" content="دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك. تعلم كيفية إضافة الحسابات، وسائل الدفع، الثيمات، والمزيد.">
+    <meta property="og:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://analyzer.social/help">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="analyzer.social | منصة صفحات البايو الاحترافية">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="الدليل والمساعدة | analyzer.social">
+    <meta name="twitter:description" content="دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك.">
+    <meta name="twitter:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --success: #48bb78;
-            --warning: #ed8936;
-            --danger: #e53e3e;
-            --dark: #1a1a2e;
-            --light: #f5f7fa;
-            --text: #2d3748;
-            --text-light: #718096;
-            --border: #e2e8f0;
-            --card-bg: #ffffff;
-            --hover-bg: #f8f9fa;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body.dark {
-            --light: #1a202c;
-            --text: #f7fafc;
-            --text-light: #a0aec0;
-            --border: #2d3748;
-            --card-bg: #2d3748;
-            --hover-bg: #374151;
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
         body {
-            font-family: 'Segoe UI', 'Tahoma', Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--light) 0%, #e2e8f0 100%);
-            margin: 0;
-            padding: 0;
-            color: var(--text);
-            transition: var(--transition);
-            min-height: 100vh;
-        }
-        body.dark { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-
-        /* ===== زر الإغلاق الجديد (مستوحى من صفحة Terms) ===== */
-        .close-button-container {
-            display: flex;
-            justify-content: flex-end;
-            padding: 16px 20px 0 20px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: transparent;
-        }
-        .close-btn {
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid var(--border);
-            color: var(--primary);
-            padding: 8px 18px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-            backdrop-filter: blur(8px);
-        }
-        .close-btn i { font-size: 12px; }
-        .close-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateY(-1px);
-        }
-
-        /* ===== هيدر بسيط بدون شريط أزرق (مثل صفحة Terms) ===== */
-        .simple-header {
-            text-align: center;
-            padding: 20px 20px 10px 20px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-        .simple-header h1 {
-            font-size: 1.8rem;
-            color: var(--text);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-        .simple-header p {
-            color: var(--text-light);
-            font-size: 0.85rem;
-        }
-
-        /* ===== الحاوية الرئيسية ===== */
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 0 16px 80px 16px;
-            width: 100%;
-        }
-
-        /* ===== البطاقات والأنماط (كما هي رائعة) ===== */
-        .card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 1px solid transparent;
-            animation: fadeInUp 0.5s ease backwards;
-            animation-delay: calc(var(--order, 0) * 0.05s);
-        }
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 32px rgba(0,0,0,0.12);
-            border-color: rgba(102,126,234,0.2);
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card h3 {
-            margin-bottom: 16px;
-            color: var(--primary);
-            border-right: 4px solid var(--primary);
-            padding-right: 12px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        ul {
-            margin-right: 20px;
-            line-height: 1.8;
-            color: var(--text);
-            list-style-type: none;
-        }
-        li {
-            margin-bottom: 10px;
-            padding-right: 20px;
-            position: relative;
-        }
-        li::before {
-            content: "✨";
-            position: absolute;
-            right: -8px;
-            color: var(--primary);
-            font-size: 12px;
-        }
-        details {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 12px 16px;
-            transition: var(--transition);
-            border: 1px solid var(--border);
-            margin-bottom: 12px;
-        }
-        details[open] {
-            background: var(--hover-bg);
-            border-color: var(--primary);
-        }
-        details summary {
-            font-weight: bold;
-            cursor: pointer;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        details p {
-            margin-top: 12px;
-            padding-right: 15px;
-            color: var(--text);
+            font-family: 'Tajawal', sans-serif;
+            background: #f5f7fa;
+            color: #1a2c3e;
             line-height: 1.6;
-            animation: fadeSlideDown 0.3s ease;
         }
-        @keyframes fadeSlideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        hr { border-color: var(--border); margin: 15px 0; }
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .contact-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        
+        /* الهيدر */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px 24px;
-            border-radius: 40px;
-            text-decoration: none;
-            transition: var(--transition);
-            font-weight: 500;
-            flex: 1;
-            min-width: 140px;
-            justify-content: center;
-        }
-        .contact-link:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.3); }
-        .version-info {
+            padding: 25px 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 10px;
+            gap: 15px;
         }
-        .version-info div {
-            background: var(--hover-bg);
-            padding: 6px 12px;
+        .header h1 { font-size: 1.6rem; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 0.85rem; }
+        .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .header-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .home-btn {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .home-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-2px); }
+        
+        /* محتوى الصفحة */
+        .content-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        .content-card h1 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+            border-right: 4px solid #667eea;
+            padding-right: 20px;
+        }
+        .content-card h2 {
+            font-size: 1.4rem;
+            color: #2d3748;
+            margin: 30px 0 15px 0;
+            padding-right: 12px;
+            border-right: 3px solid #764ba2;
+        }
+        .content-card h3 {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin: 20px 0 10px 0;
+        }
+        .content-card p {
+            color: #4a5568;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        .content-card ul, .content-card ol {
+            margin: 15px 0 15px 30px;
+            color: #4a5568;
+        }
+        .content-card li { margin: 8px 0; }
+        .content-card a { color: #667eea; text-decoration: none; }
+        .content-card a:hover { text-decoration: underline; }
+        
+        .info-box {
+            background: #f0f4ff;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+            border-right: 4px solid #667eea;
+        }
+        .info-box i { color: #667eea; margin-left: 8px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: #f8f9fa;
+            color: #2d3748;
+            font-weight: 700;
+        }
+        tr:hover { background: #f8f9fa; }
+        
+        .badge {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 3px 10px;
             border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
         }
-        .text-center { text-align: center; }
-
-        /* تحسينات للجوال */
-        @media (max-width: 480px) {
-            .simple-header h1 { font-size: 1.4rem; }
-            .card { padding: 16px; }
-            .button-group { flex-direction: column; }
-            .contact-link { padding: 10px 20px; }
-            .close-btn { padding: 6px 14px; font-size: 12px; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #718096;
+            font-size: 0.7rem;
+            border-top: 1px solid #e2e8f0;
         }
-
-        /* شريط تمرير مخصص */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--border); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        
+        @media (max-width: 768px) {
+            .content-card { padding: 25px; }
+            .content-card h1 { font-size: 1.5rem; }
+            .content-card h2 { font-size: 1.2rem; }
+            th, td { font-size: 0.7rem; padding: 8px; }
+        }
     </style>
 </head>
 <body>
-
-<!-- ===== زر الإغلاق الجديد (لون مختلف، بدون X) ===== -->
-<div class="close-button-container">
-    <button class="close-btn" onclick="closeHelpPage()">
-        <i class="fas fa-arrow-right"></i> إغلاق
-    </button>
-</div>
-
-<!-- ===== هيدر بسيط ونظيف (مثل صفحة Terms) ===== -->
-<div class="simple-header">
-    <h1>📖 الدليل والمساعدة</h1>
-    <p>دليلك الشامل لاستخدام بوت Social Analyzer بكل احترافية</p>
-</div>
-
-<div class="container">
-    <!-- أزرار سريعة -->
-    <div class="button-group">
-        <a href="https://t.me/Social_Media_analyzer_bot" target="_blank" class="contact-link">
-            <i class="fab fa-telegram"></i> افتح البوت على تليجرام
-        </a>
-    </div>
-
-    <!-- باقي البطاقات (المحتوى كما هو، مع إضافة `style="--order: 1;"` وهكذا للتأثير) -->
-    <div class="card" style="--order: 1;">
-        <h3><i class="fas fa-robot"></i> 🤖 عن البوت</h3>
-        <p style="line-height: 1.6;">بوت متخصص في تحليل حسابات التواصل الاجتماعي وتقديم توصيات ذكاء اصطناعي لتحسين أداء قنواتك.</p>
-        <p style="color: var(--primary); margin-top: 10px;"><i class="fab fa-telegram"></i> المطور: <strong>@Alshabany_Ai</strong></p>
-    </div>
-
-    <div class="card" style="--order: 2;">
-        <h3><i class="fas fa-play-circle"></i> ▶️ كيفية استخدام البوت</h3>
-        <ul>
-            <li><strong>👤 الملف الشخصي:</strong> عرض حساباتك المسجلة وحالتك (مجاني/مميز)، إضافة وتعديل الحسابات، وتفعيل صفحة البايو.</li>
-            <li><strong>🧪 مختبر التحليل:</strong> اختر المنصة (يوتيوب/تيك توك)، اضغط "تحليل"، واحصل على تقرير شامل مع أحدث الفيديوهات.</li>
-            <li><strong>📊 الاحصائيات:</strong> عرض إجمالي تحليلاتك وتوزيعها حسب المنصة مع رسوم بيانية حقيقية لكل منصة.</li>
-            <li><strong>🧠 توصيات AI:</strong> احصل على توصيات ذكاء اصطناعي مخصصة من Google Gemini لتحسين قناتك.</li>
-            <li><strong>💎 باقاتي:</strong> عرض خطط الاشتراك المميز، حصتك الحالية، وطرق الدفع (نجوم Telegram أو تحويل بنكي).</li>
-            <li><strong>📄 صفحة البايو:</strong> (للمميزين) رابط شخصي لعرض معلوماتك مع ثيمات متعددة.</li>
-            <li><strong>🔍 فحص اليوزرنيم:</strong> تحقق من توافر اسم مستخدم على يوتيوب (متاحة للجميع).</li>
-            <li><strong>🤖 المساعد الذكي:</strong> الزر العائم 🤖 في الأسفل للدردشة مع AI والإجابة عن استفساراتك فوراً.</li>
-        </ul>
-    </div>
-
-    <div class="card" style="--order: 3;">
-        <h3><i class="fas fa-gem"></i> 💎 خطط الاشتراك المميز</h3>
-        <ul>
-            <li><strong>🌙 شهري:</strong> $4 - 30 يوماً (20 توصية AI، تحليل غير محدود، صفحة بايو)</li>
-            <li><strong>📅 نصف سنوي:</strong> $30 - 180 يوماً (توفير 50%)</li>
-            <li><strong>🎉 سنوي:</strong> $48 - 365 يوماً (توفير 60%)</li>
-            <li><strong>💎 مدى الحياة:</strong> $100 - غير محدود (أفضل قيمة)</li>
-        </ul>
-        <hr>
-        <p><strong>💳 طرق الدفع المتاحة:</strong><br>💵 دولار (تحويل بنكي) | ⭐ نجوم Telegram (دفع فوري)</p>
-    </div>
-
-    <div class="card" style="--order: 4;">
-        <h3><i class="fas fa-star"></i> ⭐ مميزات الخطة المميزة</h3>
-        <ul>
-            <li>✅ تحليل غير محدود لجميع المنصات</li>
-            <li>✅ توصيات الذكاء الاصطناعي (Gemini AI)</li>
-            <li>✅ صفحة بايو شخصية مع ثيمات متعددة</li>
-            <li>✅ فحص توافر اليوزرنيم</li>
-            <li>✅ دعم أولوية في المعالجة</li>
-            <li>✅ حفظ سجل التحليلات الكامل</li>
-            <li>✅ مساعد ذكي (50 سؤال/يوم للمميزين)</li>
-        </ul>
-    </div>
-
-    <div class="card" style="--order: 5;">
-        <h3><i class="fas fa-robot"></i> 🧠 نظام توصيات AI</h3>
-        <ul>
-            <li><strong>🤖 كيف يعمل؟</strong> يتم تحليل قناتك ومقارنتها بأول تحليل (نقطة البداية).</li>
-            <li><strong>📊 ماذا يحلل؟</strong> المشتركين، المشاهدات، أوقات النشر، فئات المحتوى.</li>
-            <li><strong>💡 ماذا يقدم؟</strong> توصيات مخصصة لتحسين القناة وأفكار محتوى.</li>
-            <li><strong>🔄 الذاكرة:</strong> يتذكر التوصيات السابقة ويقارن التقدم.</li>
-            <li><strong>📈 حصتك الشهرية:</strong> تظهر في تبويب "باقاتي".</li>
-        </ul>
-    </div>
-
-    <div class="card" style="--order: 6;">
-        <h3><i class="fas fa-question-circle"></i> ❓ الأسئلة الشائعة</h3>
-        <details><summary>❓ كيف أحصل على اشتراك مميز؟</summary><p>اضغط على أيقونة 💎 في أعلى تبويب "الملف الشخصي"، اختر الخطة المناسبة، ثم قم بالدفع.</p></details>
-        <details><summary>❓ ما الفرق بين الدفع بالدولار والنجوم؟</summary><p>الدولار: تحويل بنكي وتفعيل خلال 24 ساعة. النجوم: دفع فوري وتفعيل تلقائي.</p></details>
-        <details><summary>❓ كيف أستخدم صفحة البايو؟</summary><p>بعد الاشتراك المميز، اذهب إلى "الملف الشخصي" ← "صفحة البايو".</p></details>
-        <details><summary>❓ لماذا لا تظهر لي توصيات AI؟</summary><p>التوصيات متاحة فقط للمستخدمين المميزين. تأكد من حصتك الشهرية في تبويب "باقاتي".</p></details>
-        <details><summary>❓ كيف أضيف حساباً جديداً؟</summary><p>اذهب إلى "الملف الشخصي" ← "حساباتي المسجلة" ← اضغط "إضافة".</p></details>
-        <details><summary>🌙 كيف أفعل الوضع المظلم؟</summary><p>في تبويب "الملف الشخصي"، اضغط على الزر الدائري ☀️/🌙.</p></details>
-        <details><summary>🤖 ما هو الزر العائم؟</summary><p>الزر 🤖 في الأسفل يفتح المساعد الذكي للدردشة مع AI.</p></details>
-        <details><summary>💬 كيف أستخدم المساعد الذكي؟</summary><p>اضغط على الزر العائم 🤖، اكتب سؤالك، وسيقوم AI بالإجابة فوراً.</p></details>
-        <details><summary>📊 ما الجديد في الإصدار 5.0؟</summary><p>هيكلة جديدة للتبويبات، مختبر تحليل متكامل، رسوم بيانية حقيقية لكل منصة.</p></details>
-        <details><summary>🔒 هل بياناتي آمنة؟</summary><p>نعم، جميع البيانات مشفرة ومخزنة في Supabase ولا تتم مشاركتها.</p></details>
-    </div>
-
-    <div class="card" style="--order: 7;">
-        <h3><i class="fas fa-envelope"></i> 📞 تواصل معنا</h3>
-        <div class="button-group">
-            <a href="https://t.me/Alshabany_Ai" target="_blank" class="contact-link"><i class="fab fa-telegram"></i> المطور</a>
-            <a href="https://t.me/Social_Media_Analysis" target="_blank" class="contact-link" style="background: linear-gradient(135deg, #48bb78, #38a169);"><i class="fas fa-bullhorn"></i> قناة التحديثات</a>
-            <a href="https://social-analyzer-flask-8.onrender.com/privacy" target="_blank" class="contact-link" style="background: #6c757d;"><i class="fas fa-shield-alt"></i> سياسة الخصوصية</a>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📖 الدليل والمساعدة</h1>
+                <p>دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك بكل احترافية</p>
+            </div>
+            <div class="header-buttons">
+                <a href="/" class="home-btn"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="/privacy" class="header-btn">🔒 سياسة الخصوصية</a>
+                <a href="/terms" class="header-btn">⚖️ شروط الخدمة</a>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h1>📖 الدليل والمساعدة | منصة صفحات البايو</h1>
+            <p>دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك بكل احترافية</p>
+            
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <strong>🚀 ما هي منصة analyzer.social؟</strong><br>
+                منصة متخصصة في إنشاء <strong>صفحات بايو احترافية</strong> تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد.<br>
+                👨💻 <strong>المطور:</strong> <a href="https://t.me/Alshabany_Ai" target="_blank">@Alshabany_Ai</a>
+            </div>
+            
+            <h2>▶️ كيفية استخدام المنصة</h2>
+            <table>
+                <thead><tr><th>الخطوة</th><th>الشرح</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge">1</span></td><td><strong>تسجيل الدخول</strong> - اضغط "تسجيل الدخول عبر Telegram" للوصول إلى لوحة التحكم</td></tr>
+                    <tr><td><span class="badge">2</span></td><td><strong>إعداد الملف الشخصي</strong> - أضف اسمك، سيرتك الذاتية، وصورتك الشخصية</td></tr>
+                    <tr><td><span class="badge">3</span></td><td><strong>إضافة الحسابات</strong> - أضف روابط حساباتك على يوتيوب، انستقرام، تيك توك، فيسبوك</td></tr>
+                    <tr><td><span class="badge">4</span></td><td><strong>إضافة وسائل الدفع</strong> - أضف أرقام محافظك الإلكترونية (جيب، فلوسك، يمن والت، إلخ)</td></tr>
+                    <tr><td><span class="badge">5</span></td><td><strong>حفظ ومشاركة</strong> - اضغط حفظ، وانسخ رابط صفحتك لمشاركتها مع العالم</td></tr>
+                </tbody>
+            </table>
+            
+            <h2>🎨 تخصيص صفحة البايو</h2>
+            <table>
+                <thead><tr><th>الميزة</th><th>الشرح</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>الثيمات</strong></td><td>اختر من 5 ثيمات مختلفة (افتراضي، داكن، أخضر، وردي، محيط)</td></tr>
+                    <tr><td><strong>الصورة الشخصية</strong></td><td>أضف رابط صورة تظهر في أعلى صفحتك</td></tr>
+                    <tr><td><strong>السيرة الذاتية</strong></td><td>اكتب نبذة قصيرة عن نفسك</td></tr>
+                    <tr><td><strong>الروابط المخصصة</strong></td><td>أضف روابط إضافية لمواقعك أو متاجرك</td></tr>
+                </tbody>
+            </table>
+            
+            <h2>💳 وسائل الدفع المدعومة</h2>
+            <table>
+                <thead><tr><th>المحفظة</th><th>الشرح</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>جيب</strong></td><td>أشهر محفظة رقمية في اليمن</td></tr>
+                    <tr><td><strong>فلوسك</strong></td><td>من بنك اليمن والكويت</td></tr>
+                    <tr><td><strong>جوالي</strong></td><td>من شركة وي كاش</td></tr>
+                    <tr><td><strong>محفظتي</strong></td><td>محفظة رقمية يمنية</td></tr>
+                    <tr><td><strong>موبايل موني</strong></td><td>من بنك CAC</td></tr>
+                    <tr><td><strong>يمن والت</strong></td><td>من البريد اليمني</td></tr>
+                    <tr><td><strong>كريمي</strong></td><td>بنك الكريمي</td></tr>
+                    <tr><td><strong>ون كاش</strong></td><td>محفظة رقمية</td></tr>
+                </tbody>
+            </table>
+            
+            <h2>❓ الأسئلة الشائعة</h2>
+            <div class="info-box">
+                <strong>❓ كيف أحصل على صفحة بايو؟</strong><br>
+                تسجيل الدخول عبر Telegram سيُمكنك فوراً من إنشاء صفحة البايو.
+            </div>
+            <div class="info-box">
+                <strong>❓ هل الخدمة مجانية؟</strong><br>
+                نعم! الخدمة مجانية بالكامل حالياً.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف أعدل بياناتي؟</strong><br>
+                ادخل إلى لوحة التحكم (<code>/dashboard</code>) وعدل أي حقل تريده، ثم اضغط حفظ.
+            </div>
+            <div class="info-box">
+                <strong>❓ أين أجد رابط صفحتي؟</strong><br>
+                بعد حفظ البيانات لأول مرة، سيظهر لك رابط صفحتك في لوحة التحكم.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف يعمل زر نسخ الرقم؟</strong><br>
+                عند ضغط الزائر على أيقونة المحفظة، تظهر نافذة تحتوي على رقم المحفظة مع زر لنسخه.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف أضيف رابط فيسبوك؟</strong><br>
+                يمكنك إدخال اسم المستخدم أو الرابط الكامل لصفحتك على فيسبوك.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف أغير الثيم؟</strong><br>
+                من لوحة التحكم، اختر الثيم المناسب من قائمة "الثيمات" ثم احفظ.
+            </div>
+            <div class="info-box">
+                <strong>❓ هل بياناتي آمنة؟</strong><br>
+                نعم، جميع البيانات مشفرة ومخزنة في Supabase ولا تتم مشاركتها مع أي طرف ثالث.
+            </div>
+            <div class="info-box">
+                <strong>❓ ماذا أفعل إذا واجهت مشكلة؟</strong><br>
+                تواصل معنا عبر بوت المساعدة أو أرسل استفسارك.
+            </div>
+            
+            <h2>🌙 كيف أفعل الوضع المظلم؟</h2>
+            <p>اختر ثيم <strong>داكن</strong> من قائمة الثيمات في لوحة التحكم.</p>
+            
+            <h2>📱 لماذا لا تظهر أيقونات المحافظ؟</h2>
+            <p>تأكد من أنك أدخلت رقم محفظة صحيحاً في حقل وسائل الدفع. ستظهر الأيقونة تلقائياً في صفحتك.</p>
+            
+            <h2>🔒 هل بياناتي آمنة؟</h2>
+            <p>نعم، جميع البيانات مشفرة ولا تتم مشاركتها. للمزيد، راجع <a href="/privacy">سياسة الخصوصية</a>.</p>
+            
+            <h2>📞 تواصل معنا</h2>
+            <p>📱 <strong>بوت المساعدة</strong>: <a href="https://t.me/Social_Media_tools_bot" target="_blank">@Social_Media_tools_bot</a><br>
+            📧 <strong>البريد الإلكتروني</strong>: help@analyzer.social</p>
+            
+            <div class="info-box">
+                <strong>📦 معلومات الإصدار</strong><br>
+                📦 الإصدار: 1.0<br>
+                📅 تاريخ الإصدار: يونيو 2026<br>
+                👨💻 المطور: <a href="https://t.me/Alshabany_Ai" target="_blank">@Alshabany_Ai</a><br>
+                🛠️ آخر تحديث: إضافة نظام وسائل الدفع والثيمات المتعددة
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2026 analyzer.social | منصة إنشاء صفحات البايو الاحترافية
         </div>
     </div>
-
-    <div class="card" style="--order: 8;">
-        <h3><i class="fas fa-code-branch"></i> 📦 معلومات الإصدار</h3>
-        <div class="version-info">
-            <div><strong>📦 الإصدار:</strong> 5.0</div>
-            <div><strong>📅 تاريخ الإصدار:</strong> مايو 2026</div>
-            <div><strong>👨‍💻 المطور:</strong> @Alshabany_Ai</div>
-            <div><strong>🛠️ آخر تحديث:</strong> هيكلة التبويبات الجديدة</div>
-        </div>
-        <hr>
-        <p class="text-center">📜 <a href="/terms" target="_blank" style="color: var(--primary);">شروط الخدمة</a> | 🔐 <a href="/privacy" target="_blank" style="color: var(--primary);">سياسة الخصوصية</a></p>
-    </div>
-</div>
-
-<script>
-    // دالة إغلاق الصفحة (تعمل داخل التطبيق)
-    function closeHelpPage() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.close();
-        } else if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            window.close();
-        }
-    }
-
-    // تفعيل Telegram WebApp
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.expand();
-        window.Telegram.WebApp.ready();
-    }
-
-    // دالة الوضع المظلم (كما كانت تعمل بشكل ممتاز)
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme_mode');
-        if (savedTheme === 'dark') document.body.classList.add('dark');
-    }
-    async function loadUserTheme() {
-        const token = new URLSearchParams(window.location.search).get('token');
-        if (!token) { initTheme(); return; }
-        try {
-            const response = await fetch(`/api/user_data?token=${encodeURIComponent(token)}`);
-            const data = await response.json();
-            if (data?.user?.theme_preference === 'dark') {
-                document.body.classList.add('dark');
-                localStorage.setItem('theme_mode', 'dark');
-            } else if (localStorage.getItem('theme_mode') === 'dark') {
-                document.body.classList.add('dark');
-            }
-        } catch (error) { initTheme(); }
-    }
-    loadUserTheme();
-</script>
-
 </body>
 </html>
