@@ -3,7 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ===== SEO & Open Graph (للمشاركة الاحترافية) ===== -->
+
+    <!-- أيقونات الموقع (Favicon) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    
+    <!-- عنوان الصفحة الأساسي (سيتم تحديثه ديناميكياً) -->
     <title id="pageTitle">صفحة بايو</title>
+    <meta name="description" content="صفحة بايو تعرض جميع حساباتي وروابط التواصل الاجتماعي في مكان واحد">
+    <meta name="author" content="Social Analyzer">
+    <meta name="keywords" content="بايو, صفحة روابط, سوشال ميديا">
+    <meta name="theme-color" content="#667eea">
+
+    <!-- Open Graph / فيسبوك، واتساب، تليجرام -->
+    <meta property="og:title" content="صفحة البايو | Social Analyzer">
+    <meta property="og:description" content="مرحباً! هذه صفحة بايو تعرض جميع حساباتي وطرق التواصل معي.">
+    <meta property="og:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="صفحة البايو - Social Analyzer">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Social Analyzer | منشئ البايو الاحترافي">
+
+    <!-- تويتر كارد -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="صفحة البايو | Social Analyzer">
+    <meta name="twitter:description" content="مرحباً! هذه صفحة بايو تعرض جميع حساباتي.">
+    <meta name="twitter:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         window.SUPABASE_URL = '{{ SUPABASE_URL }}';
@@ -19,12 +51,6 @@
     
     <!-- تحميل الثيم الديناميكي -->
     <link id="themeStylesheet" rel="stylesheet" href="/static/themes/default.css">
-    
-    <!-- أيقونات الموقع -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
-    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
     
     <style>
         /* ===== القواعد الأساسية ===== */
@@ -49,23 +75,29 @@
         /* الصورة الشخصية */
         .avatar-container {
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 170px;
+            height: 170px;
             margin: 0 auto 20px;
             border-radius: 50%;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
         
-        .avatar { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; display: block; }
-        .avatar:hover { transform: scale(1.05); }
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
         
         .avatar-fallback {
             width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 48px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 56px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        .avatar-fallback span { font-size: 56px; }
+        .avatar-fallback span { font-size: 64px; }
         
         .avatar-container.loading { animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse {
@@ -91,11 +123,21 @@
         
         /* أزرار الحسابات */
         .account-btn {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
+            display: flex; align-items: center; justify-content: flex-start; gap: 12px;
             width: 85%; margin: 12px auto; padding: 12px 20px;
             border-radius: 50px; text-decoration: none; font-size: 16px; font-weight: bold;
             transition: all 0.3s ease; color: white; border: none; cursor: pointer;
             position: relative; overflow: hidden;
+        }
+        .account-btn i:first-child {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+        }
+        .account-btn span {
+            flex: 1;
+            text-align: center;
+            margin-right: -28px;
         }
         .account-btn::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -104,16 +146,15 @@
         }
         .account-btn:hover::before { transform: scaleX(1); transform-origin: left; }
         .account-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
-        .account-btn i { font-size: 20px; width: 24px; text-align: center; }
         
         /* ألوان المنصات */
         .platform-youtube { background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); }
         .platform-instagram { background: linear-gradient(135deg, #f77737 0%, #e1306c 50%, #833ab4 100%); }
         .platform-tiktok { background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%); }
-        .platform-tiktok i { color: #25f4ee; }
+        .platform-tiktok i:first-child { color: #25f4ee; }
         .platform-facebook { background: linear-gradient(135deg, #1877f2 0%, #0d65d4 100%); }
         .platform-snapchat { background: linear-gradient(135deg, #fffc00 0%, #ffe600 100%); color: #000000 !important; }
-        .platform-snapchat i { color: #000000; }
+        .platform-snapchat i:first-child { color: #000000; }
         .platform-twitter { background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); }
         .platform-linkedin { background: linear-gradient(135deg, #0077b5 0%, #005e8c 100%); }
         .platform-github { background: linear-gradient(135deg, #333333 0%, #242424 100%); }
@@ -173,14 +214,20 @@
         .footer a { text-decoration: none; font-weight: bold; transition: 0.3s; }
         .footer a:hover { text-decoration: underline; }
         .views { margin-top: 15px; font-size: 11px; }
+        .copyright {
+            margin-top: 20px;
+            font-size: 10px;
+            opacity: 0.7;
+            text-align: center;
+        }
         
         @media (max-width: 600px) {
             body { padding: 15px; }
             .container { padding: 25px 15px; }
             h1 { font-size: 24px; }
             .account-btn { width: 95%; padding: 10px 15px; }
-            .avatar-container { width: 100px; height: 100px; }
-            .avatar-fallback { font-size: 36px; }
+            .avatar-container { width: 120px; height: 120px; }
+            .avatar-fallback { font-size: 40px; }
             .payment-icon { width: 48px; height: 48px; padding: 6px; }
             .payment-name { font-size: 9px; }
             .payment-grid { gap: 12px 8px; }
@@ -287,10 +334,12 @@
         </div>
         
         <div class="footer">
-            لإنشاء صفحة بايو مثل هذه 
-            <a href="https://t.me/Social_Media_tools_bot" target="_blank">اضغط هنا</a>
+            <a href="https://bio.analyzer.social" target="_blank">✨ أنشئ صفحة بايو احترافية مجاناً</a>
         </div>
         <div class="views" id="views"></div>
+        <div class="copyright">
+            © 2024 analyzer.social | جميع الحقوق محفوظة
+        </div>
     </div>
     
     <script src="/static/config.js"></script>
@@ -325,6 +374,20 @@
         };
         
         // =====================================================
+        // دالة معالجة رابط فيسبوك
+        // =====================================================
+        
+        function getFacebookUrl(identifier) {
+            if (!identifier) return '#';
+            // إذا كان رقماً (ID)
+            if (/^\d+$/.test(identifier)) {
+                return `https://www.facebook.com/profile.php?id=${identifier}`;
+            }
+            // إذا كان اسم مستخدم
+            return `https://facebook.com/${identifier}`;
+        }
+        
+        // =====================================================
         // دالة تطبيق الثيم
         // =====================================================
         
@@ -346,7 +409,7 @@
         function displayAvatar(avatarUrl, displayName) {
             const avatarContent = document.getElementById('avatarContent');
             if (avatarUrl && avatarUrl.trim()) {
-                avatarContent.innerHTML = `<img src="${avatarUrl}" class="avatar" alt="avatar" onerror="this.parentElement.innerHTML='<div class=\"avatar-fallback\"><span>${(displayName || '?').charAt(0)}</span></div>'">`;
+                avatarContent.innerHTML = `<img src="${avatarUrl}" class="avatar" alt="صورة ${displayName}" onerror="this.parentElement.innerHTML='<div class=\"avatar-fallback\"><span>${(displayName || '?').charAt(0)}</span></div>'">`;
             } else {
                 const firstLetter = displayName ? displayName.charAt(0) : '?';
                 avatarContent.innerHTML = `<div class="avatar-fallback"><span>${firstLetter}</span></div>`;
@@ -354,7 +417,7 @@
         }
         
         // =====================================================
-        // دالة عرض حسابات التواصل
+        // دالة عرض حسابات التواصل (مع دعم فيسبوك)
         // =====================================================
         
         function displayAccounts(accounts) {
@@ -372,7 +435,7 @@
                         case 'youtube': url = `https://youtube.com/@${cleanIdentifier}`; break;
                         case 'instagram': url = `https://instagram.com/${cleanIdentifier}`; break;
                         case 'tiktok': url = `https://tiktok.com/@${cleanIdentifier}`; break;
-                        case 'facebook': url = `https://facebook.com/${cleanIdentifier}`; break;
+                        case 'facebook': url = getFacebookUrl(cleanIdentifier); break;
                         case 'twitter': url = `https://twitter.com/${cleanIdentifier}`; break;
                         case 'snapchat': url = `https://snapchat.com/add/${cleanIdentifier}`; break;
                         case 'linkedin': url = `https://linkedin.com/in/${cleanIdentifier}`; break;
@@ -459,11 +522,10 @@
         }
         
         // =====================================================
-        // نافذة نسخ الرقم (الحل الأمثل)
+        // نافذة نسخ الرقم
         // =====================================================
         
         function showPaymentModal(methodName, accountNumber, storeUrl) {
-            // إنشاء النافذة المنبثقة
             const modal = document.createElement('div');
             modal.className = 'payment-modal';
             modal.innerHTML = `
@@ -488,7 +550,6 @@
             
             document.body.appendChild(modal);
             
-            // نسخ الرقم
             document.getElementById('modalCopyBtn').onclick = async () => {
                 try {
                     await navigator.clipboard.writeText(accountNumber);
@@ -510,7 +571,6 @@
                 }
             };
             
-            // فتح المتجر
             document.getElementById('modalStoreBtn').onclick = () => {
                 if (storeUrl) {
                     window.open(storeUrl, '_blank');
@@ -519,7 +579,6 @@
                 }
             };
             
-            // إغلاق النافذة
             document.getElementById('modalCloseBtn').onclick = () => modal.remove();
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
@@ -569,7 +628,6 @@
             }
         }
         
-        // دالة معالجة النقر على وسيلة الدفع
         window.handlePaymentClick = async function(methodKey, accountNumber, methodName, storeUrl) {
             await trackPaymentClick(methodKey, accountNumber);
             showPaymentModal(methodName, accountNumber, storeUrl);
@@ -601,12 +659,15 @@
                 if (error) throw error;
                 
                 if (data) {
-                    document.title = `${data.display_name || 'صفحة بايو'} | صفحات بايو`;
+                    document.title = `${data.display_name || 'صفحة بايو'} | analyzer.social`;
                     document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
-                    // إخفاء user_id تماماً وعدم عرضه للعامة
                     document.getElementById('username').innerText = '';
                     document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
                     document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
+                    
+                    // تحديث Open Graph
+                    document.querySelector('meta[property="og:title"]').setAttribute('content', `صفحة البايو | ${data.display_name || 'مستخدم'}`);
+                    document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
                     
                     applyTheme(data.theme_name || 'default');
                     displayAvatar(data.avatar_url, data.display_name);
