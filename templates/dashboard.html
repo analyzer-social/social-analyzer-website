@@ -14,6 +14,10 @@
     <link rel="manifest" href="/static/assets/icons/site.webmanifest">
     
     <style>
+        /* ===================================================== */
+        /* القسم 0: القواعد الأساسية والثيم العام                 */
+        /* ===================================================== */
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Tajawal', sans-serif;
@@ -90,6 +94,11 @@
             outline: none;
             border-color: #667eea;
         }
+        
+        /* ===================================================== */
+        /* القسم 1: تخصيص الرابط (Username)                     */
+        /* ===================================================== */
+        
         .username-input-wrapper {
             display: flex;
             align-items: center;
@@ -145,47 +154,184 @@
         .username-status { font-size: 12px; margin-top: 8px; padding: 5px 10px; border-radius: 8px; }
         .username-available { color: #28a745; background: #d4edda; }
         .username-taken { color: #dc3545; background: #f8d7da; }
-        
-        .plans-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .plan-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
+        .page-url {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
-            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
         }
-        .plan-card.current { border-color: #28a745; background: #f0fff4; }
-        .plan-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
-        .plan-price { font-size: 1.8rem; font-weight: bold; color: #667eea; }
-        .plan-features { list-style: none; margin: 15px 0; }
-        .plan-features li { padding: 5px 0; font-size: 0.8rem; }
-        .upgrade-plan-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 25px;
-            width: 100%;
-            cursor: pointer;
-        }
-        .current-plan-badge {
+        .copy-btn {
             background: #28a745;
             color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            display: inline-block;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
         }
+        
+        /* ===================================================== */
+        /* القسم 2: زر الاشتراك المميز - جوهرة ماسة              */
+        /* ===================================================== */
+        
+        .premium-upgrade-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 2px solid transparent;
+            background-image: linear-gradient(white, white), linear-gradient(135deg, #667eea, #764ba2);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-upgrade-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translate(-30%, -30%) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translate(30%, 30%) rotate(180deg); opacity: 0; }
+        }
+        
+        .premium-upgrade-section {
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #f5b042, #f59e0b);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+        }
+        
+        .premium-badge i {
+            font-size: 18px;
+            animation: gemPulse 2s infinite;
+        }
+        
+        @keyframes gemPulse {
+            0%, 100% { transform: scale(1); text-shadow: 0 0 0px gold; }
+            50% { transform: scale(1.1); text-shadow: 0 0 10px gold; }
+        }
+        
+        .premium-title {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .premium-desc {
+            color: #718096;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .premium-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+            text-align: right;
+        }
+        
+        .premium-feature {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .premium-feature i {
+            color: #28a745;
+            font-size: 16px;
+        }
+        
+        .premium-upgrade-btn {
+            background: linear-gradient(135deg, #f5b042, #f59e0b);
+            color: white;
+            border: none;
+            padding: 16px 25px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(245,158,11,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-upgrade-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(245,158,11,0.4);
+        }
+        
+        .premium-upgrade-btn:active {
+            transform: translateY(0px);
+        }
+        
+        .premium-upgrade-btn i.fa-gem {
+            animation: gemShine 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes gemShine {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 5px gold; }
+        }
+        
+        .premium-note {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 10px;
+        }
+        
+        /* ===================================================== */
+        /* القسم 3: حالة الاشتراك                                */
+        /* ===================================================== */
+        
         .subscription-info {
             background: #e2e8f0;
             border-radius: 12px;
             padding: 12px;
             font-size: 0.85rem;
         }
+        
+        /* ===================================================== */
+        /* القسم 4: حسابات التواصل                              */
+        /* ===================================================== */
         
         .platform-input {
             display: flex;
@@ -205,6 +351,10 @@
         }
         .platform-input .input-wrapper { flex: 1; }
         .field-hint { display: block; font-size: 10px; color: #718096; margin-top: 4px; }
+        
+        /* ===================================================== */
+        /* القسم 5: الروابط المخصصة                              */
+        /* ===================================================== */
         
         .custom-link-item {
             display: flex;
@@ -234,6 +384,30 @@
             margin-top: 10px;
         }
         
+        /* ===================================================== */
+        /* القسم 6: وسائل الدفع                                  */
+        /* ===================================================== */
+        
+        .payment-grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .payment-input-item {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .payment-input-item img { width: 48px; height: 48px; margin-bottom: 8px; border-radius: 12px; }
+        .payment-input-item .method-name { font-weight: bold; font-size: 13px; margin-bottom: 8px; }
+        .payment-input-item input { width: 100%; padding: 6px; border-radius: 8px; text-align: center; }
+        
+        /* ===================================================== */
+        /* القسم 7: الأزرار الرئيسية والتنبيهات                  */
+        /* ===================================================== */
+        
         .save-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -260,26 +434,6 @@
             justify-content: center;
             gap: 8px;
         }
-        .page-url {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        .copy-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-        }
         .success-msg, .error-msg {
             padding: 12px;
             border-radius: 12px;
@@ -290,21 +444,10 @@
         .error-msg { background: #f8d7da; color: #721c24; border-right: 4px solid #dc3545; }
         .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .contacts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .payment-grid-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-        }
-        .payment-input-item {
-            text-align: center;
-            padding: 12px;
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-        .payment-input-item img { width: 48px; height: 48px; margin-bottom: 8px; border-radius: 12px; }
-        .payment-input-item .method-name { font-weight: bold; font-size: 13px; margin-bottom: 8px; }
-        .payment-input-item input { width: 100%; padding: 6px; border-radius: 8px; text-align: center; }
+        
+        /* ===================================================== */
+        /* القسم 8: شاشة التحميل                                 */
+        /* ===================================================== */
         
         .loading {
             position: fixed;
@@ -333,10 +476,13 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
+        /* ===================================================== */
+        /* القسم 9: استجابة الجوال                               */
+        /* ===================================================== */
+        
         @media (max-width: 600px) {
             .container { padding: 20px; }
             .row-2cols, .contacts-grid { grid-template-columns: 1fr; }
-            .plans-grid { grid-template-columns: 1fr; }
             .username-input-wrapper {
                 flex-direction: column;
                 align-items: stretch;
@@ -349,11 +495,19 @@
                 width: 100%;
                 justify-content: center;
             }
+            .premium-title { font-size: 18px; }
+            .premium-upgrade-btn { font-size: 14px; padding: 12px 20px; }
+            .premium-features { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <!-- ===================================================== -->
+    <!-- القسم 10: هيكل HTML الرئيسي                           -->
+    <!-- ===================================================== -->
+    
     <div class="container">
+        <!-- القسم 10.1: رأس الصفحة -->
         <div class="header">
             <h1>📄 إعدادات صفحة البايو</h1>
             <div class="user-info">
@@ -363,16 +517,17 @@
             </div>
         </div>
 
+        <!-- القسم 10.2: رسائل التنبيه -->
         <div id="successMsg" class="success-msg"><i class="fas fa-check-circle"></i> <span id="successText"></span></div>
         <div id="errorMsg" class="error-msg"><i class="fas fa-exclamation-circle"></i> <span id="errorText"></span></div>
 
-        <!-- حالة الاشتراك -->
+        <!-- القسم 10.3: حالة الاشتراك -->
         <div class="card">
             <h3><i class="fas fa-crown"></i> اشتراكك الحالي</h3>
             <div id="subscriptionStatus" class="subscription-info">جاري التحميل...</div>
         </div>
 
-        <!-- تخصيص الرابط -->
+        <!-- القسم 10.4: تخصيص الرابط -->
         <div class="card">
             <h3><i class="fas fa-link"></i> الرابط المخصص</h3>
             <div class="form-group">
@@ -388,7 +543,7 @@
                     </button>
                 </div>
                 <div id="usernameStatus" class="username-status"></div>
-                <small>📌 يمكنك استخدام الحروف الإنجليزية a-z والأرقام  والشرطة السفلية ( _ ) فقط</small>
+                <small>📌 يمكنك استخدام الحروف الإنجليزية a-z والأرقام والشرطة السفلية ( _ ) فقط</small>
             </div>
             <div class="page-url">
                 <i class="fas fa-globe"></i>
@@ -397,13 +552,38 @@
             </div>
         </div>
 
-        <!-- باقات الاشتراك -->
-        <div class="card">
-            <h3><i class="fas fa-gem"></i> باقات الاشتراك</h3>
-            <div class="plans-grid" id="plansContainer"></div>
+        <!-- القسم 10.5: زر الاشتراك المميز - جوهرة ماسة -->
+        <div class="card premium-upgrade-card">
+            <div class="premium-upgrade-section">
+                <div class="premium-badge">
+                    <i class="fas fa-gem"></i>
+                    <span>جوهرة ماسة</span>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h2 class="premium-title">✨ رتّب وجودك الرقمي باحترافية</h2>
+                <p class="premium-desc">احصل على صفحة بايو احترافية، روابط غير محدودة، إحصائيات متقدمة، ودعم VIP</p>
+                
+                <div class="premium-features">
+                    <div class="premium-feature"><i class="fas fa-check-circle"></i> رابط مخصص bio.analyzer.social/اسمك</div>
+                    <div class="premium-feature"><i class="fas fa-check-circle"></i> جميع الثيمات والتصاميم</div>
+                    <div class="premium-feature"><i class="fas fa-check-circle"></i> وسائل دفع غير محدودة</div>
+                    <div class="premium-feature"><i class="fas fa-check-circle"></i> إحصائيات متقدمة للمشاهدات</div>
+                    <div class="premium-feature"><i class="fas fa-check-circle"></i> دعم VIP وأولوية في المعالجة</div>
+                    <div class="premium-feature"><i class="fas fa-check-circle"></i> إمكانية إضافة روابط مخصصة غير محدودة</div>
+                </div>
+                
+                <button class="premium-upgrade-btn" onclick="goToPlansPage()">
+                    <i class="fas fa-gem"></i> 
+                    ✨ اشتراك مميز - جوهرة ماسة ✨
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="premium-note">
+                    🎯 خطط تبدأ من $2 فقط | دفع آمن عبر نجوم Telegram أو التحويل البنكي
+                </div>
+            </div>
         </div>
 
-        <!-- المعلومات الشخصية -->
+        <!-- القسم 10.6: المعلومات الشخصية -->
         <div class="card">
             <h3><i class="fas fa-user"></i> المعلومات الشخصية</h3>
             <div class="form-group">
@@ -432,7 +612,7 @@
             </div>
         </div>
 
-        <!-- حسابات التواصل -->
+        <!-- القسم 10.7: حسابات التواصل -->
         <div class="card">
             <h3><i class="fas fa-share-alt"></i> حسابات التواصل</h3>
             <div class="platform-input">
@@ -460,7 +640,7 @@
             </div>
         </div>
 
-        <!-- جهات الاتصال -->
+        <!-- القسم 10.8: جهات الاتصال -->
         <div class="card">
             <h3><i class="fas fa-address-card"></i> معلومات الاتصال</h3>
             <div class="contacts-grid">
@@ -475,30 +655,36 @@
             </div>
         </div>
 
-        <!-- وسائل الدفع -->
+        <!-- القسم 10.9: وسائل الدفع -->
         <div class="card">
             <h3><i class="fas fa-credit-card"></i> وسائل الدفع</h3>
             <div class="payment-grid-dashboard" id="paymentMethodsContainer"></div>
             <small>📌 أدخل رقم المحفظة لكل وسيلة دفع</small>
         </div>
 
-        <!-- الروابط المخصصة -->
+        <!-- القسم 10.10: الروابط المخصصة -->
         <div class="card">
             <h3><i class="fas fa-link"></i> روابط مخصصة</h3>
             <div id="customLinksContainer"></div>
             <button type="button" class="add-link" onclick="addCustomLink()">+ إضافة رابط</button>
         </div>
 
+        <!-- القسم 10.11: أزرار الحفظ والمعاينة -->
         <button class="save-btn" onclick="saveAllData()"><i class="fas fa-save"></i> حفظ جميع التغييرات</button>
         <button class="preview-btn" onclick="previewBioPage()"><i class="fas fa-eye"></i> معاينة صفحة البايو</button>
     </div>
 
+    <!-- القسم 10.12: شاشة التحميل -->
     <div id="loadingOverlay" class="loading" style="display: none;">
         <div class="loading-content"><div class="spinner"></div><p>جاري حفظ البيانات...</p></div>
     </div>
 
     <script src="/static/config.js"></script>
     <script>
+        // =====================================================
+        // القسم 11: المتغيرات العامة والتهيئة                  //
+        // =====================================================
+        
         const SUPABASE_URL = '{{ SUPABASE_URL }}';
         const SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -514,6 +700,10 @@
         // متغيرات للتحقق من الاسم
         let isUsernameAvailable = false;
         let lastCheckedUsername = '';
+        
+        // =====================================================
+        // القسم 12: بيانات ثابتة (الخطط والمحافظ)              //
+        // =====================================================
         
         const plans = [
             { id: 'trial', name: '🆓 تجريبي', price: 0, period: '30 يوماً', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة'] },
@@ -536,6 +726,10 @@
             { id: 'mtnmomo', name: 'MTN Mobile Money', icon: '/static/assets/payment-icons/mtnmomo.webp' }
         ];
         
+        // =====================================================
+        // القسم 13: دوال المساعدة العامة                       //
+        // =====================================================
+        
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
         
@@ -551,31 +745,43 @@
             setTimeout(() => document.getElementById('errorMsg').style.display = 'none', 5000);
         }
         
-        function renderPlans() {
-            const container = document.getElementById('plansContainer');
-            if (!container) return;
-            let html = '';
-            for (const plan of plans) {
-                const isCurrent = plan.id === currentPlan;
-                html += `
-                    <div class="plan-card ${isCurrent ? 'current' : ''}">
-                        <div class="plan-name">${plan.name}</div>
-                        <div class="plan-price">${plan.price === 0 ? 'مجاني' : `$${plan.price}`}<small> / ${plan.period}</small></div>
-                        <ul class="plan-features">${plan.features.map(f => `<li><i class="fas fa-check-circle" style="color:#28a745;"></i> ${f}</li>`).join('')}</ul>
-                        ${isCurrent ? '<div class="current-plan-badge">✅ اشتراكك الحالي</div>' : `<button class="upgrade-plan-btn" onclick="upgradeToPlan('${plan.id}', ${plan.price})">الترقية إلى ${plan.name}</button>`}
-                    </div>
-                `;
+        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        
+        // =====================================================
+        // القسم 14: دوال الاشتراك والخطط (محذوفة جزئياً)       //
+        // =====================================================
+        
+        // ملاحظة: تم حذف renderPlans() لأن الخطط لم تعد تعرض في لوحة التحكم
+        
+        async function loadSubscriptionStatus() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_subscriptions')
+                    .select('*, subscription_plans(*)')
+                    .eq('user_id', parseInt(currentUserId))
+                    .eq('status', 'active')
+                    .maybeSingle();
+                
+                if (error) throw error;
+                
+                const statusDiv = document.getElementById('subscriptionStatus');
+                if (data && data.subscription_plans) {
+                    currentPlan = data.subscription_plans.name;
+                    const endDate = data.end_date ? new Date(data.end_date).toLocaleDateString('ar') : 'غير محدد';
+                    statusDiv.innerHTML = `<strong>📅 خطتك: ${data.subscription_plans.display_name}</strong><br>${data.end_date ? `تاريخ الانتهاء: ${endDate}` : 'اشتراك مدى الحياة'}`;
+                } else {
+                    currentPlan = 'trial';
+                    statusDiv.innerHTML = '🆓 أنت حالياً في الباقة التجريبية (30 يوماً)';
+                }
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+                document.getElementById('subscriptionStatus').innerHTML = '⚠️ لا يمكن تحميل حالة الاشتراك';
             }
-            container.innerHTML = html;
         }
         
-        async function upgradeToPlan(planId, price) {
-            if (price === 0) { showError('لا يمكن الترقية إلى الباقة المجانية'); return; }
-            if (confirm(`سيتم تحويلك إلى بوت الدعم لإتمام عملية الدفع بقيمة $${price}\n\nاضغط موافق للمتابعة`)) {
-                window.open('https://t.me/analyzer_social_bot', '_blank');
-                showSuccess('تم تحويلك إلى بوت الدعم. يرجى متابعة التعليمات');
-            }
-        }
+        // =====================================================
+        // القسم 15: دوال تخصيص الرابط (Username)               //
+        // =====================================================
         
         async function checkUsernameAvailability() {
             const username = document.getElementById('customUsername').value.trim();
@@ -689,32 +895,57 @@
             }
         }
         
-        async function loadSubscriptionStatus() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('user_subscriptions')
-                    .select('*, subscription_plans(*)')
-                    .eq('user_id', parseInt(currentUserId))
-                    .eq('status', 'active')
-                    .maybeSingle();
-                
-                if (error) throw error;
-                
-                const statusDiv = document.getElementById('subscriptionStatus');
-                if (data && data.subscription_plans) {
-                    currentPlan = data.subscription_plans.name;
-                    const endDate = data.end_date ? new Date(data.end_date).toLocaleDateString('ar') : 'غير محدد';
-                    statusDiv.innerHTML = `<strong>📅 خطتك: ${data.subscription_plans.display_name}</strong><br>${data.end_date ? `تاريخ الانتهاء: ${endDate}` : 'اشتراك مدى الحياة'}`;
-                } else {
-                    currentPlan = 'trial';
-                    statusDiv.innerHTML = '🆓 أنت حالياً في الباقة التجريبية (30 يوماً)';
-                }
-                renderPlans();
-            } catch (error) {
-                console.error('Error loading subscription:', error);
-                document.getElementById('subscriptionStatus').innerHTML = '⚠️ لا يمكن تحميل حالة الاشتراك';
+        function updatePageUrlDisplay() {
+            const displaySpan = document.getElementById('pageUrlDisplay');
+            
+            if (currentUsername) {
+                displaySpan.innerHTML = `bio.analyzer.social/${currentUsername}`;
+            } else if (currentPageUrl) {
+                displaySpan.innerHTML = `bio.analyzer.social/bio/${currentPageUrl}`;
+            } else {
+                displaySpan.innerHTML = 'bio.analyzer.social/...';
             }
         }
+        
+        async function copyPageUrl() {
+            let url;
+            if (currentUsername) {
+                url = `https://bio.analyzer.social/${currentUsername}`;
+            } else if (currentPageUrl) {
+                url = `https://bio.analyzer.social/bio/${currentPageUrl}`;
+            } else {
+                showError('⚠️ لا يوجد رابط للحفظ بعد');
+                return;
+            }
+            
+            try {
+                await navigator.clipboard.writeText(url);
+                showSuccess('✅ تم نسخ الرابط!');
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = url;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showSuccess('✅ تم نسخ الرابط!');
+            }
+        }
+        
+        // =====================================================
+        // القسم 16: دالة الانتقال إلى صفحة الخطط والدفع        //
+        // =====================================================
+        
+        function goToPlansPage() {
+            const userId = localStorage.getItem('bio_user_id');
+            const username = localStorage.getItem('bio_username');
+            const token = btoa(`${userId}:${Date.now()}`);
+            window.open(`/plans?token=${token}&user_id=${userId}&username=${username}`, '_blank');
+        }
+        
+        // =====================================================
+        // القسم 17: دوال حسابات التواصل                       //
+        // =====================================================
         
         function cleanFacebookInput(input) {
             if (!input) return '';
@@ -730,6 +961,10 @@
             return input;
         }
         
+        // =====================================================
+        // القسم 18: دوال جهات الاتصال                         //
+        // =====================================================
+        
         function getContacts() {
             return { phone: document.getElementById('phoneNumber').value.trim(), email: document.getElementById('emailAddress').value.trim() };
         }
@@ -740,6 +975,10 @@
                 document.getElementById('emailAddress').value = contacts.email || '';
             }
         }
+        
+        // =====================================================
+        // القسم 19: دوال الروابط المخصصة                      //
+        // =====================================================
         
         function renderCustomLinks() {
             const container = document.getElementById('customLinksContainer');
@@ -764,7 +1003,10 @@
             renderCustomLinks();
         }
         function removeCustomLink(index) { customLinks.splice(index, 1); renderCustomLinks(); }
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        
+        // =====================================================
+        // القسم 20: دوال وسائل الدفع                          //
+        // =====================================================
         
         function renderPaymentInputs() {
             const container = document.getElementById('paymentMethodsContainer');
@@ -819,6 +1061,10 @@
             } catch (error) { console.error('Error saving payment methods:', error); }
         }
         
+        // =====================================================
+        // القسم 21: دوال حفظ وتحميل البيانات الرئيسية          //
+        // =====================================================
+        
         async function saveAllData() {
             if (!currentUserId) { showError('الرجاء تسجيل الدخول أولاً'); window.location.href = '/'; return; }
             showLoading();
@@ -866,19 +1112,6 @@
             finally { hideLoading(); }
         }
         
-        function updatePageUrlDisplay() {
-            const displaySpan = document.getElementById('pageUrlDisplay');
-            const username = document.getElementById('customUsername').value.trim();
-            
-            if (currentUsername) {
-                displaySpan.innerHTML = `bio.analyzer.social/${currentUsername}`;
-            } else if (currentPageUrl) {
-                displaySpan.innerHTML = `bio.analyzer.social/bio/${currentPageUrl}`;
-            } else {
-                displaySpan.innerHTML = 'bio.analyzer.social/...';
-            }
-        }
-        
         async function loadBioData() {
             if (!currentUserId) return;
             try {
@@ -916,6 +1149,10 @@
             } catch (error) { console.error('خطأ في تحميل البيانات:', error); }
         }
         
+        // =====================================================
+        // القسم 22: دوال المستخدم والمصادقة                   //
+        // =====================================================
+        
         function checkSessionValidity() {
             const expiresAt = localStorage.getItem('bio_expires_at');
             if (!expiresAt || Date.now() > parseInt(expiresAt)) { localStorage.clear(); window.location.replace('/'); return false; }
@@ -939,6 +1176,17 @@
             } catch (error) { console.error('خطأ في تحميل بيانات المستخدم:', error); return true; }
         }
         
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.clear();
+                window.location.replace('/');
+            }
+        }
+        
+        // =====================================================
+        // القسم 23: دوال المعاينة                             //
+        // =====================================================
+        
         function previewBioPage() {
             let url;
             if (currentUsername) {
@@ -952,37 +1200,9 @@
             window.open(url, '_blank');
         }
         
-        async function copyPageUrl() {
-            let url;
-            if (currentUsername) {
-                url = `https://bio.analyzer.social/${currentUsername}`;
-            } else if (currentPageUrl) {
-                url = `https://bio.analyzer.social/bio/${currentPageUrl}`;
-            } else {
-                showError('⚠️ لا يوجد رابط للحفظ بعد');
-                return;
-            }
-            
-            try {
-                await navigator.clipboard.writeText(url);
-                showSuccess('✅ تم نسخ الرابط!');
-            } catch (err) {
-                const textarea = document.createElement('textarea');
-                textarea.value = url;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showSuccess('✅ تم نسخ الرابط!');
-            }
-        }
-        
-        function logout() {
-            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.clear();
-                window.location.replace('/');
-            }
-        }
+        // =====================================================
+        // القسم 24: ربط الدوال بالنافذة والتهيئة              //
+        // =====================================================
         
         window.addCustomLink = addCustomLink;
         window.removeCustomLink = removeCustomLink;
@@ -993,7 +1213,7 @@
         window.copyPageUrl = copyPageUrl;
         window.checkUsernameAvailability = checkUsernameAvailability;
         window.saveUsername = saveUsername;
-        window.upgradeToPlan = upgradeToPlan;
+        window.goToPlansPage = goToPlansPage;
         
         async function init() {
             if (!checkSessionValidity()) return;
