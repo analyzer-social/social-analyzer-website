@@ -29,6 +29,16 @@ SUPABASE_BIO_ANON_KEY = (
     ''  # سيتم التحقق منها بعد
 )
 
+# =====================================================
+# القسم: المسارات المحجوزة (لا يمكن استخدامها كـ username)
+# =====================================================
+
+RESERVED_PATHS = [
+    'dashboard', 'admin', 'plans', 'auth', 'privacy', 
+    'terms', 'help', 'health', 'healthcheck', 'favicon.ico', 
+    'robots.txt', 'sitemap.xml', 'api', 'static', 'report',
+    'google-auth-callback', 'google-error', 'bio'
+]
 # طباعة معلومات debug (للتأكد من وجود المتغيرات)
 print(f"🔍 Checking environment variables:")
 print(f"   SUPABASE_BIO_URL: {'✅ Found' if SUPABASE_BIO_URL else '❌ Missing'}")
@@ -331,26 +341,28 @@ def auth():
 # مسارات عرض صفحة البايو (مع دعم username الجديد)
 # =====================================================
 
-@app.route('/<username>')
-def bio_page_by_username(username):
-    """صفحة عرض البايو باستخدام username المخصص"""
-    print(f"🔍 جلب صفحة البايو باستخدام username: {username}")
+# =====================================================
+# القسم: صفحة البايو - الرابط الجديد (SEO Friendly)
+# =====================================================
+
+@app.route('/bio/<username>')
+def bio_page(username):
+    """صفحة البايو - analyzer.social/bio/username"""
+    
+    print(f"🔍 جلب صفحة البايو: {username}")
     
     if not supabase:
-        return render_template('error.html', error="قاعدة البيانات غير متصلة"), 500
+        return render_template('error.html', error_message="قاعدة البيانات غير متصلة"), 500
     
     # البحث عن الصفحة باستخدام username
     bio_data = get_bio_page_by_identifier(username, 'username')
     
     if not bio_data:
-        # إذا لم يتم العثور، نحاول البحث باستخدام page_url (للمرونة)
-        bio_data = get_bio_page_by_identifier(username, 'page_url')
-        if not bio_data:
-            return render_template('error.html', error="الصفحة غير موجودة"), 404
+        return render_template('error.html', error_message="الصفحة غير موجودة"), 404
     
     # التحقق من أن الصفحة نشطة
     if not bio_data.get('is_active', True):
-        return render_template('error.html', error="هذه الصفحة غير نشطة حالياً"), 403
+        return render_template('error.html', error_message="هذه الصفحة غير نشطة حالياً"), 403
     
     # زيادة عدد المشاهدات
     increment_views_count(bio_data['id'])
@@ -359,8 +371,6 @@ def bio_page_by_username(username):
     return render_template('bio.html', 
                          SUPABASE_URL=SUPABASE_BIO_URL, 
                          SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY,
-                         page_url=bio_data.get('page_url'),
-                         username=bio_data.get('username'),
                          bio_data=bio_data)
 
 @app.route('/bio/<page_url>')
