@@ -222,7 +222,25 @@ def verify_user():
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+# =====================================================
+# معالج الأخطاء (Error Handlers)
+# =====================================================
 
+@app.errorhandler(404)
+def page_not_found(e):
+    """صفحة خطأ 404"""
+    return render_template('error.html', error_message="الصفحة غير موجودة"), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """صفحة خطأ 500"""
+    return render_template('error.html', error_message="حدث خطأ داخلي في الخادم"), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """معالج الأخطاء العام"""
+    print(f"❌ خطأ غير متوقع: {str(e)}")
+    return render_template('error.html', error_message="حدث خطأ غير متوقع"), 500 
 # =====================================================
 # دوال مساعدة لعرض صفحة البايو
 # =====================================================
@@ -940,24 +958,60 @@ def admin_stats():
         'total_clicks': total_clicks
     }) 
 # =====================================================
-# معالج الأخطاء (Error Handlers)
-# =====================================================
-
-@app.errorhandler(404)
-def page_not_found(e):
-    """صفحة خطأ 404"""
-    return render_template('error.html', error_message="الصفحة غير موجودة"), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    """صفحة خطأ 500"""
-    return render_template('error.html', error_message="حدث خطأ داخلي في الخادم"), 500
-
-@app.errorhandler(Exception)
-def handle_exception(e):
-    """معالج الأخطاء العام"""
-    print(f"❌ خطأ غير متوقع: {str(e)}")
-    return render_template('error.html', error_message="حدث خطأ غير متوقع"), 500                    
+@app.route('/api/subscription/plans', methods=['GET'])
+def get_subscription_plans():
+    """جلب خطط الاشتراك من قاعدة البيانات"""
+    if not supabase:
+        return jsonify({'success': False, 'error': 'Database not connected'}), 500
+    
+    try:
+        result = supabase.table('subscription_plans')\
+            .select('*')\
+            .eq('is_active', True)\
+            .order('sort_order', asc=True)\
+            .execute()
+        
+        plans = []
+        for plan in result.data:
+            # حساب النص المناسب للمدة
+            duration_days = plan.get('duration_days', 0)
+            if duration_days >= 36500:
+                duration_text = 'مدى الحياة'
+            elif duration_days >= 365:
+                years = duration_days // 365
+                duration_text = f'{years} سنة'
+            elif duration_days >= 30:
+                months = duration_days // 30
+                duration_text = f'{months} شهر'
+            else:
+                duration_text = f'{duration_days} يوم'
+            
+            # معالجة المميزات (قد تكون JSONB أو نص)
+            features = plan.get('features', [])
+            if isinstance(features, str):
+                import json
+                try:
+                    features = json.loads(features)
+                except:
+                    features = []
+            
+            plans.append({
+                'id': plan.get('name'),
+                'display_name': plan.get('display_name'),
+                'price': float(plan.get('price_usd', 0)),
+                'price_stars': plan.get('price_stars', 0),
+                'duration_days': duration_days,
+                'duration_text': duration_text,
+                'features': features,
+                'sort_order': plan.get('sort_order', 0),
+                'recommended': plan.get('name') == 'yearly'  # جعل الخطة السنوية هي الموصى بها
+            })
+        
+        return jsonify({'success': True, 'plans': plans})
+        
+    except Exception as e:
+        print(f"Error fetching plans: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500                   
 # =====================================================
 # تشغيل التطبيق
 # =====================================================
