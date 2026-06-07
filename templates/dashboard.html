@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
     
-    <!-- Favicon and App Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
@@ -56,42 +55,29 @@
             align-items: center;
             gap: 10px;
         }
-        .user-info i { margin-left: 8px; }
         .logout-btn {
             background: linear-gradient(135deg, #dc3545, #c82333);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 14px;
         }
         .card {
             background: #f8f9fa;
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
             border: 1px solid #e9ecef;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
         .card h3 {
             margin-bottom: 20px;
             color: #667eea;
             border-right: 4px solid #667eea;
             padding-right: 12px;
-            font-size: 1.1rem;
         }
         .form-group { margin-bottom: 20px; }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #2d3748;
-        }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #2d3748; }
         input, textarea, select {
             width: 100%;
             padding: 12px;
@@ -99,12 +85,10 @@
             border-radius: 12px;
             font-family: 'Tajawal', sans-serif;
             font-size: 14px;
-            transition: all 0.3s;
         }
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
         .username-input-wrapper {
             display: flex;
@@ -115,17 +99,8 @@
             border-radius: 12px;
             padding: 0 8px;
         }
-        .username-input-wrapper span {
-            color: #718096;
-            font-size: 14px;
-            direction: ltr;
-        }
-        .username-input-wrapper input {
-            border: none;
-            padding: 12px 0;
-            flex: 1;
-        }
-        .username-input-wrapper input:focus { box-shadow: none; }
+        .username-input-wrapper span { color: #718096; font-size: 14px; }
+        .username-input-wrapper input { border: none; padding: 12px 0; flex: 1; }
         .check-username {
             background: #667eea;
             color: white;
@@ -133,18 +108,15 @@
             padding: 8px 15px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 12px;
         }
         .username-status { font-size: 12px; margin-top: 5px; }
         .username-available { color: #28a745; }
         .username-taken { color: #dc3545; }
         
-        /* باقات الاشتراك */
         .plans-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            margin-top: 15px;
         }
         .plan-card {
             background: white;
@@ -152,40 +124,20 @@
             padding: 20px;
             text-align: center;
             border: 2px solid #e2e8f0;
-            transition: all 0.3s;
         }
-        .plan-card:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
-        }
-        .plan-card.current {
-            border-color: #28a745;
-            background: #f0fff4;
-        }
-        .plan-name {
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .plan-price {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-        .plan-price small { font-size: 0.7rem; color: #718096; }
-        .plan-features { list-style: none; margin-bottom: 20px; }
-        .plan-features li { padding: 5px 0; font-size: 0.8rem; color: #4a5568; }
-        .plan-features i { margin-left: 8px; }
+        .plan-card.current { border-color: #28a745; background: #f0fff4; }
+        .plan-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
+        .plan-price { font-size: 1.8rem; font-weight: bold; color: #667eea; }
+        .plan-features { list-style: none; margin: 15px 0; }
+        .plan-features li { padding: 5px 0; font-size: 0.8rem; }
         .upgrade-plan-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px;
             border-radius: 25px;
-            cursor: pointer;
             width: 100%;
-            font-weight: bold;
+            cursor: pointer;
         }
         .current-plan-badge {
             background: #28a745;
@@ -194,14 +146,12 @@
             border-radius: 20px;
             font-size: 0.7rem;
             display: inline-block;
-            margin-top: 10px;
         }
         .subscription-info {
             background: #e2e8f0;
             border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 15px;
-            font-size: 0.8rem;
+            padding: 12px;
+            font-size: 0.85rem;
         }
         
         .platform-input {
@@ -222,6 +172,7 @@
         }
         .platform-input .input-wrapper { flex: 1; }
         .field-hint { display: block; font-size: 10px; color: #718096; margin-top: 4px; }
+        
         .custom-link-item {
             display: flex;
             gap: 10px;
@@ -249,6 +200,7 @@
             cursor: pointer;
             margin-top: 10px;
         }
+        
         .save-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -267,7 +219,6 @@
             border: none;
             padding: 12px;
             border-radius: 12px;
-            font-size: 14px;
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
@@ -277,10 +228,9 @@
             gap: 8px;
         }
         .page-url {
-            background: linear-gradient(135deg, #f0f4ff, #e9ecef);
+            background: #f0f4ff;
             padding: 15px;
             border-radius: 12px;
-            margin: 20px 0;
             text-align: center;
             display: flex;
             align-items: center;
@@ -289,7 +239,7 @@
             flex-wrap: wrap;
         }
         .copy-btn {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
+            background: #28a745;
             color: white;
             border: none;
             padding: 8px 20px;
@@ -321,6 +271,7 @@
         .payment-input-item img { width: 48px; height: 48px; margin-bottom: 8px; border-radius: 12px; }
         .payment-input-item .method-name { font-weight: bold; font-size: 13px; margin-bottom: 8px; }
         .payment-input-item input { width: 100%; padding: 6px; border-radius: 8px; text-align: center; }
+        
         .loading {
             position: fixed;
             top: 0; left: 0;
@@ -382,27 +333,30 @@
                 <label>🌐 رابط صفحتك المخصص</label>
                 <div class="username-input-wrapper">
                     <span>analyzer.social/</span>
-                    <input type="text" id="customUsername" placeholder="username" maxlength="30" pattern="[a-zA-Z0-9_]+">
+                    <input type="text" id="customUsername" placeholder="username" maxlength="30">
                     <button type="button" class="check-username" onclick="checkUsernameAvailability()">تحقق</button>
                 </div>
                 <div id="usernameStatus" class="username-status"></div>
                 <small>📌 يمكنك استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط</small>
+            </div>
+            <div class="page-url">
+                <i class="fas fa-globe"></i>
+                <span class="url-text" id="pageUrlDisplay">analyzer.social/...</span>
+                <button class="copy-btn" onclick="copyPageUrl()"><i class="fas fa-copy"></i> نسخ الرابط</button>
             </div>
         </div>
 
         <!-- باقات الاشتراك -->
         <div class="card">
             <h3><i class="fas fa-gem"></i> باقات الاشتراك</h3>
-            <div class="plans-grid" id="plansContainer">
-                <!-- سيتم تعبئة الباقات عبر JavaScript -->
-            </div>
+            <div class="plans-grid" id="plansContainer"></div>
         </div>
 
         <!-- المعلومات الشخصية -->
         <div class="card">
             <h3><i class="fas fa-user"></i> المعلومات الشخصية</h3>
             <div class="form-group">
-                <label>🖼️ رابط الصورة الشخصية (اختياري)</label>
+                <label>🖼️ رابط الصورة الشخصية</label>
                 <input type="url" id="avatarUrl" placeholder="https://example.com/avatar.jpg">
             </div>
             <div class="row-2cols">
@@ -427,7 +381,7 @@
             </div>
         </div>
 
-        <!-- حسابات التواصل الاجتماعي -->
+        <!-- حسابات التواصل -->
         <div class="card">
             <h3><i class="fas fa-share-alt"></i> حسابات التواصل</h3>
             <div class="platform-input">
@@ -445,8 +399,8 @@
             <div class="platform-input">
                 <i class="fab fa-facebook-f" style="background:#1877f2;"></i>
                 <div class="input-wrapper">
-                    <input type="text" id="facebook" placeholder="اسم المستخدم أو رابط الصفحة">
-                    <small class="field-hint">💡 يمكنك إدخال: اسم المستخدم أو الرابط الكامل</small>
+                    <input type="text" id="facebook" placeholder="اسم المستخدم أو الرابط">
+                    <small class="field-hint">💡 يمكنك إدخال اسم المستخدم أو الرابط الكامل</small>
                 </div>
             </div>
             <div class="platform-input">
@@ -506,11 +460,10 @@
         let userData = {};
         let paymentData = {};
         
-        // قائمة الباقات
         const plans = [
-            { id: 'trial', name: '🆓 تجريبي', price: 0, period: '30 يوماً', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة'], isCurrent: false },
-            { id: 'yearly', name: '💎 سنوي', price: 2, period: 'سنة كاملة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم أولوية'], isCurrent: false },
-            { id: 'lifetime', name: '👑 مدى الحياة', price: 20, period: 'مدى الحياة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم VIP', 'تحليلات متقدمة'], isCurrent: false }
+            { id: 'trial', name: '🆓 تجريبي', price: 0, period: '30 يوماً', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة'] },
+            { id: 'yearly', name: '💎 سنوي', price: 2, period: 'سنة كاملة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم أولوية'] },
+            { id: 'lifetime', name: '👑 مدى الحياة', price: 20, period: 'مدى الحياة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم VIP', 'تحليلات متقدمة'] }
         ];
         
         const paymentWallets = [
@@ -531,23 +484,19 @@
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
         function showSuccess(msg) { 
-            const div = document.getElementById('successMsg');
             document.getElementById('successText').innerText = msg;
-            div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 3000);
+            document.getElementById('successMsg').style.display = 'block';
+            setTimeout(() => document.getElementById('successMsg').style.display = 'none', 3000);
         }
         function showError(msg) { 
-            const div = document.getElementById('errorMsg');
             document.getElementById('errorText').innerText = msg;
-            div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 5000);
+            document.getElementById('errorMsg').style.display = 'block';
+            setTimeout(() => document.getElementById('errorMsg').style.display = 'none', 5000);
         }
         
-        // عرض الباقات
         function renderPlans() {
             const container = document.getElementById('plansContainer');
             if (!container) return;
-            
             let html = '';
             for (const plan of plans) {
                 const isCurrent = plan.id === currentPlan;
@@ -555,9 +504,7 @@
                     <div class="plan-card ${isCurrent ? 'current' : ''}">
                         <div class="plan-name">${plan.name}</div>
                         <div class="plan-price">${plan.price === 0 ? 'مجاني' : `$${plan.price}`}<small> / ${plan.period}</small></div>
-                        <ul class="plan-features">
-                            ${plan.features.map(f => `<li><i class="fas fa-check-circle" style="color: #28a745;"></i> ${f}</li>`).join('')}
-                        </ul>
+                        <ul class="plan-features">${plan.features.map(f => `<li><i class="fas fa-check-circle" style="color:#28a745;"></i> ${f}</li>`).join('')}</ul>
                         ${isCurrent ? '<div class="current-plan-badge">✅ اشتراكك الحالي</div>' : `<button class="upgrade-plan-btn" onclick="upgradeToPlan('${plan.id}', ${plan.price})">الترقية إلى ${plan.name}</button>`}
                     </div>
                 `;
@@ -565,32 +512,31 @@
             container.innerHTML = html;
         }
         
-        // الترقية
         async function upgradeToPlan(planId, price) {
-            if (price === 0) {
-                showError('لا يمكن الترقية إلى الباقة المجانية');
-                return;
-            }
-            
-            const message = `🛒 طلب ترقية إلى الباقة ${planId === 'yearly' ? 'السنوية' : 'مدى الحياة'}\n\n💰 السعر: $${price}\n\nللدفع عبر نجوم Telegram أو التحويل البنكي، يرجى التواصل مع الدعم:\n@analyzer_social_bot`;
-            
+            if (price === 0) { showError('لا يمكن الترقية إلى الباقة المجانية'); return; }
             if (confirm(`سيتم تحويلك إلى بوت الدعم لإتمام عملية الدفع بقيمة $${price}\n\nاضغط موافق للمتابعة`)) {
                 window.open('https://t.me/analyzer_social_bot', '_blank');
-                showSuccess('تم تحويلك إلى بوت الدعم. يرجى متابعة التعليمات لإتمام الترقية');
+                showSuccess('تم تحويلك إلى بوت الدعم. يرجى متابعة التعليمات');
             }
         }
         
-        // التحقق من توفر الاسم
         async function checkUsernameAvailability() {
             const username = document.getElementById('customUsername').value.trim();
+            const statusDiv = document.getElementById('usernameStatus');
+            
             if (!username) {
-                showError('الرجاء إدخال اسم مستخدم');
+                statusDiv.innerHTML = '⚠️ الرجاء إدخال اسم مستخدم';
+                statusDiv.className = 'username-status username-taken';
                 return;
             }
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                showError('يمكن استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط');
+                statusDiv.innerHTML = '⚠️ يمكن استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط';
+                statusDiv.className = 'username-status username-taken';
                 return;
             }
+            
+            statusDiv.innerHTML = '🔄 جاري التحقق...';
+            statusDiv.className = 'username-status';
             
             try {
                 const { data, error } = await supabaseClient
@@ -599,7 +545,6 @@
                     .eq('username', username)
                     .maybeSingle();
                 
-                const statusDiv = document.getElementById('usernameStatus');
                 if (error) throw error;
                 
                 if (data && data.username === username && (!currentUsername || data.username !== currentUsername)) {
@@ -611,11 +556,12 @@
                 }
             } catch (error) {
                 console.error('Error checking username:', error);
+                statusDiv.innerHTML = '❌ حدث خطأ في التحقق';
+                statusDiv.className = 'username-status username-taken';
                 showError('حدث خطأ في التحقق من الاسم');
             }
         }
         
-        // تحميل حالة الاشتراك
         async function loadSubscriptionStatus() {
             try {
                 const { data, error } = await supabaseClient
@@ -628,16 +574,13 @@
                 if (error) throw error;
                 
                 const statusDiv = document.getElementById('subscriptionStatus');
-                if (data) {
-                    currentPlan = data.subscription_plans?.name || 'trial';
+                if (data && data.subscription_plans) {
+                    currentPlan = data.subscription_plans.name;
                     const endDate = data.end_date ? new Date(data.end_date).toLocaleDateString('ar') : 'غير محدد';
-                    statusDiv.innerHTML = `
-                        <strong>📅 خطتك الحالية: ${data.subscription_plans?.display_name || 'تجريبي'}</strong><br>
-                        ${data.end_date ? `تاريخ الانتهاء: ${endDate}` : 'اشتراك مدى الحياة'}
-                    `;
+                    statusDiv.innerHTML = `<strong>📅 خطتك: ${data.subscription_plans.display_name}</strong><br>${data.end_date ? `تاريخ الانتهاء: ${endDate}` : 'اشتراك مدى الحياة'}`;
                 } else {
                     currentPlan = 'trial';
-                    statusDiv.innerHTML = '🆓 أنت حالياً في الباقة التجريبية المجانية (30 يوماً)';
+                    statusDiv.innerHTML = '🆓 أنت حالياً في الباقة التجريبية (30 يوماً)';
                 }
                 renderPlans();
             } catch (error) {
@@ -701,7 +644,13 @@
             if (!container) return;
             let html = '';
             for (const wallet of paymentWallets) {
-                html += `<div class="payment-input-item"><img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'"><div class="method-name">${wallet.name}</div><input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${paymentData[wallet.id] || ''}"></div>`;
+                html += `
+                    <div class="payment-input-item">
+                        <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                        <div class="method-name">${wallet.name}</div>
+                        <input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${paymentData[wallet.id] || ''}">
+                    </div>
+                `;
             }
             container.innerHTML = html;
         }
@@ -739,6 +688,7 @@
                     headers: { 'Content-Type': 'application/json', 'X-User-Id': currentUserId },
                     body: JSON.stringify({ payment_methods: paymentDataToSave, bio_page_id: bioPageId })
                 });
+                console.log('تم حفظ وسائل الدفع');
             } catch (error) { console.error('Error saving payment methods:', error); }
         }
         
@@ -761,7 +711,7 @@
                 const newUsername = document.getElementById('customUsername').value.trim();
                 const bioData = {
                     avatar_url: document.getElementById('avatarUrl').value || null,
-                    display_name: document.getElementById('displayName').value || userData.username || 'مستخدم',
+                    display_name: document.getElementById('displayName').value || 'مستخدم',
                     bio: document.getElementById('bio').value || null,
                     theme_name: document.getElementById('theme').value,
                     accounts: accounts,
@@ -785,18 +735,32 @@
                     const { data, error } = await supabaseClient.from('bio_pages').update(bioData).eq('user_id', parseInt(currentUserId)).select();
                     if (error) throw error;
                     if (data && data[0]) bioPageId = data[0].id;
+                    if (newUsername) currentUsername = newUsername;
                     showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
                 } else {
-                    const randomId = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 4);
+                    const randomId = Math.random().toString(36).substring(2, 10);
                     const newData = { user_id: parseInt(currentUserId), page_url: randomId, ...bioData, is_active: true, views_count: 0, created_at: new Date().toISOString() };
                     const { data, error } = await supabaseClient.from('bio_pages').insert([newData]).select();
                     if (error) throw error;
-                    if (data && data[0]) { bioPageId = data[0].id; currentPageUrl = randomId; document.getElementById('pageUrlValue').innerText = currentPageUrl; }
+                    if (data && data[0]) { bioPageId = data[0].id; currentPageUrl = randomId; }
                     showSuccess('✅ تم إنشاء صفحة البايو بنجاح!');
                 }
                 if (bioPageId) await savePaymentMethods(bioPageId);
+                updatePageUrlDisplay();
             } catch (error) { console.error('خطأ في الحفظ:', error); showError(error.message || 'حدث خطأ أثناء حفظ البيانات'); }
             finally { hideLoading(); }
+        }
+        
+        function updatePageUrlDisplay() {
+            const displaySpan = document.getElementById('pageUrlDisplay');
+            const username = document.getElementById('customUsername').value.trim();
+            if (username && document.getElementById('usernameStatus')?.innerText.includes('متوفر')) {
+                displaySpan.innerHTML = `analyzer.social/${username}`;
+            } else if (currentPageUrl) {
+                displaySpan.innerHTML = `analyzer.social/bio/${currentPageUrl}`;
+            } else {
+                displaySpan.innerHTML = 'analyzer.social/...';
+            }
         }
         
         async function loadBioData() {
@@ -818,10 +782,10 @@
                     loadContacts(data.contacts || {});
                     currentPageUrl = data.page_url;
                     currentUsername = data.username || '';
-                    document.getElementById('pageUrlValue').innerText = currentPageUrl;
                     document.getElementById('customUsername').value = currentUsername;
                     customLinks = data.custom_links || [];
                     renderCustomLinks();
+                    updatePageUrlDisplay();
                 }
                 await loadPaymentData();
                 renderPaymentInputs();
@@ -852,13 +816,31 @@
         }
         
         function previewBioPage() {
-            if (!currentPageUrl) { showError('⚠️ لا يوجد رابط للحفظ بعد'); return; }
             const username = document.getElementById('customUsername').value.trim();
-            if (username && document.getElementById('usernameStatus')?.innerText.includes('متوفر')) {
+            const statusText = document.getElementById('usernameStatus')?.innerText || '';
+            if (username && statusText.includes('متوفر')) {
                 window.open(`https://analyzer.social/${username}`, '_blank');
-            } else {
+            } else if (currentPageUrl) {
                 window.open(`https://analyzer.social/bio/${currentPageUrl}`, '_blank');
+            } else {
+                showError('⚠️ لا يوجد رابط للحفظ بعد');
             }
+        }
+        
+        async function copyPageUrl() {
+            const username = document.getElementById('customUsername').value.trim();
+            const statusText = document.getElementById('usernameStatus')?.innerText || '';
+            let url;
+            if (username && statusText.includes('متوفر')) {
+                url = `https://analyzer.social/${username}`;
+            } else if (currentPageUrl) {
+                url = `https://analyzer.social/bio/${currentPageUrl}`;
+            } else {
+                showError('⚠️ لا يوجد رابط للحفظ بعد');
+                return;
+            }
+            await navigator.clipboard.writeText(url);
+            showSuccess('✅ تم نسخ الرابط!');
         }
         
         function logout() {
@@ -874,12 +856,7 @@
         window.saveAllData = saveAllData;
         window.previewBioPage = previewBioPage;
         window.logout = logout;
-        window.copyPageUrl = async function() {
-            const username = document.getElementById('customUsername').value.trim();
-            const url = username ? `https://analyzer.social/${username}` : `https://analyzer.social/bio/${currentPageUrl}`;
-            await navigator.clipboard.writeText(url);
-            showSuccess('✅ تم نسخ الرابط!');
-        };
+        window.copyPageUrl = copyPageUrl;
         window.checkUsernameAvailability = checkUsernameAvailability;
         window.upgradeToPlan = upgradeToPlan;
         
