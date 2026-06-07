@@ -392,8 +392,13 @@ def bio_page_by_page_url(page_url):
                          username=bio_data.get('username'),
                          bio_data=bio_data)
 
-# =====================================================
-
+# ======================هيثم===============================
+@app.route('/plans')
+def plans_page():
+    """صفحة خطط الاشتراك والدفع"""
+    return render_template('plans.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
 # =====================================================
 # نقطة نهاية فحص الصحة (لـ Render)
 # =====================================================
