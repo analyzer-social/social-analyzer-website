@@ -938,7 +938,26 @@ def admin_stats():
         'total_bio_pages': bio_pages_count or 0,
         'total_views': total_views,
         'total_clicks': total_clicks
-    })                  
+    }) 
+# =====================================================
+# معالج الأخطاء (Error Handlers)
+# =====================================================
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """صفحة خطأ 404"""
+    return render_template('error.html', error_message="الصفحة غير موجودة"), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """صفحة خطأ 500"""
+    return render_template('error.html', error_message="حدث خطأ داخلي في الخادم"), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """معالج الأخطاء العام"""
+    print(f"❌ خطأ غير متوقع: {str(e)}")
+    return render_template('error.html', error_message="حدث خطأ غير متوقع"), 500                    
 # =====================================================
 # تشغيل التطبيق
 # =====================================================
