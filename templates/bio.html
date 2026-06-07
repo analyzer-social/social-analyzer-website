@@ -38,9 +38,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // متغيرات من Flask
         window.SUPABASE_URL = '{{ SUPABASE_URL }}';
         window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
+        
+        // دعم كل من page_url و username
         window.PAGE_URL = '{{ page_url }}';
+        window.USERNAME = '{{ username }}';
+        
+        // بيانات الصفحة المرسلة من الخادم (مباشرة)
+        window.BIO_DATA = {{ bio_data|tojson|safe if bio_data else 'null' }};
     </script>
     
     <!-- الخطوط -->
@@ -344,8 +351,21 @@
     
     <script src="/static/config.js"></script>
     <script>
-        const pageUrl = window.PAGE_URL;
+        // الحصول على البيانات من window
+        const supabaseUrl = window.SUPABASE_URL;
+        const supabaseKey = window.SUPABASE_ANON_KEY;
         let supabaseClient = null;
+        
+        // البيانات المباشرة من الخادم (الأفضل)
+        let bioDataFromServer = window.BIO_DATA;
+        
+        // معرف الصفحة (page_url أو username)
+        const pageUrl = window.PAGE_URL;
+        const username = window.USERNAME;
+        
+        console.log("🔍 بيانات من الخادم:", bioDataFromServer);
+        console.log("🔍 page_url:", pageUrl);
+        console.log("🔍 username:", username);
         
         // =====================================================
         // قائمة المحافظ الإلكترونية مع روابط المتاجر
@@ -379,11 +399,9 @@
         
         function getFacebookUrl(identifier) {
             if (!identifier) return '#';
-            // إذا كان رقماً (ID)
             if (/^\d+$/.test(identifier)) {
                 return `https://www.facebook.com/profile.php?id=${identifier}`;
             }
-            // إذا كان اسم مستخدم
             return `https://facebook.com/${identifier}`;
         }
         
@@ -513,10 +531,12 @@
         
         async function trackPaymentClick(methodKey, accountNumber) {
             try {
+                // استخدام page_url أو username
+                const identifier = pageUrl || username;
                 await fetch('/api/payment/click', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ method_key: methodKey, account_number: accountNumber, page_url: pageUrl })
+                    body: JSON.stringify({ method_key: methodKey, account_number: accountNumber, page_url: identifier })
                 });
             } catch (error) { console.error('Error tracking click:', error); }
         }
@@ -587,14 +607,18 @@
         // دالة عرض وسائل الدفع
         // =====================================================
         
-        async function displayPaymentMethods() {
+        async function displayPaymentMethods(bioPageId, pageIdentifier) {
             const section = document.getElementById('paymentSection');
             const grid = document.getElementById('paymentGrid');
             if (!section || !grid) return;
             
             try {
-                const response = await fetch(`/api/payment/load-page?page_url=${pageUrl}`);
+                // استخدام page_url أو username للبحث
+                const identifier = pageIdentifier || pageUrl || username;
+                const response = await fetch(`/api/payment/load-page?page_url=${identifier}`);
                 const result = await response.json();
+                
+                console.log("🔍 وسائل الدفع:", result);
                 
                 if (!result.success || !result.payment_methods) {
                     section.style.display = 'none';
@@ -611,7 +635,7 @@
                 for (const wallet of activeWallets) {
                     const accountNumber = result.payment_methods[wallet.id];
                     html += `
-                        <div class="payment-item" onclick="handlePaymentClick('${wallet.id}', '${accountNumber}', '${wallet.name}', '${wallet.storeUrl}')">
+                        <div class="payment-item" onclick="handlePaymentClick('${wallet.id}', '${accountNumber.replace(/'/g, "\\'")}', '${wallet.name}', '${wallet.storeUrl}')">
                             <img src="/static/assets/payment-icons/${wallet.id}.webp" 
                                  alt="${wallet.name}" class="payment-icon"
                                  onerror="this.src='/static/assets/payment-icons/placeholder.png'">
@@ -634,56 +658,111 @@
         };
         
         // =====================================================
-        // دالة زيادة المشاهدات
+        // دالة عرض الصفحة باستخدام البيانات المباشرة
         // =====================================================
         
-        async function incrementViews(pageUrlParam) {
-            try {
-                await supabaseClient.rpc('increment_bio_views', { page_url_param: pageUrlParam });
-            } catch (error) { console.error('Error incrementing views:', error); }
+        function displayBioPageFromData(data) {
+            if (!data) {
+                showError('الصفحة غير موجودة');
+                return;
+            }
+            
+            console.log("✅ عرض بيانات الصفحة:", data);
+            
+            // تحديث عنوان الصفحة
+            document.title = `${data.display_name || 'صفحة بايو'} | analyzer.social`;
+            
+            // عرض المعلومات الأساسية
+            document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
+            
+            // عرض اسم المستخدم المخصص إذا وجد
+            const usernameElement = document.getElementById('username');
+            if (data.username) {
+                usernameElement.innerText = `@${data.username}`;
+                usernameElement.style.display = 'block';
+            } else {
+                usernameElement.style.display = 'none';
+            }
+            
+            document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
+            document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
+            
+            // تحديث Open Graph
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            if (ogTitle) ogTitle.setAttribute('content', `صفحة البايو | ${data.display_name || 'مستخدم'}`);
+            
+            const ogUrl = document.querySelector('meta[property="og:url"]');
+            if (ogUrl) ogUrl.setAttribute('content', window.location.href);
+            
+            // تطبيق الثيم
+            applyTheme(data.theme_name || 'default');
+            
+            // عرض الصورة الشخصية
+            displayAvatar(data.avatar_url, data.display_name);
+            
+            // عرض الحسابات والروابط
+            displayAccounts(data.accounts || {});
+            displayCustomLinks(data.custom_links || []);
+            displayContacts(data.contacts || {});
+            
+            // عرض وسائل الدفع (باستخدام page_url أو username)
+            const identifier = data.page_url || data.username;
+            displayPaymentMethods(data.id, identifier);
+            
+            // إخفاء شاشة التحميل وعرض المحتوى
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                }, 500);
+            }, 300);
         }
         
         // =====================================================
-        // دالة تحميل الصفحة الرئيسية
+        // دالة تحميل الصفحة - تعتمد على البيانات المباشرة أولاً
         // =====================================================
         
         async function loadBioPage() {
+            // أولاً: إذا كانت البيانات موجودة من الخادم مباشرة
+            if (bioDataFromServer && bioDataFromServer !== 'null') {
+                console.log("✅ استخدام البيانات المباشرة من الخادم");
+                displayBioPageFromData(bioDataFromServer);
+                return;
+            }
+            
+            // ثانياً: إذا لم تكن هناك بيانات مباشرة، نحاول جلبها من API
+            console.log("⚠️ لا توجد بيانات مباشرة، جلب من API...");
+            
+            if (!supabaseClient) {
+                supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            }
+            
             try {
-                const { data, error } = await supabaseClient
-                    .from('bio_pages')
-                    .select('*')
-                    .eq('page_url', pageUrl)
-                    .eq('is_active', true)
-                    .single();
+                let query;
+                if (pageUrl) {
+                    query = supabaseClient
+                        .from('bio_pages')
+                        .select('*')
+                        .eq('page_url', pageUrl)
+                        .eq('is_active', true);
+                } else if (username) {
+                    query = supabaseClient
+                        .from('bio_pages')
+                        .select('*')
+                        .eq('username', username)
+                        .eq('is_active', true);
+                } else {
+                    showError('معرف الصفحة غير موجود');
+                    return;
+                }
+                
+                const { data, error } = await query.single();
                 
                 if (error) throw error;
                 
                 if (data) {
-                    document.title = `${data.display_name || 'صفحة بايو'} | analyzer.social`;
-                    document.getElementById('displayName').innerText = data.display_name || 'مستخدم';
-                    document.getElementById('username').innerText = '';
-                    document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
-                    document.getElementById('views').innerHTML = `👁️ ${data.views_count || 0} مشاهدة`;
-                    
-                    // تحديث Open Graph
-                    document.querySelector('meta[property="og:title"]').setAttribute('content', `صفحة البايو | ${data.display_name || 'مستخدم'}`);
-                    document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
-                    
-                    applyTheme(data.theme_name || 'default');
-                    displayAvatar(data.avatar_url, data.display_name);
-                    displayAccounts(data.accounts || {});
-                    displayCustomLinks(data.custom_links || []);
-                    displayContacts(data.contacts || {});
-                    await displayPaymentMethods();
-                    await incrementViews(pageUrl);
-                    
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.opacity = '0';
-                        setTimeout(() => {
-                            document.getElementById('loading-screen').style.display = 'none';
-                            document.getElementById('mainContent').style.display = 'block';
-                        }, 500);
-                    }, 300);
+                    displayBioPageFromData(data);
                 } else {
                     showError('الصفحة غير موجودة');
                 }
@@ -699,15 +778,17 @@
         }
         
         // =====================================================
-        // تهيئة Supabase
+        // تهيئة Supabase وبدء التحميل
         // =====================================================
         
-        function initSupabaseClient() {
-            supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+        function init() {
+            if (supabaseUrl && supabaseKey) {
+                supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            }
             loadBioPage();
         }
         
-        initSupabaseClient();
+        init();
     </script>
 </body>
 </html>
