@@ -24,7 +24,6 @@
             margin: 0 auto;
         }
         
-        /* بطاقات الخطط */
         .plans-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -56,7 +55,6 @@
         
         .plan-card.recommended {
             border: 2px solid #f59e0b;
-            position: relative;
         }
         
         .recommended-badge {
@@ -73,68 +71,15 @@
             white-space: nowrap;
         }
         
-        .plan-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
+        .plan-icon { font-size: 48px; margin-bottom: 15px; }
+        .plan-name { font-size: 22px; font-weight: 800; color: #2d3748; margin-bottom: 10px; }
+        .plan-price { font-size: 32px; font-weight: 800; color: #f59e0b; margin: 15px 0; }
+        .plan-price small { font-size: 14px; font-weight: normal; color: #718096; }
+        .plan-stars { background: #fef3c7; display: inline-block; padding: 5px 12px; border-radius: 50px; font-size: 12px; color: #f59e0b; margin-bottom: 15px; }
+        .plan-features { text-align: right; margin: 20px 0; padding: 0 10px; }
+        .plan-features li { list-style: none; font-size: 12px; padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+        .plan-features li i { color: #28a745; font-size: 12px; }
         
-        .plan-name {
-            font-size: 22px;
-            font-weight: 800;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-        
-        .plan-price {
-            font-size: 32px;
-            font-weight: 800;
-            color: #f59e0b;
-            margin: 15px 0;
-        }
-        
-        .plan-price small {
-            font-size: 14px;
-            font-weight: normal;
-            color: #718096;
-        }
-        
-        .plan-duration {
-            font-size: 13px;
-            color: #718096;
-            margin-bottom: 15px;
-        }
-        
-        .plan-stars {
-            background: #fef3c7;
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-size: 12px;
-            color: #f59e0b;
-            margin-bottom: 15px;
-        }
-        
-        .plan-features {
-            text-align: right;
-            margin: 20px 0;
-            padding: 0 10px;
-        }
-        
-        .plan-features li {
-            list-style: none;
-            font-size: 12px;
-            padding: 6px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .plan-features li i {
-            color: #28a745;
-            font-size: 12px;
-        }
-        
-        /* أقسام الدفع */
         .payment-section {
             background: white;
             border-radius: 28px;
@@ -181,11 +126,7 @@
             margin-bottom: 10px;
         }
         
-        .payment-method-name {
-            font-size: 13px;
-            font-weight: bold;
-            color: #2d3748;
-        }
+        .payment-method-name { font-size: 13px; font-weight: bold; color: #2d3748; }
         
         .bank-number {
             background: linear-gradient(135deg, #667eea15, #764ba215);
@@ -195,13 +136,7 @@
             margin: 20px 0;
         }
         
-        .bank-number span:first-child {
-            display: block;
-            font-size: 13px;
-            color: #718096;
-            margin-bottom: 10px;
-        }
-        
+        .bank-number span:first-child { display: block; font-size: 13px; color: #718096; margin-bottom: 10px; }
         .bank-number span:last-child {
             font-size: 28px;
             font-weight: bold;
@@ -253,13 +188,8 @@
             box-shadow: 0 8px 20px rgba(102,126,234,0.4);
         }
         
-        .btn-stars {
-            background: linear-gradient(135deg, #f5b042, #f59e0b);
-        }
-        
-        .btn-stars:hover {
-            box-shadow: 0 8px 20px rgba(245,158,11,0.4);
-        }
+        .btn-stars { background: linear-gradient(135deg, #f5b042, #f59e0b); }
+        .btn-stars:hover { box-shadow: 0 8px 20px rgba(245,158,11,0.4); }
         
         .warning-box {
             background: #fff3cd;
@@ -309,84 +239,107 @@
             .payment-grid { grid-template-columns: repeat(3, 1fr); }
             .bank-number span:last-child { font-size: 18px; }
         }
-        
-        .loading {
-            text-align: center;
-            padding: 60px;
-            color: white;
-            font-size: 18px;
-        }
-        
-        .loading i { animation: spin 1s linear infinite; margin-left: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="loadingIndicator" class="loading">
-            <i class="fas fa-spinner fa-spin"></i> جاري تحميل خطط الاشتراك...
+        <!-- خطط الاشتراك (ثابتة) -->
+        <div class="plans-grid">
+            <!-- الخطة السنوية -->
+            <div class="plan-card recommended selected" onclick="selectPlan('yearly')">
+                <div class="recommended-badge"><i class="fas fa-star"></i> الأكثر طلباً</div>
+                <div class="plan-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="plan-name">💎 سنوي</div>
+                <div class="plan-price">$2<small> / سنة كاملة</small></div>
+                <div class="plan-stars"><i class="fas fa-star"></i> 150 نجمة Telegram</div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check-circle"></i> رابط مخصص bio.analyzer.social/اسمك</li>
+                    <li><i class="fas fa-check-circle"></i> جميع الثيمات والتصاميم</li>
+                    <li><i class="fas fa-check-circle"></i> وسائل دفع غير محدودة</li>
+                    <li><i class="fas fa-check-circle"></i> دعم أولوية</li>
+                    <li><i class="fas fa-check-circle"></i> إحصائيات متقدمة</li>
+                </ul>
+            </div>
+            
+            <!-- الخطة مدى الحياة -->
+            <div class="plan-card" onclick="selectPlan('lifetime')">
+                <div class="plan-icon"><i class="fas fa-crown"></i></div>
+                <div class="plan-name">👑 مدى الحياة</div>
+                <div class="plan-price">$20<small> / مدى الحياة</small></div>
+                <div class="plan-stars"><i class="fas fa-star"></i> 1500 نجمة Telegram</div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check-circle"></i> رابط مخصص bio.analyzer.social/اسمك</li>
+                    <li><i class="fas fa-check-circle"></i> جميع الثيمات والتصاميم</li>
+                    <li><i class="fas fa-check-circle"></i> وسائل دفع غير محدودة</li>
+                    <li><i class="fas fa-check-circle"></i> دعم VIP</li>
+                    <li><i class="fas fa-check-circle"></i> تحليلات متقدمة</li>
+                    <li><i class="fas fa-check-circle"></i> تحديثات مجانية مدى الحياة</li>
+                </ul>
+            </div>
         </div>
         
-        <div id="mainContent" style="display: none;">
-            <!-- خطط الاشتراك -->
-            <div class="plans-grid" id="plansGrid"></div>
+        <!-- طرق الدفع -->
+        <div class="payment-section">
+            <div class="section-title">
+                <i class="fas fa-credit-card"></i>
+                <span>طرق الدفع المتاحة</span>
+            </div>
             
-            <!-- طرق الدفع -->
-            <div class="payment-section">
-                <div class="section-title">
-                    <i class="fas fa-credit-card"></i>
-                    <span>طرق الدفع المتاحة</span>
+            <div class="payment-grid">
+                <div class="payment-method" onclick="copyWalletNumber('جيب')">
+                    <img src="/static/assets/payment-icons/jaib.webp" alt="جيب" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                    <div class="payment-method-name">جيب</div>
                 </div>
-                
-                <div class="payment-grid" id="paymentGrid"></div>
-                
-                <!-- التحويل البنكي -->
-                <div id="bankSection">
-                    <div class="bank-number">
-                        <span>📱 رقم المحفظة الموحد للتحويل</span>
-                        <span id="bankNumber">772130931</span>
-                        <button class="copy-btn" onclick="copyBankNumber()"><i class="fas fa-copy"></i> نسخ الرقم</button>
-                    </div>
+                <div class="payment-method" onclick="copyWalletNumber('ون كاش')">
+                    <img src="/static/assets/payment-icons/onecash.webp" alt="ون كاش" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                    <div class="payment-method-name">ون كاش</div>
                 </div>
-                
-                <!-- أزرار الدفع -->
-                <div class="action-buttons">
-                    <button class="btn-primary btn-stars" id="starsPayBtn" onclick="payWithStars()">
-                        <i class="fas fa-star"></i> ⭐ دفع بنجوم Telegram
-                    </button>
-                    <button class="btn-primary" onclick="payWithBank()">
-                        <i class="fas fa-university"></i> 🏦 دفع بنكي / محافظ
-                    </button>
+                <div class="payment-method" onclick="copyWalletNumber('كاش')">
+                    <img src="/static/assets/payment-icons/cash.webp" alt="كاش" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                    <div class="payment-method-name">كاش</div>
                 </div>
-                
-                <div class="warning-box">
-                    <i class="fas fa-info-circle"></i> 
-                    <strong>تنبيه مهم:</strong> بعد إتمام التحويل، سيتم تفعيل اشتراكك تلقائياً خلال 5-10 دقائق. 
-                    للمساعدة والدعم: <a href="https://t.me/Alshabany_Ai" target="_blank" style="color:#667eea;">@Alshabany_Ai</a>
+                <div class="payment-method" onclick="copyWalletNumber('جوالي')">
+                    <img src="/static/assets/payment-icons/jawaly.webp" alt="جوالي" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                    <div class="payment-method-name">جوالي</div>
+                </div>
+                <div class="payment-method" onclick="copyWalletNumber('كريمي')">
+                    <img src="/static/assets/payment-icons/kremi.webp" alt="كريمي" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                    <div class="payment-method-name">كريمي</div>
                 </div>
             </div>
             
-            <div class="footer">
-                <p>✨ اشتراك واحد - جميع المميزات - صفحة بايو احترافية</p>
-                <p><a href="/dashboard">← العودة للوحة التحكم</a></p>
+            <div class="bank-number">
+                <span>📱 رقم المحفظة الموحد للتحويل</span>
+                <span>772130931</span>
+                <button class="copy-btn" onclick="copyBankNumber()"><i class="fas fa-copy"></i> نسخ الرقم</button>
             </div>
+            
+            <div class="action-buttons">
+                <button class="btn-primary btn-stars" onclick="payWithStars()">
+                    <i class="fas fa-star"></i> ⭐ دفع بنجوم Telegram
+                </button>
+                <button class="btn-primary" onclick="payWithBank()">
+                    <i class="fas fa-university"></i> 🏦 دفع بنكي / محافظ
+                </button>
+            </div>
+            
+            <div class="warning-box">
+                <i class="fas fa-info-circle"></i> 
+                <strong>تنبيه مهم:</strong> بعد إتمام التحويل، سيتم تفعيل اشتراكك تلقائياً خلال 5-10 دقائق. 
+                للمساعدة والدعم: <a href="https://t.me/Alshabany_Ai" target="_blank" style="color:#667eea;">@Alshabany_Ai</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>✨ اشتراك واحد - جميع المميزات - صفحة بايو احترافية</p>
+            <p><a href="/dashboard">← العودة للوحة التحكم</a></p>
         </div>
     </div>
     
     <div id="toast" class="toast">✅ تم نسخ الرقم!</div>
     
     <script>
-        // قائمة وسائل الدفع
-        const paymentWallets = [
-            { id: 'jaib', name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
-            { id: 'onecash', name: 'ون كاش', icon: '/static/assets/payment-icons/onecash.webp' },
-            { id: 'cash', name: 'كاش', icon: '/static/assets/payment-icons/cash.webp' },
-            { id: 'jawaly', name: 'جوالي', icon: '/static/assets/payment-icons/jawaly.webp' },
-            { id: 'kremi', name: 'كريمي', icon: '/static/assets/payment-icons/kremi.webp' }
-        ];
-        
-        let plans = [];
-        let selectedPlan = null;
+        let selectedPlan = 'yearly';
         let userId = null;
         let username = null;
         
@@ -396,102 +349,24 @@
         userId = urlParams.get('user_id') || (token ? atob(token).split(':')[0] : null);
         username = urlParams.get('username') || localStorage.getItem('bio_username');
         
-        // أيقونات الخطط
-        function getPlanIcon(planId) {
-            const icons = {
-                'trial': 'fa-gift',
-                'yearly': 'fa-calendar-alt',
-                'lifetime': 'fa-crown'
-            };
-            return icons[planId] || 'fa-gem';
-        }
-        
-        // ========== جلب الخطط من قاعدة البيانات ==========
-        async function loadPlansFromDatabase() {
-            try {
-                const response = await fetch('/api/subscription/plans');
-                const result = await response.json();
-                
-                if (result.success && result.plans && result.plans.length > 0) {
-                    plans = result.plans;
-                    // اختيار الخطة السنوية أولاً إذا وجدت، وإلا أول خطة
-                    selectedPlan = plans.find(p => p.id === 'yearly') || plans[0];
-                    renderPlans();
-                    renderPaymentMethods();
-                    
-                    // إخفاء التحميل وإظهار المحتوى
-                    document.getElementById('loadingIndicator').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
-                } else {
-                    throw new Error('No plans found');
-                }
-            } catch (error) {
-                console.error('Error loading plans:', error);
-                document.getElementById('loadingIndicator').innerHTML = `
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    خطأ في تحميل البيانات. يرجى تحديث الصفحة
-                    <button onclick="location.reload()" style="display: block; margin: 20px auto; background: white; color: #667eea; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;">إعادة المحاولة</button>
-                `;
-            }
-        }
-        
-        function renderPlans() {
-            const container = document.getElementById('plansGrid');
-            if (!container) return;
-            
-            container.innerHTML = plans.map((plan, index) => `
-                <div class="plan-card ${plan.id === 'yearly' ? 'recommended' : ''} ${selectedPlan && selectedPlan.id === plan.id ? 'selected' : ''}" 
-                     onclick="selectPlan('${plan.id}')">
-                    ${plan.id === 'yearly' ? '<div class="recommended-badge"><i class="fas fa-star"></i> الأكثر طلباً</div>' : ''}
-                    <div class="plan-icon"><i class="fas ${getPlanIcon(plan.id)}"></i></div>
-                    <div class="plan-name">${plan.display_name || plan.name}</div>
-                    <div class="plan-price">$${plan.price}<small> / ${plan.duration_text}</small></div>
-                    <div class="plan-stars"><i class="fas fa-star"></i> ${plan.price_stars} نجمة Telegram</div>
-                    <ul class="plan-features">
-                        ${(plan.features || []).map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
-                        ${(!plan.features || plan.features.length === 0) ? '<li><i class="fas fa-check-circle"></i> رابط مخصص</li><li><i class="fas fa-check-circle"></i> جميع الثيمات</li><li><i class="fas fa-check-circle"></i> وسائل دفع غير محدودة</li>' : ''}
-                    </ul>
-                </div>
-            `).join('');
-        }
-        
-        function renderPaymentMethods() {
-            const container = document.getElementById('paymentGrid');
-            if (!container) return;
-            
-            container.innerHTML = paymentWallets.map(wallet => `
-                <div class="payment-method" onclick="copyWalletNumber('${wallet.name}')">
-                    <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
-                    <div class="payment-method-name">${wallet.name}</div>
-                </div>
-            `).join('');
-        }
-        
         function selectPlan(planId) {
-            selectedPlan = plans.find(p => p.id === planId);
-            renderPlans();
+            selectedPlan = planId;
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
         }
         
         function payWithStars() {
-            if (!selectedPlan) {
-                showToast('⚠️ الرجاء اختيار خطة أولاً');
-                return;
-            }
-            
             const botUsername = 'analyzer_social_bot';
-            const startParam = `premium_${selectedPlan.id}_${userId || ''}`;
+            const startParam = `premium_${selectedPlan}_${userId || ''}`;
             window.open(`https://t.me/${botUsername}?start=${startParam}`, '_blank');
             showToast('⭐ تم توجيهك إلى البوت لإتمام الدفع بالنجوم');
         }
         
         function payWithBank() {
-            if (!selectedPlan) {
-                showToast('⚠️ الرجاء اختيار خطة أولاً');
-                return;
-            }
-            
-            const plan = selectedPlan;
-            const message = `💰 طلب ترقية حساب مميز - analyzer.social\n\n🆔 معرف المستخدم: ${userId || 'غير معروف'}\n👤 اسم المستخدم: @${username || 'غير معروف'}\n📋 الباقة: ${plan.display_name || plan.name}\n💰 المبلغ: $${plan.price}\n📅 المدة: ${plan.duration_text}\n⭐ قيمة النجوم: ${plan.price_stars} نجمة\n📱 رقم التحويل: 772130931\n\n✅ تم التحويل إلى الرقم الموحد، يرجى التفعيل`;
+            const planName = selectedPlan === 'yearly' ? '💎 سنوي ($2)' : '👑 مدى الحياة ($20)';
+            const message = `💰 طلب ترقية حساب مميز - analyzer.social\n\n🆔 معرف المستخدم: ${userId || 'غير معروف'}\n👤 اسم المستخدم: @${username || 'غير معروف'}\n📋 الباقة: ${planName}\n📱 رقم التحويل: 772130931\n\n✅ تم التحويل إلى الرقم الموحد، يرجى التفعيل`;
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://t.me/Alshabany_Ai?text=${encodedMessage}`, '_blank');
             showToast('📤 تم توجيهك إلى المطور. أرسل صورة الإيداع مع المعرف الخاص بك');
@@ -517,9 +392,6 @@
                 toast.className = 'toast';
             }, 3000);
         }
-        
-        // بدء التحميل
-        loadPlansFromDatabase();
     </script>
 </body>
 </html>
