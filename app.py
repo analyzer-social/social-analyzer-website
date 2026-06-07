@@ -1044,7 +1044,92 @@ def get_subscription_plans():
         
     except Exception as e:
         print(f"Error fetching plans: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500                  
+        return jsonify({'success': False, 'error': str(e)}), 500
+# =====================================================
+# القسم: Sitemap.xml لتحسين محركات البحث (SEO)
+# =====================================================
+
+@app.route('/sitemap.xml')
+def sitemap():
+    """إنشاء خريطة موقع ديناميكية لجميع صفحات البايو"""
+    
+    if not supabase:
+        return render_template('error.html', error_message="قاعدة البيانات غير متصلة"), 500
+    
+    try:
+        # جلب جميع صفحات البايو النشطة التي لديها username
+        result = supabase.table('bio_pages')\
+            .select('username, updated_at')\
+            .eq('is_active', True)\
+            .not_.is_('username', 'null')\
+            .execute()
+        
+        # روابط ثابتة في الموقع
+        static_urls = [
+            {'loc': '/', 'priority': '1.0', 'changefreq': 'weekly'},
+            {'loc': '/dashboard', 'priority': '0.9', 'changefreq': 'weekly'},
+            {'loc': '/plans', 'priority': '0.8', 'changefreq': 'monthly'},
+            {'loc': '/privacy', 'priority': '0.5', 'changefreq': 'yearly'},
+            {'loc': '/terms', 'priority': '0.5', 'changefreq': 'yearly'},
+            {'loc': '/help', 'priority': '0.6', 'changefreq': 'monthly'},
+        ]
+        
+        # بناء XML
+        xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        
+        # إضافة الروابط الثابتة
+        for url in static_urls:
+            xml += '  <url>\n'
+            xml += f'    <loc>https://analyzer.social{url["loc"]}</loc>\n'
+            xml += f'    <priority>{url["priority"]}</priority>\n'
+            xml += f'    <changefreq>{url["changefreq"]}</changefreq>\n'
+            xml += '  </url>\n'
+        
+        # إضافة صفحات البايو الديناميكية
+        for page in result.data:
+            username = page.get('username')
+            if username:
+                xml += '  <url>\n'
+                xml += f'    <loc>https://analyzer.social/bio/{username}</loc>\n'
+                xml += '    <priority>0.7</priority>\n'
+                xml += '    <changefreq>weekly</changefreq>\n'
+                if page.get('updated_at'):
+                    xml += f'    <lastmod>{page["updated_at"]}</lastmod>\n'
+                xml += '  </url>\n'
+        
+        xml += '</urlset>'
+        
+        return xml, 200, {'Content-Type': 'application/xml'}
+        
+    except Exception as e:
+        print(f"Error generating sitemap: {str(e)}")
+        return render_template('error.html', error_message="حدث خطأ في إنشاء خريطة الموقع"), 500
+
+# =====================================================
+# القسم: robots.txt لتوجيه محركات البحث
+# =====================================================
+
+@app.route('/robots.txt')
+def robots():
+    """ملف robots.txt لتوجيه محركات البحث"""
+    content = """User-agent: *
+Allow: /
+Allow: /bio/
+Allow: /plans
+Allow: /privacy
+Allow: /terms
+Allow: /help
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth
+Disallow: /static/config.js
+
+Sitemap: https://analyzer.social/sitemap.xml
+Host: https://analyzer.social
+"""
+    return content, 200, {'Content-Type': 'text/plain'}                                
 # =====================================================
 # تشغيل التطبيق
 # =====================================================
