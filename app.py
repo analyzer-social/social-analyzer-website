@@ -970,7 +970,6 @@ def get_subscription_plans():
         return jsonify({'success': False, 'error': 'Database not connected'}), 500
     
     try:
-        # تصحيح: استخدام order() بدون asc، أو استخدام asc_()
         result = supabase.table('subscription_plans')\
             .select('*')\
             .eq('is_active', True)\
@@ -979,8 +978,12 @@ def get_subscription_plans():
         
         plans = []
         for plan in result.data:
+            # معالجة duration_days (تجنب None)
+            duration_days = plan.get('duration_days')
+            if duration_days is None:
+                duration_days = 0
+            
             # حساب النص المناسب للمدة
-            duration_days = plan.get('duration_days', 0)
             if duration_days >= 36500:
                 duration_text = 'مدى الحياة'
             elif duration_days >= 365:
@@ -989,23 +992,37 @@ def get_subscription_plans():
             elif duration_days >= 30:
                 months = duration_days // 30
                 duration_text = f'{months} شهر'
-            else:
+            elif duration_days > 0:
                 duration_text = f'{duration_days} يوم'
+            else:
+                duration_text = 'غير محدد'
             
-            # معالجة المميزات (قد تكون JSONB أو نص)
-            features = plan.get('features', [])
-            if isinstance(features, str):
+            # معالجة المميزات (تجنب None)
+            features = plan.get('features')
+            if features is None:
+                features = []
+            elif isinstance(features, str):
                 import json
                 try:
                     features = json.loads(features)
                 except:
                     features = []
             
+            # معالجة price_usd (تجنب None)
+            price_usd = plan.get('price_usd')
+            if price_usd is None:
+                price_usd = 0
+            
+            # معالجة price_stars (تجنب None)
+            price_stars = plan.get('price_stars')
+            if price_stars is None:
+                price_stars = 0
+            
             plans.append({
                 'id': plan.get('name'),
                 'display_name': plan.get('display_name'),
-                'price': float(plan.get('price_usd', 0)),
-                'price_stars': plan.get('price_stars', 0),
+                'price': float(price_usd),
+                'price_stars': price_stars,
                 'duration_days': duration_days,
                 'duration_text': duration_text,
                 'features': features,
@@ -1017,7 +1034,7 @@ def get_subscription_plans():
         
     except Exception as e:
         print(f"Error fetching plans: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500                   
+        return jsonify({'success': False, 'error': str(e)}), 500                  
 # =====================================================
 # تشغيل التطبيق
 # =====================================================
