@@ -224,7 +224,68 @@ def verify_user():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # =====================================================
-# الصفحات الرئيسية
+# دوال مساعدة لعرض صفحة البايو
+# =====================================================
+
+def get_bio_page_by_identifier(identifier, identifier_type='page_url'):
+    """
+    الحصول على بيانات صفحة البايو باستخدام page_url أو username
+    identifier_type: 'page_url' أو 'username'
+    """
+    if not supabase:
+        return None
+    
+    try:
+        if identifier_type == 'username':
+            # البحث باستخدام username
+            result = supabase.table('bio_pages')\
+                .select('*')\
+                .eq('username', identifier)\
+                .maybe_single()\
+                .execute()
+        else:
+            # البحث باستخدام page_url
+            result = supabase.table('bio_pages')\
+                .select('*')\
+                .eq('page_url', identifier)\
+                .maybe_single()\
+                .execute()
+        
+        return result.data if result.data else None
+        
+    except Exception as e:
+        print(f"Error in get_bio_page_by_identifier: {str(e)}")
+        return None
+
+def increment_views_count(page_id):
+    """زيادة عدد المشاهدات للصفحة"""
+    if not supabase:
+        return
+    
+    try:
+        # الحصول على العدد الحالي
+        result = supabase.table('bio_pages')\
+            .select('views_count')\
+            .eq('id', page_id)\
+            .execute()
+        
+        if result.data:
+            current_views = result.data[0].get('views_count', 0)
+            new_views = current_views + 1
+            
+            # تحديث العدد
+            supabase.table('bio_pages')\
+                .update({'views_count': new_views})\
+                .eq('id', page_id)\
+                .execute()
+            
+            print(f"✅ تم زيادة عدد المشاهدات إلى {new_views}")
+            
+    except Exception as e:
+        print(f"Error incrementing views: {str(e)}")
+
+# =====================================================
+# الصفحات الرئيسية لعرض البايو
 # =====================================================
 
 @app.route('/')
@@ -248,13 +309,70 @@ def auth():
                          SUPABASE_URL=SUPABASE_BIO_URL, 
                          SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
 
-@app.route('/bio/<page_url>')
-def bio_page(page_url):
-    """صفحة عرض البايو العامة"""
+# =====================================================
+# مسارات عرض صفحة البايو (مع دعم username الجديد)
+# =====================================================
+
+@app.route('/<username>')
+def bio_page_by_username(username):
+    """صفحة عرض البايو باستخدام username المخصص"""
+    print(f"🔍 جلب صفحة البايو باستخدام username: {username}")
+    
+    if not supabase:
+        return render_template('error.html', error="قاعدة البيانات غير متصلة"), 500
+    
+    # البحث عن الصفحة باستخدام username
+    bio_data = get_bio_page_by_identifier(username, 'username')
+    
+    if not bio_data:
+        # إذا لم يتم العثور، نحاول البحث باستخدام page_url (للمرونة)
+        bio_data = get_bio_page_by_identifier(username, 'page_url')
+        if not bio_data:
+            return render_template('error.html', error="الصفحة غير موجودة"), 404
+    
+    # التحقق من أن الصفحة نشطة
+    if not bio_data.get('is_active', True):
+        return render_template('error.html', error="هذه الصفحة غير نشطة حالياً"), 403
+    
+    # زيادة عدد المشاهدات
+    increment_views_count(bio_data['id'])
+    
+    # إرسال البيانات إلى القالب
     return render_template('bio.html', 
                          SUPABASE_URL=SUPABASE_BIO_URL, 
                          SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY,
-                         page_url=page_url)
+                         page_url=bio_data.get('page_url'),
+                         username=bio_data.get('username'),
+                         bio_data=bio_data)
+
+@app.route('/bio/<page_url>')
+def bio_page_by_page_url(page_url):
+    """صفحة عرض البايو باستخدام page_url القديم (للتوافق مع الروابط القديمة)"""
+    print(f"🔍 جلب صفحة البايو باستخدام page_url: {page_url}")
+    
+    if not supabase:
+        return render_template('error.html', error="قاعدة البيانات غير متصلة"), 500
+    
+    # البحث عن الصفحة باستخدام page_url
+    bio_data = get_bio_page_by_identifier(page_url, 'page_url')
+    
+    if not bio_data:
+        return render_template('error.html', error="الصفحة غير موجودة"), 404
+    
+    # التحقق من أن الصفحة نشطة
+    if not bio_data.get('is_active', True):
+        return render_template('error.html', error="هذه الصفحة غير نشطة حالياً"), 403
+    
+    # زيادة عدد المشاهدات
+    increment_views_count(bio_data['id'])
+    
+    # إرسال البيانات إلى القالب
+    return render_template('bio.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY,
+                         page_url=bio_data.get('page_url'),
+                         username=bio_data.get('username'),
+                         bio_data=bio_data)
 
 # =====================================================
 
@@ -274,10 +392,11 @@ def health():
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
-# =====================================================    
+
 @app.route('/static/assets/icons/<path:filename>')
 def serve_icon(filename):
     return send_from_directory('static/assets/icons', filename)
+
 # =====================================================
 # APIs لوسائل الدفع
 # =====================================================
@@ -513,8 +632,8 @@ def get_payment_stats(user_id):
         return jsonify({'success': True, 'stats': result.data})
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500 
-# =====================================================        
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/payment/load-page', methods=['GET'])
 def load_payment_methods_for_page():
     """تحميل وسائل الدفع لصفحة عامة (للعرض العام)"""
@@ -557,7 +676,8 @@ def load_payment_methods_for_page():
         
     except Exception as e:
         print(f"❌ خطأ في تحميل وسائل الدفع للصفحة: {str(e)}")
-        return jsonify({'error': str(e)}), 500 
+        return jsonify({'error': str(e)}), 500
+
 # =====================================================
 # إعدادات الجلسات والأمان للمدير
 # =====================================================
@@ -580,6 +700,7 @@ def verify_admin(password):
 def report():
     """صفحة التقرير الشامل للمشروع"""
     return render_template('report.html')
+
 # =====================================================
 # مصادقة Google OAuth
 # =====================================================
@@ -601,6 +722,7 @@ def google_auth_callback():
             return redirect('/auth/google-error?error=missing_token')
         
         # الحصول على معلومات المستخدم من Supabase
+        import requests
         user_response = requests.get(
             f'{SUPABASE_BIO_URL}/auth/v1/user',
             headers={'Authorization': f'Bearer {access_token}'}
@@ -678,6 +800,7 @@ def google_auth_error():
     """صفحة خطأ مصادقة Google"""
     error = request.args.get('error', 'unknown')
     return render_template('google_error.html', error=error)
+
 # =====================================================
 # صفحات المعلومات (سياسة الخصوصية، شروط الخدمة، المساعدة)
 # =====================================================
@@ -696,6 +819,7 @@ def terms_of_service():
 def help_page():
     """صفحة الدليل والمساعدة"""
     return render_template('help.html')
+
 # =====================================================
 # لوحة تحكم المدير
 # =====================================================
