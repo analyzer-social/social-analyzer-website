@@ -970,10 +970,11 @@ def get_subscription_plans():
         return jsonify({'success': False, 'error': 'Database not connected'}), 500
     
     try:
+        # تصحيح: استخدام order() بدون asc، أو استخدام asc_()
         result = supabase.table('subscription_plans')\
             .select('*')\
             .eq('is_active', True)\
-            .order('sort_order', asc=True)\
+            .order('sort_order')\
             .execute()
         
         plans = []
@@ -1009,7 +1010,7 @@ def get_subscription_plans():
                 'duration_text': duration_text,
                 'features': features,
                 'sort_order': plan.get('sort_order', 0),
-                'recommended': plan.get('name') == 'yearly'  # جعل الخطة السنوية هي الموصى بها
+                'recommended': plan.get('name') == 'yearly'
             })
         
         return jsonify({'success': True, 'plans': plans})
