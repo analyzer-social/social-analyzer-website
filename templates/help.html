@@ -1,722 +1,311 @@
-# -*- coding: utf-8 -*-
-from flask import Flask, render_template, send_from_directory, request, jsonify
-from supabase import create_client, Client
-import os
-from functools import wraps
-from flask import Flask, render_template, send_from_directory, request, jsonify, session, redirect
-from datetime import datetime
-import hashlib
-app = Flask(__name__, template_folder='templates', static_folder='static')
-app.secret_key = os.environ.get('SECRET_KEY', 'bio_social_analyzer_secret_key_2024_secure_9xK7mP2qR5tW8zL1')
-
-# =====================================================
-# متغيرات البيئة - دعم لعدة أسماء ممكنة
-# =====================================================
-
-# محاولة الحصول على URL من عدة أسماء ممكنة
-SUPABASE_BIO_URL = (
-    os.environ.get('SUPABASE_BIO_URL') or 
-    os.environ.get('SUPABASE_URL') or
-    os.environ.get('NEXT_PUBLIC_SUPABASE_URL') or
-    'https://riojthitssmmsdmsqzyc.supabase.co'  # القيمة الافتراضية
-)
-
-# محاولة الحصول على ANON KEY من عدة أسماء ممكنة
-SUPABASE_BIO_ANON_KEY = (
-    os.environ.get('SUPABASE_BIO_ANON_KEY') or
-    os.environ.get('SUPABASE_ANON_KEY') or
-    os.environ.get('NEXT_PUBLIC_SUPABASE_ANON_KEY') or
-    ''  # سيتم التحقق منها بعد
-)
-
-# طباعة معلومات debug (للتأكد من وجود المتغيرات)
-print(f"🔍 Checking environment variables:")
-print(f"   SUPABASE_BIO_URL: {'✅ Found' if SUPABASE_BIO_URL else '❌ Missing'}")
-print(f"   SUPABASE_BIO_ANON_KEY: {'✅ Found' if SUPABASE_BIO_ANON_KEY else '❌ Missing'}")
-print(f"   SECRET_KEY: {'✅ Found' if app.secret_key else '❌ Missing'}")
-
-# التحقق من وجود ANON KEY (بدون إيقاف التشغيل)
-if not SUPABASE_BIO_ANON_KEY:
-    print("⚠️ WARNING: SUPABASE_BIO_ANON_KEY is not set! Some features may not work.")
-    # لا نوقف التشغيل، نعطي قيمة افتراضية فارغة
-
-# تهيئة Supabase للخلفية (حتى لو كان المفتاح فارغاً، سنتعامل معه لاحقاً)
-try:
-    if SUPABASE_BIO_URL and SUPABASE_BIO_ANON_KEY:
-        supabase: Client = create_client(SUPABASE_BIO_URL, SUPABASE_BIO_ANON_KEY)
-        print("✅ Supabase client initialized successfully")
-    else:
-        supabase = None
-        print("⚠️ Supabase client not initialized (missing credentials)")
-except Exception as e:
-    print(f"⚠️ Supabase initialization error: {e}")
-    supabase = None
-
-# =====================================================
-# دوال المصادقة (Decorators)
-# =====================================================
-
-def require_auth(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        user_id = request.headers.get('X-User-Id')
-        if not user_id:
-            return jsonify({'error': 'Unauthorized'}), 401
-        return f(*args, **kwargs)
-    return decorated_function
-
-# =====================================================
-# واجهات برمجة التطبيقات (API)
-# =====================================================
-
-@app.route('/api/bio/save', methods=['POST'])
-@require_auth
-def save_bio():
-    """حفظ بيانات صفحة البايو"""
-    if not supabase:
-        return jsonify({'error': 'Database not configured'}), 500
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    try:
-        data = request.json
-        user_id = request.headers.get('X-User-Id')
-        page_url = data.get('page_url')
+    <!-- SEO & Open Graph -->
+    <title>📖 الدليل والمساعدة | منصة صفحات البايو analyzer.social</title>
+    <meta name="description" content="دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك. تعلم كيفية إضافة الحسابات، وسائل الدفع، الثيمات، والمزيد.">
+    <meta name="keywords" content="مساعدة, دليل, صفحة بايو, analyzer.social, شرحات, أسئلة شائعة">
+    <meta name="author" content="analyzer.social">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Open Graph / فيسبوك، واتساب، تليجرام -->
+    <meta property="og:title" content="📖 الدليل والمساعدة | analyzer.social">
+    <meta property="og:description" content="دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك. تعلم كيفية إضافة الحسابات، وسائل الدفع، الثيمات، والمزيد.">
+    <meta property="og:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://analyzer.social/help">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="analyzer.social | منصة صفحات البايو الاحترافية">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="الدليل والمساعدة | analyzer.social">
+    <meta name="twitter:description" content="دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك.">
+    <meta name="twitter:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #f5f7fa;
+            color: #1a2c3e;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         
-        bio_data = {
-            'avatar_url': data.get('avatar_url'),
-            'display_name': data.get('display_name'),
-            'bio': data.get('bio'),
-            'theme_name': data.get('theme_name'),
-            'accounts': data.get('accounts', {}),
-            'custom_links': data.get('custom_links', []),
-            'updated_at': 'now()'
+        /* الهيدر */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header h1 { font-size: 1.6rem; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 0.85rem; }
+        .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .header-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .home-btn {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .home-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-2px); }
+        
+        /* محتوى الصفحة */
+        .content-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        .content-card h1 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+            border-right: 4px solid #667eea;
+            padding-right: 20px;
+        }
+        .content-card h2 {
+            font-size: 1.4rem;
+            color: #2d3748;
+            margin: 30px 0 15px 0;
+            padding-right: 12px;
+            border-right: 3px solid #764ba2;
+        }
+        .content-card h3 {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin: 20px 0 10px 0;
+        }
+        .content-card p {
+            color: #4a5568;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        .content-card ul, .content-card ol {
+            margin: 15px 0 15px 30px;
+            color: #4a5568;
+        }
+        .content-card li { margin: 8px 0; }
+        .content-card a { color: #667eea; text-decoration: none; }
+        .content-card a:hover { text-decoration: underline; }
+        
+        .info-box {
+            background: #f0f4ff;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+            border-right: 4px solid #667eea;
+        }
+        .info-box i { color: #667eea; margin-left: 8px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: #f8f9fa;
+            color: #2d3748;
+            font-weight: 700;
+        }
+        tr:hover { background: #f8f9fa; }
+        
+        .badge {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
         }
         
-        if page_url:
-            # تحديث صفحة موجودة
-            result = supabase.table('bio_pages')\
-                .update(bio_data)\
-                .eq('user_id', int(user_id))\
-                .execute()
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #718096;
+            font-size: 0.7rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            .content-card { padding: 25px; }
+            .content-card h1 { font-size: 1.5rem; }
+            .content-card h2 { font-size: 1.2rem; }
+            th, td { font-size: 0.7rem; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📖 الدليل والمساعدة</h1>
+                <p>دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك بكل احترافية</p>
+            </div>
+            <div class="header-buttons">
+                <a href="/" class="home-btn"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="/privacy" class="header-btn">🔒 سياسة الخصوصية</a>
+                <a href="/terms" class="header-btn">⚖️ شروط الخدمة</a>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h1>📖 الدليل والمساعدة | منصة صفحات البايو</h1>
+            <p>دليلك الشامل لإنشاء وإدارة صفحة البايو الخاصة بك بكل احترافية</p>
             
-            if result.data:
-                return jsonify({'success': True, 'data': result.data[0]})
-            else:
-                return jsonify({'error': 'No data updated'}), 400
-        else:
-            # إنشاء صفحة جديدة
-            name = data.get('display_name', 'user')
-            import random
-            import string
-            random_str = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-            new_page_url = f"{name.replace(' ', '_').lower()}_{random_str}"
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <strong>🚀 ما هي منصة analyzer.social؟</strong><br>
+                منصة متخصصة في إنشاء <strong>صفحات بايو احترافية</strong> تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد.<br>
+                👨💻 <strong>المطور:</strong> <a href="https://t.me/Alshabany_Ai" target="_blank">@Alshabany_Ai</a>
+            </div>
             
-            new_data = {
-                'user_id': int(user_id),
-                'page_url': new_page_url,
-                **bio_data,
-                'is_active': True,
-                'views_count': 0,
-                'created_at': 'now()'
-            }
+            <h2>▶️ كيفية استخدام المنصة</h2>
+            <table>
+                <thead><tr><th>الخطوة</th><th>الشرح</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge">1</span></td><td><strong>تسجيل الدخول</strong> - اضغط "تسجيل الدخول عبر Telegram" للوصول إلى لوحة التحكم</td></tr>
+                    <tr><td><span class="badge">2</span></td><td><strong>إعداد الملف الشخصي</strong> - أضف اسمك، سيرتك الذاتية، وصورتك الشخصية</td></tr>
+                    <tr><td><span class="badge">3</span></td><td><strong>إضافة الحسابات</strong> - أضف روابط حساباتك على يوتيوب، انستقرام، تيك توك، فيسبوك</td></tr>
+                    <tr><td><span class="badge">4</span></td><td><strong>إضافة وسائل الدفع</strong> - أضف أرقام محافظك الإلكترونية (جيب، فلوسك، يمن والت، إلخ)</td></tr>
+                    <tr><td><span class="badge">5</span></td><td><strong>حفظ ومشاركة</strong> - اضغط حفظ، وانسخ رابط صفحتك لمشاركتها مع العالم</td></tr>
+                </tbody>
+            </table>
             
-            result = supabase.table('bio_pages')\
-                .insert(new_data)\
-                .execute()
+            <h2>🎨 تخصيص صفحة البايو</h2>
+            <table>
+                <thead><tr><th>الميزة</th><th>الشرح</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>الثيمات</strong></td><td>اختر من 5 ثيمات مختلفة (افتراضي، داكن، أخضر، وردي، محيط)</td></tr>
+                    <tr><td><strong>الصورة الشخصية</strong></td><td>أضف رابط صورة تظهر في أعلى صفحتك</td></tr>
+                    <tr><td><strong>السيرة الذاتية</strong></td><td>اكتب نبذة قصيرة عن نفسك</td></tr>
+                    <tr><td><strong>الروابط المخصصة</strong></td><td>أضف روابط إضافية لمواقعك أو متاجرك</td></tr>
+                </tbody>
+            </table>
             
-            if result.data:
-                return jsonify({'success': True, 'page_url': new_page_url, 'data': result.data[0]})
-            else:
-                return jsonify({'error': 'Failed to create'}), 400
-                
-    except Exception as e:
-        print(f"Error in save_bio: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/bio/load', methods=['GET'])
-@require_auth
-def load_bio():
-    """تحميل بيانات صفحة البايو"""
-    if not supabase:
-        return jsonify({'error': 'Database not configured'}), 500
-    
-    try:
-        user_id = request.headers.get('X-User-Id')
-        
-        result = supabase.table('bio_pages')\
-            .select('*')\
-            .eq('user_id', int(user_id))\
-            .maybe_single()\
-            .execute()
-        
-        if result.data:
-            return jsonify({'success': True, 'data': result.data})
-        else:
-            return jsonify({'success': True, 'data': None})
+            <h2>💳 وسائل الدفع المدعومة</h2>
+            <table>
+                <thead><tr><th>المحفظة</th><th>الشرح</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>جيب</strong></td><td>أشهر محفظة رقمية في اليمن</td></tr>
+                    <tr><td><strong>فلوسك</strong></td><td>من بنك اليمن والكويت</td></tr>
+                    <tr><td><strong>جوالي</strong></td><td>من شركة وي كاش</td></tr>
+                    <tr><td><strong>محفظتي</strong></td><td>محفظة رقمية يمنية</td></tr>
+                    <tr><td><strong>موبايل موني</strong></td><td>من بنك CAC</td></tr>
+                    <tr><td><strong>يمن والت</strong></td><td>من البريد اليمني</td></tr>
+                    <tr><td><strong>كريمي</strong></td><td>بنك الكريمي</td></tr>
+                    <tr><td><strong>ون كاش</strong></td><td>محفظة رقمية</td></tr>
+                </tbody>
+            </table>
             
-    except Exception as e:
-        print(f"Error in load_bio: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/user/create', methods=['POST'])
-def create_user():
-    """إنشاء مستخدم جديد"""
-    if not supabase:
-        return jsonify({'error': 'Database not configured'}), 500
-    
-    try:
-        data = request.json
-        telegram_id = data.get('telegram_id')
-        
-        if not telegram_id:
-            return jsonify({'success': False, 'error': 'telegram_id required'}), 400
-        
-        # التحقق من وجود المستخدم
-        result = supabase.table('app_users')\
-            .select('*')\
-            .eq('id', int(telegram_id))\
-            .execute()
-        
-        if not result.data:
-            # إنشاء مستخدم جديد
-            new_user = {
-                'id': int(telegram_id),
-                'username': data.get('username', f'user_{telegram_id}'),
-                'first_name': data.get('first_name', ''),
-                'last_name': data.get('last_name', ''),
-                'created_at': 'now()',
-                'updated_at': 'now()'
-            }
+            <h2>❓ الأسئلة الشائعة</h2>
+            <div class="info-box">
+                <strong>❓ كيف أحصل على صفحة بايو؟</strong><br>
+                تسجيل الدخول عبر Telegram سيُمكنك فوراً من إنشاء صفحة البايو.
+            </div>
+            <div class="info-box">
+                <strong>❓ هل الخدمة مجانية؟</strong><br>
+                نعم! الخدمة مجانية بالكامل حالياً.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف أعدل بياناتي؟</strong><br>
+                ادخل إلى لوحة التحكم (<code>/dashboard</code>) وعدل أي حقل تريده، ثم اضغط حفظ.
+            </div>
+            <div class="info-box">
+                <strong>❓ أين أجد رابط صفحتي؟</strong><br>
+                بعد حفظ البيانات لأول مرة، سيظهر لك رابط صفحتك في لوحة التحكم.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف يعمل زر نسخ الرقم؟</strong><br>
+                عند ضغط الزائر على أيقونة المحفظة، تظهر نافذة تحتوي على رقم المحفظة مع زر لنسخه.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف أضيف رابط فيسبوك؟</strong><br>
+                يمكنك إدخال اسم المستخدم أو الرابط الكامل لصفحتك على فيسبوك.
+            </div>
+            <div class="info-box">
+                <strong>❓ كيف أغير الثيم؟</strong><br>
+                من لوحة التحكم، اختر الثيم المناسب من قائمة "الثيمات" ثم احفظ.
+            </div>
+            <div class="info-box">
+                <strong>❓ هل بياناتي آمنة؟</strong><br>
+                نعم، جميع البيانات مشفرة ومخزنة في Supabase ولا تتم مشاركتها مع أي طرف ثالث.
+            </div>
+            <div class="info-box">
+                <strong>❓ ماذا أفعل إذا واجهت مشكلة؟</strong><br>
+                تواصل معنا عبر بوت المساعدة أو أرسل استفسارك.
+            </div>
             
-            result = supabase.table('app_users')\
-                .insert(new_user)\
-                .execute()
+            <h2>🌙 كيف أفعل الوضع المظلم؟</h2>
+            <p>اختر ثيم <strong>داكن</strong> من قائمة الثيمات في لوحة التحكم.</p>
             
-            return jsonify({'success': True, 'user': result.data[0] if result.data else None})
-        else:
-            return jsonify({'success': True, 'user': result.data[0], 'exists': True})
-        
-    except Exception as e:
-        print(f"Error in create_user: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/user/verify', methods=['GET'])
-@require_auth
-def verify_user():
-    """التحقق من صحة المستخدم"""
-    if not supabase:
-        return jsonify({'error': 'Database not configured'}), 500
-    
-    try:
-        user_id = request.headers.get('X-User-Id')
-        
-        result = supabase.table('app_users')\
-            .select('id, username, first_name')\
-            .eq('id', int(user_id))\
-            .maybe_single()\
-            .execute()
-        
-        if result.data:
-            return jsonify({'success': True, 'user': result.data})
-        else:
-            return jsonify({'success': False, 'error': 'User not found'}), 404
+            <h2>📱 لماذا لا تظهر أيقونات المحافظ؟</h2>
+            <p>تأكد من أنك أدخلت رقم محفظة صحيحاً في حقل وسائل الدفع. ستظهر الأيقونة تلقائياً في صفحتك.</p>
             
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# =====================================================
-# الصفحات الرئيسية
-# =====================================================
-
-@app.route('/')
-def index():
-    """الصفحة الرئيسية (تسجيل الدخول)"""
-    return render_template('index.html', 
-                         SUPABASE_URL=SUPABASE_BIO_URL, 
-                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
-
-@app.route('/dashboard')
-def dashboard():
-    """لوحة تحكم المستخدم"""
-    return render_template('dashboard.html', 
-                         SUPABASE_URL=SUPABASE_BIO_URL, 
-                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
-
-@app.route('/auth')
-def auth():
-    """معالج مصادقة تلغرام"""
-    return render_template('auth.html', 
-                         SUPABASE_URL=SUPABASE_BIO_URL, 
-                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
-
-@app.route('/bio/<page_url>')
-def bio_page(page_url):
-    """صفحة عرض البايو العامة"""
-    return render_template('bio.html', 
-                         SUPABASE_URL=SUPABASE_BIO_URL, 
-                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY,
-                         page_url=page_url)
-
-# =====================================================
-
-# =====================================================
-# نقطة نهاية فحص الصحة (لـ Render)
-# =====================================================
-
-@app.route('/health')
-@app.route('/healthcheck')
-def health():
-    return {"status": "ok", "supabase_configured": supabase is not None}, 200
-
-# =====================================================
-# الملفات الثابتة
-# =====================================================
-
-@app.route('/static/<path:filename>')
-def serve_static(filename):
-    return send_from_directory('static', filename)
-# =====================================================    
-@app.route('/static/assets/icons/<path:filename>')
-def serve_icon(filename):
-    return send_from_directory('static/assets/icons', filename)
-# =====================================================
-# APIs لوسائل الدفع
-# =====================================================
-
-@app.route('/api/payment/save', methods=['POST'])
-@require_auth
-def save_payment_methods():
-    """حفظ وسائل الدفع للمستخدم"""
-    try:
-        user_id = request.headers.get('X-User-Id')
-        data = request.json
-        payment_methods = data.get('payment_methods', {})
-        bio_page_id = data.get('bio_page_id')
-        
-        print(f"🔍 1. user_id: {user_id}")
-        print(f"🔍 2. bio_page_id المستلم: {bio_page_id}")
-        print(f"🔍 3. payment_methods: {payment_methods}")
-        
-        # الحصول على bio_page_id إذا لم يتم إرساله
-        if not bio_page_id:
-            page_result = supabase.table('bio_pages')\
-                .select('id')\
-                .eq('user_id', int(user_id))\
-                .execute()
+            <h2>🔒 هل بياناتي آمنة؟</h2>
+            <p>نعم، جميع البيانات مشفرة ولا تتم مشاركتها. للمزيد، راجع <a href="/privacy">سياسة الخصوصية</a>.</p>
             
-            if page_result.data and len(page_result.data) > 0:
-                bio_page_id = page_result.data[0]['id']
-                print(f"🔍 4. تم العثور على bio_page_id: {bio_page_id}")
-            else:
-                print("❌ لم يتم العثور على bio_page_id")
-                return jsonify({'error': 'Bio page not found for this user'}), 404
-        
-        # قائمة المحافظ
-        payment_wallets = [
-            {'key': 'jaib', 'name': 'جيب'},
-            {'key': 'floosak', 'name': 'فلوسك'},
-            {'key': 'jawaly', 'name': 'جوالي'},
-            {'key': 'mahfazti', 'name': 'محفظتي'},
-            {'key': 'mobilemoney', 'name': 'موبايل موني'},
-            {'key': 'yemenwallet', 'name': 'يمن والت'},
-            {'key': 'shilling', 'name': 'شلن'},
-            {'key': 'easywallet', 'name': 'سهل'},
-            {'key': 'onecash', 'name': 'ون كاش'},
-            {'key': 'kremi', 'name': 'كريمي'},
-            {'key': 'cash', 'name': 'كاش'},
-            {'key': 'mtnmomo', 'name': 'MTN Mobile Money'}
-        ]
-        
-        for wallet in payment_wallets:
-            account_number = payment_methods.get(wallet['key'], '')
-            print(f"🔍 5. معالجة {wallet['key']}: account_number={account_number}")
+            <h2>📞 تواصل معنا</h2>
+            <p>📱 <strong>بوت المساعدة</strong>: <a href="https://t.me/Social_Media_tools_bot" target="_blank">@Social_Media_tools_bot</a><br>
+            📧 <strong>البريد الإلكتروني</strong>: help@analyzer.social</p>
             
-            # البحث عن سجل موجود - الطريقة الصحيحة لـ Supabase
-            try:
-                existing_result = supabase.table('payment_methods')\
-                    .select('id')\
-                    .eq('user_id', int(user_id))\
-                    .eq('method_key', wallet['key'])\
-                    .execute()
-                
-                # التحقق من وجود بيانات في الاستجابة
-                if existing_result and hasattr(existing_result, 'data') and existing_result.data and len(existing_result.data) > 0:
-                    # يوجد سجل => تحديث
-                    existing_id = existing_result.data[0]['id']
-                    print(f"🔍 6. سجل موجود: {existing_id}")
-                    
-                    if account_number:
-                        supabase.table('payment_methods')\
-                            .update({
-                                'account_number': account_number,
-                                'updated_at': 'now()'
-                            })\
-                            .eq('id', existing_id)\
-                            .execute()
-                        print(f"✅ تم تحديث {wallet['key']}: {account_number}")
-                    else:
-                        supabase.table('payment_methods')\
-                            .delete()\
-                            .eq('id', existing_id)\
-                            .execute()
-                        print(f"🗑️ تم حذف {wallet['key']}")
-                else:
-                    # لا يوجد سجل => إدراج جديد
-                    print(f"🔍 7. لا يوجد سجل لـ {wallet['key']}")
-                    if account_number:
-                        insert_result = supabase.table('payment_methods')\
-                            .insert({
-                                'user_id': int(user_id),
-                                'bio_page_id': bio_page_id,
-                                'method_key': wallet['key'],
-                                'method_name': wallet['name'],
-                                'account_number': account_number,
-                                'created_at': 'now()'
-                            })\
-                            .execute()
-                        print(f"✅ تم إضافة {wallet['key']}: {account_number}")
-                        print(f"🔍 8. نتيجة الإضافة: {insert_result.data if insert_result else 'No data'}")
-            except Exception as inner_error:
-                print(f"⚠️ خطأ في معالجة {wallet['key']}: {str(inner_error)}")
+            <div class="info-box">
+                <strong>📦 معلومات الإصدار</strong><br>
+                📦 الإصدار: 1.0<br>
+                📅 تاريخ الإصدار: يونيو 2026<br>
+                👨💻 المطور: <a href="https://t.me/Alshabany_Ai" target="_blank">@Alshabany_Ai</a><br>
+                🛠️ آخر تحديث: إضافة نظام وسائل الدفع والثيمات المتعددة
+            </div>
+        </div>
         
-        print("✅ تمت معالجة جميع وسائل الدفع بنجاح")
-        return jsonify({'success': True})
-        
-    except Exception as e:
-        print(f"❌ خطأ في حفظ وسائل الدفع: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/payment/load', methods=['GET'])
-@require_auth
-def load_payment_methods():
-    """تحميل وسائل الدفع للمستخدم"""
-    try:
-        user_id = request.headers.get('X-User-Id')
-        
-        result = supabase.table('payment_methods')\
-            .select('method_key, account_number')\
-            .eq('user_id', int(user_id))\
-            .execute()
-        
-        payment_methods = {}
-        for item in result.data:
-            payment_methods[item['method_key']] = item['account_number']
-        
-        return jsonify({'success': True, 'payment_methods': payment_methods})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/payment/click', methods=['POST'])
-def track_payment_click():
-    """تسجيل نقرة على وسيلة دفع - يجمع بين التحديث الفوري والتسجيل التفصيلي"""
-    try:
-        data = request.json
-        method_key = data.get('method_key')
-        account_number = data.get('account_number')
-        page_url = data.get('page_url')
-        
-        print(f"🔍 تسجيل نقرة: {method_key} - {account_number} - {page_url}")
-        
-        # 1. الحصول على bio_page_id و user_id من page_url
-        bio_result = supabase.table('bio_pages')\
-            .select('id, user_id')\
-            .eq('page_url', page_url)\
-            .execute()
-        
-        if not bio_result.data or len(bio_result.data) == 0:
-            print(f"❌ لم يتم العثور على الصفحة: {page_url}")
-            return jsonify({'error': 'Bio page not found'}), 404
-        
-        bio_page_id = bio_result.data[0]['id']
-        user_id = bio_result.data[0]['user_id']
-        
-        # 2. الحصول على payment_method_id
-        pm_result = supabase.table('payment_methods')\
-            .select('id')\
-            .eq('user_id', user_id)\
-            .eq('method_key', method_key)\
-            .eq('bio_page_id', bio_page_id)\
-            .execute()
-        
-        if pm_result.data and len(pm_result.data) > 0:
-            payment_method_id = pm_result.data[0]['id']
-            print(f"🔍 payment_method_id={payment_method_id}")
-            
-            # =====================================================
-            # 3. تحديث إجمالي النقرات في جدول payment_methods
-            # =====================================================
-            # استعلم عن العدد الحالي
-            current_record = supabase.table('payment_methods')\
-                .select('clicks_count')\
-                .eq('id', payment_method_id)\
-                .execute()
-
-            if current_record.data:
-                current_clicks = current_record.data[0].get('clicks_count', 0)
-                new_clicks = current_clicks + 1
-                
-                # قم بالتحديث بالقيمة الجديدة
-                supabase.table('payment_methods')\
-                    .update({
-                        'clicks_count': new_clicks,
-                        'last_click_at': 'now()'
-                    })\
-                    .eq('id', payment_method_id)\
-                    .execute()
-                print(f"✅ تم تحديث عدد النقرات إلى {new_clicks}")
-            # =====================================================
-            
-            # =====================================================
-            # 4. تسجيل التفاصيل في جدول payment_clicks (للتحليل)
-            # =====================================================
-            supabase.table('payment_clicks')\
-                .insert({
-                    'payment_method_id': payment_method_id,
-                    'user_id': user_id,
-                    'bio_page_id': bio_page_id,
-                    'method_key': method_key,
-                    'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
-                    'clicker_user_agent': request.headers.get('User-Agent'),
-                    'clicked_at': 'now()'
-                })\
-                .execute()
-            print(f"✅ تم تسجيل تفاصيل النقرة في payment_clicks")
-            # =====================================================
-            
-            return jsonify({'success': True})
-        else:
-            print(f"⚠️ لم يتم العثور على payment_method_id للمفتاح: {method_key}")
-            return jsonify({'error': 'Payment method not found'}), 404
-        
-    except Exception as e:
-        print(f"❌ خطأ في تسجيل النقرة: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/payment/stats/<int:user_id>', methods=['GET'])
-@require_auth
-def get_payment_stats(user_id):
-    """إحصائيات نقرات وسائل الدفع للمستخدم"""
-    try:
-        result = supabase.table('payment_methods')\
-            .select('method_name, method_key, account_number, clicks_count, last_click_at')\
-            .eq('user_id', user_id)\
-            .order('clicks_count', desc=True)\
-            .execute()
-        
-        return jsonify({'success': True, 'stats': result.data})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500 
-# =====================================================        
-@app.route('/api/payment/load-page', methods=['GET'])
-def load_payment_methods_for_page():
-    """تحميل وسائل الدفع لصفحة عامة (للعرض العام)"""
-    try:
-        page_url = request.args.get('page_url')
-        
-        if not page_url:
-            return jsonify({'error': 'page_url required'}), 400
-        
-        print(f"🔍 جلب وسائل الدفع للصفحة: {page_url}")
-        
-        # الحصول على bio_page_id من page_url
-        bio_result = supabase.table('bio_pages')\
-            .select('id')\
-            .eq('page_url', page_url)\
-            .execute()
-        
-        if not bio_result.data or len(bio_result.data) == 0:
-            print(f"❌ لم يتم العثور على الصفحة: {page_url}")
-            return jsonify({'success': False, 'error': 'Page not found'}), 404
-        
-        bio_page_id = bio_result.data[0]['id']
-        print(f"🔍 bio_page_id: {bio_page_id}")
-        
-        # جلب وسائل الدفع
-        result = supabase.table('payment_methods')\
-            .select('method_key, account_number')\
-            .eq('bio_page_id', bio_page_id)\
-            .eq('is_active', True)\
-            .execute()
-        
-        payment_methods = {}
-        if result.data:
-            for item in result.data:
-                if item.get('account_number'):
-                    payment_methods[item['method_key']] = item['account_number']
-        
-        print(f"✅ تم تحميل وسائل الدفع: {payment_methods}")
-        return jsonify({'success': True, 'payment_methods': payment_methods})
-        
-    except Exception as e:
-        print(f"❌ خطأ في تحميل وسائل الدفع للصفحة: {str(e)}")
-        return jsonify({'error': str(e)}), 500 
-# =====================================================
-# إعدادات الجلسات والأمان للمدير
-# =====================================================
-
-import hashlib
-from datetime import datetime
-from flask import session, redirect, url_for
-
-# كلمة مرور المدير (من متغيرات البيئة)
-ADMIN_PASSWORD_HASH = hashlib.sha256(
-    os.environ.get('ADMIN_PASSWORD', 'default_admin_password').encode()
-).hexdigest()
-
-def verify_admin(password):
-    """التحقق من كلمة مرور المدير"""
-    return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
-
-# =====================================================
-# =====================================================
-# صفحات المعلومات (سياسة الخصوصية، شروط الخدمة، المساعدة)
-# =====================================================
-
-@app.route('/privacy')
-def privacy_policy():
-    """صفحة سياسة الخصوصية"""
-    return render_template('privacy.html')
-
-@app.route('/terms')
-def terms_of_service():
-    """صفحة شروط الخدمة"""
-    return render_template('terms.html')
-
-@app.route('/help')
-def help_page():
-    """صفحة الدليل والمساعدة"""
-    return render_template('help.html')
-# =====================================================
-# لوحة تحكم المدير
-# =====================================================
-
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    """صفحة تسجيل دخول المدير"""
-    if request.method == 'POST':
-        password = request.form.get('password', '')
-        if verify_admin(password):
-            session['admin_logged_in'] = True
-            return redirect('/admin/dashboard')
-        return render_template('admin_login.html', error='كلمة المرور غير صحيحة')
-    return render_template('admin_login.html')
-
-
-@app.route('/admin/dashboard')
-def admin_dashboard():
-    """لوحة تحكم المدير"""
-    if not session.get('admin_logged_in'):
-        return redirect('/admin/login')
-    
-    if not supabase:
-        return render_template('admin_dashboard.html', stats={}, users=[], now_date=datetime.now().strftime('%Y-%m-%d %H:%M'), error='قاعدة البيانات غير متصلة')
-    
-    # جلب جميع المستخدمين
-    users_result = supabase.table('app_users').select('*').order('created_at', desc=True).execute()
-    
-    users_data = []
-    total_views = 0
-    total_clicks = 0
-    total_payment_methods = 0
-    
-    for user in users_result.data:
-        # جلب صفحة البايو
-        bio_page = supabase.table('bio_pages')\
-            .select('*')\
-            .eq('user_id', user['id'])\
-            .maybe_single()\
-            .execute()
-        
-        # جلب إحصائيات الدفع
-        payment_stats = []
-        payment_clicks = 0
-        
-        if bio_page.data:
-            payment_stats_result = supabase.table('payment_methods')\
-                .select('method_name, clicks_count')\
-                .eq('user_id', user['id'])\
-                .execute()
-            payment_stats = payment_stats_result.data
-            payment_clicks = sum(p.get('clicks_count', 0) for p in payment_stats)
-            total_payment_methods += len([p for p in payment_stats if p.get('clicks_count', 0) > 0])
-        
-        views_count = bio_page.data.get('views_count', 0) if bio_page.data else 0
-        total_views += views_count
-        total_clicks += payment_clicks
-        
-        users_data.append({
-            'id': user['id'],
-            'username': user.get('username', ''),
-            'first_name': user.get('first_name', ''),
-            'created_at': user.get('created_at', ''),
-            'bio_page': bio_page.data,
-            'payment_stats': payment_stats,
-            'total_clicks': payment_clicks,
-            'views_count': views_count
-        })
-    
-    stats = {
-        'total_users': len(users_result.data),
-        'total_bio_pages': len([u for u in users_data if u['bio_page']]),
-        'total_views': total_views,
-        'total_clicks': total_clicks,
-        'total_payment_methods': total_payment_methods
-    }
-    
-    return render_template('admin_dashboard.html', 
-                         stats=stats, 
-                         users=users_data,
-                         now_date=datetime.now().strftime('%Y-%m-%d %H:%M'))
-
-
-@app.route('/admin/logout')
-def admin_logout():
-    """تسجيل خروج المدير"""
-    session.pop('admin_logged_in', None)
-    return redirect('/admin/login')
-
-
-# =====================================================
-# API إضافية للوحة التحكم
-# =====================================================
-
-@app.route('/api/admin/stats', methods=['GET'])
-def admin_stats():
-    """API لجلب الإحصائيات العامة (للاستخدام في JavaScript)"""
-    if not session.get('admin_logged_in'):
-        return jsonify({'error': 'Unauthorized'}), 401
-    
-    if not supabase:
-        return jsonify({'error': 'Database not configured'}), 500
-    
-    # إحصائيات سريعة
-    users_count = supabase.table('app_users').select('*', count='exact').execute().count
-    bio_pages_count = supabase.table('bio_pages').select('*', count='exact').execute().count
-    
-    views_result = supabase.table('bio_pages').select('views_count').execute()
-    total_views = sum(v.get('views_count', 0) for v in views_result.data)
-    
-    clicks_result = supabase.table('payment_methods').select('clicks_count').execute()
-    total_clicks = sum(c.get('clicks_count', 0) for c in clicks_result.data)
-    
-    return jsonify({
-        'total_users': users_count or 0,
-        'total_bio_pages': bio_pages_count or 0,
-        'total_views': total_views,
-        'total_clicks': total_clicks
-    })                  
-# =====================================================
-# تشغيل التطبيق
-# =====================================================
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+        <div class="footer">
+            © 2026 analyzer.social | منصة إنشاء صفحات البايو الاحترافية
+        </div>
+    </div>
+</body>
+</html>
