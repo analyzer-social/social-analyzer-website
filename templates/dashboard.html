@@ -93,25 +93,58 @@
         .username-input-wrapper {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            padding: 0 8px;
+            padding: 0 12px;
+            flex-wrap: wrap;
         }
-        .username-input-wrapper span { color: #718096; font-size: 14px; }
-        .username-input-wrapper input { border: none; padding: 12px 0; flex: 1; }
+        .username-input-wrapper span {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .username-input-wrapper input {
+            border: none;
+            padding: 12px 0;
+            flex: 1;
+            min-width: 150px;
+        }
+        .username-input-wrapper input:focus {
+            outline: none;
+        }
         .check-username {
             background: #667eea;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 18px;
             border-radius: 10px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .username-status { font-size: 12px; margin-top: 5px; }
-        .username-available { color: #28a745; }
-        .username-taken { color: #dc3545; }
+        .check-username:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        .save-username-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            gap: 6px;
+        }
+        .save-username-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+        }
+        .username-status { font-size: 12px; margin-top: 8px; padding: 5px 10px; border-radius: 8px; }
+        .username-available { color: #28a745; background: #d4edda; }
+        .username-taken { color: #dc3545; background: #f8d7da; }
         
         .plans-grid {
             display: grid;
@@ -237,6 +270,7 @@
             justify-content: center;
             gap: 10px;
             flex-wrap: wrap;
+            margin-top: 15px;
         }
         .copy-btn {
             background: #28a745;
@@ -252,8 +286,8 @@
             margin-bottom: 20px;
             display: none;
         }
-        .success-msg { background: #d4edda; color: #155724; }
-        .error-msg { background: #f8d7da; color: #721c24; }
+        .success-msg { background: #d4edda; color: #155724; border-right: 4px solid #28a745; }
+        .error-msg { background: #f8d7da; color: #721c24; border-right: 4px solid #dc3545; }
         .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .contacts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .payment-grid-dashboard {
@@ -303,6 +337,18 @@
             .container { padding: 20px; }
             .row-2cols, .contacts-grid { grid-template-columns: 1fr; }
             .plans-grid { grid-template-columns: 1fr; }
+            .username-input-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px;
+            }
+            .username-input-wrapper input {
+                text-align: center;
+            }
+            .check-username, .save-username-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -332,16 +378,21 @@
             <div class="form-group">
                 <label>🌐 رابط صفحتك المخصص</label>
                 <div class="username-input-wrapper">
-                    <span>analyzer.social/</span>
-                    <input type="text" id="customUsername" placeholder="username" maxlength="30">
-                    <button type="button" class="check-username" onclick="checkUsernameAvailability()">تحقق</button>
+                    <span>bio.analyzer.social/</span>
+                    <input type="text" id="customUsername" placeholder="username" maxlength="30" dir="ltr">
+                    <button type="button" class="check-username" onclick="checkUsernameAvailability()">
+                        <i class="fas fa-search"></i> تحقق
+                    </button>
+                    <button type="button" id="saveUsernameBtn" class="save-username-btn" style="display:none;" onclick="saveUsername()">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
                 </div>
                 <div id="usernameStatus" class="username-status"></div>
                 <small>📌 يمكنك استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط</small>
             </div>
             <div class="page-url">
                 <i class="fas fa-globe"></i>
-                <span class="url-text" id="pageUrlDisplay">analyzer.social/...</span>
+                <span class="url-text" id="pageUrlDisplay">bio.analyzer.social/...</span>
                 <button class="copy-btn" onclick="copyPageUrl()"><i class="fas fa-copy"></i> نسخ الرابط</button>
             </div>
         </div>
@@ -357,7 +408,7 @@
             <h3><i class="fas fa-user"></i> المعلومات الشخصية</h3>
             <div class="form-group">
                 <label>🖼️ رابط الصورة الشخصية</label>
-                <input type="url" id="avatarUrl" placeholder="https://example.com/avatar.jpg">
+                <input type="url" id="avatarUrl" placeholder="https://example.com/avatar.jpg" dir="ltr">
             </div>
             <div class="row-2cols">
                 <div class="form-group">
@@ -367,7 +418,7 @@
             </div>
             <div class="form-group">
                 <label>📖 السيرة الذاتية</label>
-                <textarea id="bio" placeholder="اكتب نبذة قصيرة عن نفسك..."></textarea>
+                <textarea id="bio" placeholder="اكتب نبذة قصيرة عن نفسك..." rows="3"></textarea>
             </div>
             <div class="form-group">
                 <label>🎨 الثيم</label>
@@ -415,11 +466,11 @@
             <div class="contacts-grid">
                 <div class="form-group">
                     <label>📱 رقم الجوال</label>
-                    <input type="tel" id="phoneNumber" placeholder="مثال: 966512345678">
+                    <input type="tel" id="phoneNumber" placeholder="مثال: 966512345678" dir="ltr">
                 </div>
                 <div class="form-group">
                     <label>✉️ البريد الإلكتروني</label>
-                    <input type="email" id="emailAddress" placeholder="example@domain.com">
+                    <input type="email" id="emailAddress" placeholder="example@domain.com" dir="ltr">
                 </div>
             </div>
         </div>
@@ -460,6 +511,10 @@
         let userData = {};
         let paymentData = {};
         
+        // متغيرات للتحقق من الاسم
+        let isUsernameAvailable = false;
+        let lastCheckedUsername = '';
+        
         const plans = [
             { id: 'trial', name: '🆓 تجريبي', price: 0, period: '30 يوماً', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة'] },
             { id: 'yearly', name: '💎 سنوي', price: 2, period: 'سنة كاملة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم أولوية'] },
@@ -483,11 +538,13 @@
         
         function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+        
         function showSuccess(msg) { 
             document.getElementById('successText').innerText = msg;
             document.getElementById('successMsg').style.display = 'block';
             setTimeout(() => document.getElementById('successMsg').style.display = 'none', 3000);
         }
+        
         function showError(msg) { 
             document.getElementById('errorText').innerText = msg;
             document.getElementById('errorMsg').style.display = 'block';
@@ -523,42 +580,112 @@
         async function checkUsernameAvailability() {
             const username = document.getElementById('customUsername').value.trim();
             const statusDiv = document.getElementById('usernameStatus');
+            const saveBtn = document.getElementById('saveUsernameBtn');
             
             if (!username) {
                 statusDiv.innerHTML = '⚠️ الرجاء إدخال اسم مستخدم';
                 statusDiv.className = 'username-status username-taken';
+                saveBtn.style.display = 'none';
                 return;
             }
+            
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
                 statusDiv.innerHTML = '⚠️ يمكن استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط';
                 statusDiv.className = 'username-status username-taken';
+                saveBtn.style.display = 'none';
                 return;
             }
             
             statusDiv.innerHTML = '🔄 جاري التحقق...';
             statusDiv.className = 'username-status';
+            saveBtn.style.display = 'none';
             
             try {
-                const { data, error } = await supabaseClient
+                let query = supabaseClient
                     .from('bio_pages')
                     .select('username')
-                    .eq('username', username)
-                    .maybeSingle();
+                    .eq('username', username);
+                
+                if (currentPageUrl) {
+                    query = query.neq('page_url', currentPageUrl);
+                }
+                
+                const { data, error } = await query.maybeSingle();
                 
                 if (error) throw error;
                 
-                if (data && data.username === username && (!currentUsername || data.username !== currentUsername)) {
+                if (data) {
                     statusDiv.innerHTML = '❌ هذا الاسم غير متوفر';
                     statusDiv.className = 'username-status username-taken';
-                } else {
-                    statusDiv.innerHTML = '✅ هذا الاسم متوفر';
-                    statusDiv.className = 'username-status username-available';
+                    saveBtn.style.display = 'none';
+                    isUsernameAvailable = false;
+                    return false;
                 }
+                
+                statusDiv.innerHTML = '✅ هذا الاسم متوفر';
+                statusDiv.className = 'username-status username-available';
+                saveBtn.style.display = 'inline-flex';
+                isUsernameAvailable = true;
+                lastCheckedUsername = username;
+                return true;
+                
             } catch (error) {
                 console.error('Error checking username:', error);
                 statusDiv.innerHTML = '❌ حدث خطأ في التحقق';
                 statusDiv.className = 'username-status username-taken';
+                saveBtn.style.display = 'none';
                 showError('حدث خطأ في التحقق من الاسم');
+                return false;
+            }
+        }
+        
+        async function saveUsername() {
+            const username = document.getElementById('customUsername').value.trim();
+            const statusDiv = document.getElementById('usernameStatus');
+            
+            if (!username) {
+                showError('⚠️ الرجاء إدخال اسم مستخدم');
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                showError('⚠️ اسم المستخدم يحتوي على أحرف غير مسموحة');
+                return;
+            }
+            
+            if (username !== lastCheckedUsername || !isUsernameAvailable) {
+                showError('⚠️ الرجاء التحقق من توفر الاسم أولاً');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('bio_pages')
+                    .update({ username: username })
+                    .eq('user_id', parseInt(currentUserId));
+                
+                if (error) throw error;
+                
+                currentUsername = username;
+                
+                document.getElementById('saveUsernameBtn').style.display = 'none';
+                
+                statusDiv.innerHTML = '✅ تم تعيين اسم المستخدم بنجاح!';
+                statusDiv.className = 'username-status username-available';
+                
+                updatePageUrlDisplay();
+                
+                showSuccess('✅ تم تعيين اسم المستخدم لمساتك');
+                
+                await loadBioData();
+                
+            } catch (error) {
+                console.error('Error saving username:', error);
+                showError('❌ حدث خطأ أثناء حفظ اسم المستخدم');
+            } finally {
+                hideLoading();
             }
         }
         
@@ -648,7 +775,7 @@
                     <div class="payment-input-item">
                         <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
                         <div class="method-name">${wallet.name}</div>
-                        <input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${paymentData[wallet.id] || ''}">
+                        <input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${paymentData[wallet.id] || ''}" dir="ltr">
                     </div>
                 `;
             }
@@ -708,7 +835,6 @@
                 if (facebookRaw) accounts.facebook = cleanFacebookInput(facebookRaw);
                 if (twitter) accounts.twitter = twitter;
                 
-                const newUsername = document.getElementById('customUsername').value.trim();
                 const bioData = {
                     avatar_url: document.getElementById('avatarUrl').value || null,
                     display_name: document.getElementById('displayName').value || 'مستخدم',
@@ -720,22 +846,11 @@
                     updated_at: new Date().toISOString()
                 };
                 
-                if (newUsername && newUsername !== currentUsername) {
-                    const { data: existing } = await supabaseClient.from('bio_pages').select('username').eq('username', newUsername).maybeSingle();
-                    if (existing && existing.username && existing.username !== currentUsername) {
-                        showError('⚠️ اسم المستخدم غير متوفر');
-                        hideLoading();
-                        return;
-                    }
-                    bioData.username = newUsername;
-                }
-                
                 let bioPageId = null;
                 if (currentPageUrl) {
                     const { data, error } = await supabaseClient.from('bio_pages').update(bioData).eq('user_id', parseInt(currentUserId)).select();
                     if (error) throw error;
                     if (data && data[0]) bioPageId = data[0].id;
-                    if (newUsername) currentUsername = newUsername;
                     showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
                 } else {
                     const randomId = Math.random().toString(36).substring(2, 10);
@@ -754,12 +869,13 @@
         function updatePageUrlDisplay() {
             const displaySpan = document.getElementById('pageUrlDisplay');
             const username = document.getElementById('customUsername').value.trim();
-            if (username && document.getElementById('usernameStatus')?.innerText.includes('متوفر')) {
-                displaySpan.innerHTML = `analyzer.social/${username}`;
+            
+            if (currentUsername) {
+                displaySpan.innerHTML = `bio.analyzer.social/${currentUsername}`;
             } else if (currentPageUrl) {
-                displaySpan.innerHTML = `analyzer.social/bio/${currentPageUrl}`;
+                displaySpan.innerHTML = `bio.analyzer.social/bio/${currentPageUrl}`;
             } else {
-                displaySpan.innerHTML = 'analyzer.social/...';
+                displaySpan.innerHTML = 'bio.analyzer.social/...';
             }
         }
         
@@ -783,6 +899,14 @@
                     currentPageUrl = data.page_url;
                     currentUsername = data.username || '';
                     document.getElementById('customUsername').value = currentUsername;
+                    
+                    if (currentUsername) {
+                        document.getElementById('saveUsernameBtn').style.display = 'none';
+                        const statusDiv = document.getElementById('usernameStatus');
+                        statusDiv.innerHTML = '✅ اسم المستخدم الحالي';
+                        statusDiv.className = 'username-status username-available';
+                    }
+                    
                     customLinks = data.custom_links || [];
                     renderCustomLinks();
                     updatePageUrlDisplay();
@@ -816,31 +940,41 @@
         }
         
         function previewBioPage() {
-            const username = document.getElementById('customUsername').value.trim();
-            const statusText = document.getElementById('usernameStatus')?.innerText || '';
-            if (username && statusText.includes('متوفر')) {
-                window.open(`https://analyzer.social/${username}`, '_blank');
-            } else if (currentPageUrl) {
-                window.open(`https://analyzer.social/bio/${currentPageUrl}`, '_blank');
-            } else {
-                showError('⚠️ لا يوجد رابط للحفظ بعد');
-            }
-        }
-        
-        async function copyPageUrl() {
-            const username = document.getElementById('customUsername').value.trim();
-            const statusText = document.getElementById('usernameStatus')?.innerText || '';
             let url;
-            if (username && statusText.includes('متوفر')) {
-                url = `https://analyzer.social/${username}`;
+            if (currentUsername) {
+                url = `https://bio.analyzer.social/${currentUsername}`;
             } else if (currentPageUrl) {
-                url = `https://analyzer.social/bio/${currentPageUrl}`;
+                url = `https://bio.analyzer.social/bio/${currentPageUrl}`;
             } else {
                 showError('⚠️ لا يوجد رابط للحفظ بعد');
                 return;
             }
-            await navigator.clipboard.writeText(url);
-            showSuccess('✅ تم نسخ الرابط!');
+            window.open(url, '_blank');
+        }
+        
+        async function copyPageUrl() {
+            let url;
+            if (currentUsername) {
+                url = `https://bio.analyzer.social/${currentUsername}`;
+            } else if (currentPageUrl) {
+                url = `https://bio.analyzer.social/bio/${currentPageUrl}`;
+            } else {
+                showError('⚠️ لا يوجد رابط للحفظ بعد');
+                return;
+            }
+            
+            try {
+                await navigator.clipboard.writeText(url);
+                showSuccess('✅ تم نسخ الرابط!');
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = url;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showSuccess('✅ تم نسخ الرابط!');
+            }
         }
         
         function logout() {
@@ -858,6 +992,7 @@
         window.logout = logout;
         window.copyPageUrl = copyPageUrl;
         window.checkUsernameAvailability = checkUsernameAvailability;
+        window.saveUsername = saveUsername;
         window.upgradeToPlan = upgradeToPlan;
         
         async function init() {
