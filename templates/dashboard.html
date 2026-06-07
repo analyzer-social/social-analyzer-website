@@ -433,7 +433,7 @@
             <div class="form-group">
                 <label>🌐 رابط صفحتك المخصص</label>
                 <div class="username-input-wrapper">
-                    <span>bio.analyzer.social/</span>
+                    <span>analyzer.social/bio/</span>
                     <input type="text" id="customUsername" placeholder="username" maxlength="30" dir="ltr">
                     <button type="button" class="check-username" onclick="checkUsernameAvailability()">
                         <i class="fas fa-search"></i> تحقق
@@ -782,11 +782,9 @@
             const displaySpan = document.getElementById('pageUrlDisplay');
             
             if (currentUsername) {
-                displaySpan.innerHTML = `bio.analyzer.social/${currentUsername}`;
-            } else if (currentPageUrl) {
-                displaySpan.innerHTML = `bio.analyzer.social/bio/${currentPageUrl}`;
+                displaySpan.innerHTML = `analyzer.social/bio/${currentUsername}`;
             } else {
-                displaySpan.innerHTML = 'bio.analyzer.social/...';
+                displaySpan.innerHTML = 'analyzer.social/bio/...';
             }
         }
         
@@ -1066,21 +1064,36 @@
             }
         }
         
-        // =====================================================
-        // القسم 23: دوال المعاينة                             //
+                // =====================================================
+        // القسم 23: دوال المعاينة
         // =====================================================
         
         function previewBioPage() {
-            let url;
             if (currentUsername) {
-                url = `https://bio.analyzer.social/${currentUsername}`;
-            } else if (currentPageUrl) {
-                url = `https://bio.analyzer.social/bio/${currentPageUrl}`;
+                window.open(`https://analyzer.social/bio/${currentUsername}`, '_blank');
             } else {
-                showError('⚠️ لا يوجد رابط للحفظ بعد');
-                return;
+                showError('⚠️ الرجاء حفظ صفحة البايو أولاً');
             }
-            window.open(url, '_blank');
+        }
+        
+        async function copyPageUrl() {
+            if (currentUsername) {
+                const url = `https://analyzer.social/bio/${currentUsername}`;
+                try {
+                    await navigator.clipboard.writeText(url);
+                    showSuccess('✅ تم نسخ الرابط!');
+                } catch (err) {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = url;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showSuccess('✅ تم نسخ الرابط!');
+                }
+            } else {
+                showError('⚠️ الرجاء حفظ صفحة البايو أولاً');
+            }
         }
         
         // =====================================================
