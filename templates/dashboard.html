@@ -13,9 +13,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
     <link rel="manifest" href="/static/assets/icons/site.webmanifest">
-    <link rel="mask-icon" href="/static/assets/icons/safari-pinned-tab.svg" color="#667eea">
-    <meta name="msapplication-TileColor" content="#667eea">
-    <meta name="theme-color" content="#667eea">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,7 +23,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 24px;
@@ -59,8 +56,15 @@
             align-items: center;
             gap: 10px;
         }
-        .user-info i {
-            margin-left: 8px;
+        .user-info i { margin-left: 8px; }
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
         }
         .card {
             background: #f8f9fa;
@@ -81,17 +85,7 @@
             padding-right: 12px;
             font-size: 1.1rem;
         }
-        button {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            opacity: 0.95;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
         label {
             display: block;
             font-weight: bold;
@@ -112,10 +106,104 @@
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
-        textarea {
-            resize: vertical;
-            min-height: 80px;
+        .username-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0 8px;
         }
+        .username-input-wrapper span {
+            color: #718096;
+            font-size: 14px;
+            direction: ltr;
+        }
+        .username-input-wrapper input {
+            border: none;
+            padding: 12px 0;
+            flex: 1;
+        }
+        .username-input-wrapper input:focus { box-shadow: none; }
+        .check-username {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .username-status { font-size: 12px; margin-top: 5px; }
+        .username-available { color: #28a745; }
+        .username-taken { color: #dc3545; }
+        
+        /* باقات الاشتراك */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .plan-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        .plan-card.current {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+        .plan-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .plan-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .plan-price small { font-size: 0.7rem; color: #718096; }
+        .plan-features { list-style: none; margin-bottom: 20px; }
+        .plan-features li { padding: 5px 0; font-size: 0.8rem; color: #4a5568; }
+        .plan-features i { margin-left: 8px; }
+        .upgrade-plan-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+        .current-plan-badge {
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .subscription-info {
+            background: #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+        
         .platform-input {
             display: flex;
             align-items: center;
@@ -132,18 +220,8 @@
             color: white;
             font-size: 22px;
         }
-        .platform-input .input-wrapper {
-            flex: 1;
-        }
-        .platform-input input {
-            width: 100%;
-        }
-        .field-hint {
-            display: block;
-            font-size: 10px;
-            color: #718096;
-            margin-top: 4px;
-        }
+        .platform-input .input-wrapper { flex: 1; }
+        .field-hint { display: block; font-size: 10px; color: #718096; margin-top: 4px; }
         .custom-link-item {
             display: flex;
             gap: 10px;
@@ -151,12 +229,8 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .custom-link-item input:first-child {
-            width: 30%;
-        }
-        .custom-link-item input:last-child {
-            width: 60%;
-        }
+        .custom-link-item input:first-child { width: 30%; }
+        .custom-link-item input:last-child { width: 60%; }
         .remove-link {
             background: #dc3545;
             color: white;
@@ -187,83 +261,6 @@
             width: 100%;
             margin-top: 20px;
         }
-        .page-url {
-            background: linear-gradient(135deg, #f0f4ff, #e9ecef);
-            padding: 15px;
-            border-radius: 12px;
-            margin: 20px 0;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .page-url .url-text {
-            direction: ltr;
-            display: inline-block;
-            background: white;
-            padding: 8px 15px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-family: monospace;
-        }
-        .copy-btn {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .copy-btn:hover {
-            transform: translateY(-2px);
-        }
-        .success-msg, .error-msg {
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-        @keyframes slideDown {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        .success-msg {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .error-msg {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .row-2cols {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .logout-btn {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-        }
         .preview-btn {
             background: linear-gradient(135deg, #17a2b8, #138496);
             color: white;
@@ -279,17 +276,36 @@
             justify-content: center;
             gap: 8px;
         }
-        small {
-            display: block;
-            margin-top: 5px;
-            color: #718096;
-            font-size: 12px;
+        .page-url {
+            background: linear-gradient(135deg, #f0f4ff, #e9ecef);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        .contacts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .copy-btn {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
         }
+        .success-msg, .error-msg {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .success-msg { background: #d4edda; color: #155724; }
+        .error-msg { background: #f8d7da; color: #721c24; }
+        .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .contacts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .payment-grid-dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -301,44 +317,14 @@
             background: white;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
         }
-        .payment-input-item:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.1);
-        }
-        .payment-input-item img {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 8px;
-            border-radius: 12px;
-        }
-        .payment-input-item .method-name {
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-        .payment-input-item input {
-            width: 100%;
-            padding: 6px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 12px;
-        }
-        @media (max-width: 600px) {
-            .container { padding: 20px; }
-            .row-2cols { grid-template-columns: 1fr; }
-            .contacts-grid { grid-template-columns: 1fr; }
-            .custom-link-item input:first-child,
-            .custom-link-item input:last-child { width: 100%; }
-        }
+        .payment-input-item img { width: 48px; height: 48px; margin-bottom: 8px; border-radius: 12px; }
+        .payment-input-item .method-name { font-weight: bold; font-size: 13px; margin-bottom: 8px; }
+        .payment-input-item input { width: 100%; padding: 6px; border-radius: 8px; text-align: center; }
         .loading {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
             display: flex;
             justify-content: center;
@@ -360,9 +346,12 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .row-2cols, .contacts-grid { grid-template-columns: 1fr; }
+            .plans-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -373,15 +362,40 @@
             <div class="user-info">
                 <i class="fas fa-user-circle"></i>
                 <span id="userDisplayName">مرحباً بك</span>
-                <button class="logout-btn" onclick="logout()" style="margin-right: 0;">🚪 تسجيل الخروج</button>
+                <button class="logout-btn" onclick="logout()">🚪 تسجيل الخروج</button>
             </div>
         </div>
 
-        <div id="successMsg" class="success-msg">
-            <i class="fas fa-check-circle"></i> <span id="successText">تم حفظ التغييرات بنجاح!</span>
+        <div id="successMsg" class="success-msg"><i class="fas fa-check-circle"></i> <span id="successText"></span></div>
+        <div id="errorMsg" class="error-msg"><i class="fas fa-exclamation-circle"></i> <span id="errorText"></span></div>
+
+        <!-- حالة الاشتراك -->
+        <div class="card">
+            <h3><i class="fas fa-crown"></i> اشتراكك الحالي</h3>
+            <div id="subscriptionStatus" class="subscription-info">جاري التحميل...</div>
         </div>
-        <div id="errorMsg" class="error-msg">
-            <i class="fas fa-exclamation-circle"></i> <span id="errorText">حدث خطأ، يرجى المحاولة مرة أخرى</span>
+
+        <!-- تخصيص الرابط -->
+        <div class="card">
+            <h3><i class="fas fa-link"></i> الرابط المخصص</h3>
+            <div class="form-group">
+                <label>🌐 رابط صفحتك المخصص</label>
+                <div class="username-input-wrapper">
+                    <span>analyzer.social/</span>
+                    <input type="text" id="customUsername" placeholder="username" maxlength="30" pattern="[a-zA-Z0-9_]+">
+                    <button type="button" class="check-username" onclick="checkUsernameAvailability()">تحقق</button>
+                </div>
+                <div id="usernameStatus" class="username-status"></div>
+                <small>📌 يمكنك استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط</small>
+            </div>
+        </div>
+
+        <!-- باقات الاشتراك -->
+        <div class="card">
+            <h3><i class="fas fa-gem"></i> باقات الاشتراك</h3>
+            <div class="plans-grid" id="plansContainer">
+                <!-- سيتم تعبئة الباقات عبر JavaScript -->
+            </div>
         </div>
 
         <!-- المعلومات الشخصية -->
@@ -391,30 +405,16 @@
                 <label>🖼️ رابط الصورة الشخصية (اختياري)</label>
                 <input type="url" id="avatarUrl" placeholder="https://example.com/avatar.jpg">
             </div>
-
             <div class="row-2cols">
                 <div class="form-group">
                     <label>📝 الاسم المعروض</label>
                     <input type="text" id="displayName" placeholder="الاسم الذي سيظهر للزوار">
                 </div>
-                <div class="form-group">
-                    <label>🔗 رابط صفحتك</label>
-                    <div class="page-url">
-                        <i class="fas fa-globe"></i>
-                        <span class="url-text">analyzer.social/bio/</span>
-                        <span id="pageUrlValue" style="color:#667eea;font-weight:bold;">...</span>
-                        <button class="copy-btn" onclick="copyPageUrl()">
-                            <i class="fas fa-copy"></i> نسخ الرابط
-                        </button>
-                    </div>
-                </div>
             </div>
-
             <div class="form-group">
                 <label>📖 السيرة الذاتية</label>
                 <textarea id="bio" placeholder="اكتب نبذة قصيرة عن نفسك..."></textarea>
             </div>
-
             <div class="form-group">
                 <label>🎨 الثيم</label>
                 <select id="theme">
@@ -429,37 +429,29 @@
 
         <!-- حسابات التواصل الاجتماعي -->
         <div class="card">
-            <h3><i class="fas fa-share-alt"></i> حسابات التواصل الاجتماعي</h3>
+            <h3><i class="fas fa-share-alt"></i> حسابات التواصل</h3>
             <div class="platform-input">
                 <i class="fab fa-youtube" style="background:#ff0000;"></i>
-                <div class="input-wrapper">
-                    <input type="text" id="youtube" placeholder="اسم المستخدم في يوتيوب">
-                </div>
+                <div class="input-wrapper"><input type="text" id="youtube" placeholder="اسم المستخدم"></div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-instagram" style="background:#e1306c;"></i>
-                <div class="input-wrapper">
-                    <input type="text" id="instagram" placeholder="اسم المستخدم في انستقرام">
-                </div>
+                <div class="input-wrapper"><input type="text" id="instagram" placeholder="اسم المستخدم"></div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-tiktok" style="background:#000000;"></i>
-                <div class="input-wrapper">
-                    <input type="text" id="tiktok" placeholder="اسم المستخدم في تيك توك">
-                </div>
+                <div class="input-wrapper"><input type="text" id="tiktok" placeholder="اسم المستخدم"></div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-facebook-f" style="background:#1877f2;"></i>
                 <div class="input-wrapper">
                     <input type="text" id="facebook" placeholder="اسم المستخدم أو رابط الصفحة">
-                    <small class="field-hint">💡 يمكنك إدخال: اسم المستخدم (example) أو رابط الصفحة الكامل</small>
+                    <small class="field-hint">💡 يمكنك إدخال: اسم المستخدم أو الرابط الكامل</small>
                 </div>
             </div>
             <div class="platform-input">
                 <i class="fab fa-twitter" style="background:#1da1f2;"></i>
-                <div class="input-wrapper">
-                    <input type="text" id="twitter" placeholder="اسم المستخدم في X">
-                </div>
+                <div class="input-wrapper"><input type="text" id="twitter" placeholder="اسم المستخدم"></div>
             </div>
         </div>
 
@@ -468,9 +460,8 @@
             <h3><i class="fas fa-address-card"></i> معلومات الاتصال</h3>
             <div class="contacts-grid">
                 <div class="form-group">
-                    <label>📱 رقم الجوال (واتساب)</label>
+                    <label>📱 رقم الجوال</label>
                     <input type="tel" id="phoneNumber" placeholder="مثال: 966512345678">
-                    <small>📌 سيظهر زر اتصال وزر واتساب مباشرة</small>
                 </div>
                 <div class="form-group">
                     <label>✉️ البريد الإلكتروني</label>
@@ -481,45 +472,46 @@
 
         <!-- وسائل الدفع -->
         <div class="card">
-            <h3><i class="fas fa-credit-card"></i> وسائل الدفع الإلكتروني</h3>
+            <h3><i class="fas fa-credit-card"></i> وسائل الدفع</h3>
             <div class="payment-grid-dashboard" id="paymentMethodsContainer"></div>
-            <small>📌 أدخل رقم المحفظة أو الجوال لكل وسيلة دفع</small>
+            <small>📌 أدخل رقم المحفظة لكل وسيلة دفع</small>
         </div>
 
-        <button class="save-btn" onclick="saveBioPage()">
-            <i class="fas fa-save"></i> حفظ التغييرات
-        </button>
-        
-        <button class="preview-btn" onclick="previewBioPage()">
-            <i class="fas fa-eye"></i> معاينة صفحة البايو
-        </button>
+        <!-- الروابط المخصصة -->
+        <div class="card">
+            <h3><i class="fas fa-link"></i> روابط مخصصة</h3>
+            <div id="customLinksContainer"></div>
+            <button type="button" class="add-link" onclick="addCustomLink()">+ إضافة رابط</button>
+        </div>
+
+        <button class="save-btn" onclick="saveAllData()"><i class="fas fa-save"></i> حفظ جميع التغييرات</button>
+        <button class="preview-btn" onclick="previewBioPage()"><i class="fas fa-eye"></i> معاينة صفحة البايو</button>
     </div>
 
     <div id="loadingOverlay" class="loading" style="display: none;">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <p>جاري حفظ البيانات...</p>
-        </div>
+        <div class="loading-content"><div class="spinner"></div><p>جاري حفظ البيانات...</p></div>
     </div>
 
     <script src="/static/config.js"></script>
     <script>
-        // =====================================================
-        // إعدادات Supabase
-        // =====================================================
         const SUPABASE_URL = '{{ SUPABASE_URL }}';
         const SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // متغيرات عامة
         let currentUserId = null;
         let currentPageUrl = null;
+        let currentUsername = null;
+        let currentPlan = null;
         let customLinks = [];
         let userData = {};
+        let paymentData = {};
         
-        // =====================================================
-        // قائمة المحافظ
-        // =====================================================
+        // قائمة الباقات
+        const plans = [
+            { id: 'trial', name: '🆓 تجريبي', price: 0, period: '30 يوماً', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة'], isCurrent: false },
+            { id: 'yearly', name: '💎 سنوي', price: 2, period: 'سنة كاملة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم أولوية'], isCurrent: false },
+            { id: 'lifetime', name: '👑 مدى الحياة', price: 20, period: 'مدى الحياة', features: ['رابط مخصص', 'جميع الثيمات', 'وسائل دفع غير محدودة', 'دعم VIP', 'تحليلات متقدمة'], isCurrent: false }
+        ];
         
         const paymentWallets = [
             { id: 'jaib', name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
@@ -536,109 +528,140 @@
             { id: 'mtnmomo', name: 'MTN Mobile Money', icon: '/static/assets/payment-icons/mtnmomo.webp' }
         ];
         
-        let paymentData = {};
-        
-        // =====================================================
-        // دوال العرض والتحكم
-        // =====================================================
-        
-        function showLoading() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
+        function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+        function showSuccess(msg) { 
+            const div = document.getElementById('successMsg');
+            document.getElementById('successText').innerText = msg;
+            div.style.display = 'block';
+            setTimeout(() => div.style.display = 'none', 3000);
+        }
+        function showError(msg) { 
+            const div = document.getElementById('errorMsg');
+            document.getElementById('errorText').innerText = msg;
+            div.style.display = 'block';
+            setTimeout(() => div.style.display = 'none', 5000);
         }
         
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
+        // عرض الباقات
+        function renderPlans() {
+            const container = document.getElementById('plansContainer');
+            if (!container) return;
+            
+            let html = '';
+            for (const plan of plans) {
+                const isCurrent = plan.id === currentPlan;
+                html += `
+                    <div class="plan-card ${isCurrent ? 'current' : ''}">
+                        <div class="plan-name">${plan.name}</div>
+                        <div class="plan-price">${plan.price === 0 ? 'مجاني' : `$${plan.price}`}<small> / ${plan.period}</small></div>
+                        <ul class="plan-features">
+                            ${plan.features.map(f => `<li><i class="fas fa-check-circle" style="color: #28a745;"></i> ${f}</li>`).join('')}
+                        </ul>
+                        ${isCurrent ? '<div class="current-plan-badge">✅ اشتراكك الحالي</div>' : `<button class="upgrade-plan-btn" onclick="upgradeToPlan('${plan.id}', ${plan.price})">الترقية إلى ${plan.name}</button>`}
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
         }
         
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMsg');
-            document.getElementById('successText').innerText = message;
-            successDiv.style.display = 'block';
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 3000);
+        // الترقية
+        async function upgradeToPlan(planId, price) {
+            if (price === 0) {
+                showError('لا يمكن الترقية إلى الباقة المجانية');
+                return;
+            }
+            
+            const message = `🛒 طلب ترقية إلى الباقة ${planId === 'yearly' ? 'السنوية' : 'مدى الحياة'}\n\n💰 السعر: $${price}\n\nللدفع عبر نجوم Telegram أو التحويل البنكي، يرجى التواصل مع الدعم:\n@analyzer_social_bot`;
+            
+            if (confirm(`سيتم تحويلك إلى بوت الدعم لإتمام عملية الدفع بقيمة $${price}\n\nاضغط موافق للمتابعة`)) {
+                window.open('https://t.me/analyzer_social_bot', '_blank');
+                showSuccess('تم تحويلك إلى بوت الدعم. يرجى متابعة التعليمات لإتمام الترقية');
+            }
         }
         
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMsg');
-            document.getElementById('errorText').innerText = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
+        // التحقق من توفر الاسم
+        async function checkUsernameAvailability() {
+            const username = document.getElementById('customUsername').value.trim();
+            if (!username) {
+                showError('الرجاء إدخال اسم مستخدم');
+                return;
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                showError('يمكن استخدام الحروف الإنجليزية والأرقام والشرطة السفلية فقط');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('bio_pages')
+                    .select('username')
+                    .eq('username', username)
+                    .maybeSingle();
+                
+                const statusDiv = document.getElementById('usernameStatus');
+                if (error) throw error;
+                
+                if (data && data.username === username && (!currentUsername || data.username !== currentUsername)) {
+                    statusDiv.innerHTML = '❌ هذا الاسم غير متوفر';
+                    statusDiv.className = 'username-status username-taken';
+                } else {
+                    statusDiv.innerHTML = '✅ هذا الاسم متوفر';
+                    statusDiv.className = 'username-status username-available';
+                }
+            } catch (error) {
+                console.error('Error checking username:', error);
+                showError('حدث خطأ في التحقق من الاسم');
+            }
         }
         
-        // =====================================================
-        // دالة معالجة رابط فيسبوك
-        // =====================================================
+        // تحميل حالة الاشتراك
+        async function loadSubscriptionStatus() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_subscriptions')
+                    .select('*, subscription_plans(*)')
+                    .eq('user_id', parseInt(currentUserId))
+                    .eq('status', 'active')
+                    .maybeSingle();
+                
+                if (error) throw error;
+                
+                const statusDiv = document.getElementById('subscriptionStatus');
+                if (data) {
+                    currentPlan = data.subscription_plans?.name || 'trial';
+                    const endDate = data.end_date ? new Date(data.end_date).toLocaleDateString('ar') : 'غير محدد';
+                    statusDiv.innerHTML = `
+                        <strong>📅 خطتك الحالية: ${data.subscription_plans?.display_name || 'تجريبي'}</strong><br>
+                        ${data.end_date ? `تاريخ الانتهاء: ${endDate}` : 'اشتراك مدى الحياة'}
+                    `;
+                } else {
+                    currentPlan = 'trial';
+                    statusDiv.innerHTML = '🆓 أنت حالياً في الباقة التجريبية المجانية (30 يوماً)';
+                }
+                renderPlans();
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+                document.getElementById('subscriptionStatus').innerHTML = '⚠️ لا يمكن تحميل حالة الاشتراك';
+            }
+        }
         
         function cleanFacebookInput(input) {
             if (!input) return '';
-            
-            // إزالة المسافات الزائدة
             input = input.trim();
-            
-            // إذا كان رابطاً كاملاً
             if (input.includes('facebook.com') || input.includes('fb.com')) {
-                // محاولة استخراج username من الرابط
                 let match = input.match(/facebook\.com\/([^\/?]+)/);
-                if (match && match[1] && !match[1].includes('profile.php')) {
-                    return match[1];
-                }
-                // محاولة استخراج id من رابط profile.php
+                if (match && match[1] && !match[1].includes('profile.php')) return match[1];
                 match = input.match(/id=([0-9]+)/);
-                if (match && match[1]) {
-                    return match[1];
-                }
-                // محاولة استخراج من رابط مختصر
+                if (match && match[1]) return match[1];
                 match = input.match(/fb\.com\/([^\/?]+)/);
-                if (match && match[1]) {
-                    return match[1];
-                }
+                if (match && match[1]) return match[1];
             }
-            // إرجاع النص كما هو (اسم مستخدم عادي)
             return input;
         }
         
-        // =====================================================
-        // دالة نسخ الرابط
-        // =====================================================
-        
-        async function copyPageUrl() {
-            if (!currentPageUrl) {
-                showError('⚠️ لا يوجد رابط للحفظ بعد، قم بحفظ البيانات أولاً');
-                return;
-            }
-            const fullUrl = `https://bio.analyzer.social/bio/${currentPageUrl}`;
-            try {
-                await navigator.clipboard.writeText(fullUrl);
-                showSuccess('✅ تم نسخ الرابط بنجاح!');
-                const copyBtn = document.querySelector('.copy-btn');
-                const originalHTML = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalHTML;
-                }, 2000);
-            } catch (err) {
-                const textarea = document.createElement('textarea');
-                textarea.value = fullUrl;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showSuccess('✅ تم نسخ الرابط بنجاح!');
-            }
-        }
-        
-        // =====================================================
-        // دوال جهات الاتصال
-        // =====================================================
-        
         function getContacts() {
-            return {
-                phone: document.getElementById('phoneNumber').value.trim(),
-                email: document.getElementById('emailAddress').value.trim()
-            };
+            return { phone: document.getElementById('phoneNumber').value.trim(), email: document.getElementById('emailAddress').value.trim() };
         }
         
         function loadContacts(contacts) {
@@ -647,10 +670,6 @@
                 document.getElementById('emailAddress').value = contacts.email || '';
             }
         }
-        
-        // =====================================================
-        // دوال الروابط المخصصة
-        // =====================================================
         
         function renderCustomLinks() {
             const container = document.getElementById('customLinksContainer');
@@ -668,48 +687,21 @@
             });
         }
         
-        function updateCustomLink(index, field, value) {
-            customLinks[index][field] = value;
-        }
-        
+        function updateCustomLink(index, field, value) { customLinks[index][field] = value; }
         function addCustomLink() {
-            if (customLinks.length >= 10) {
-                showError('الحد الأقصى هو 10 روابط مخصصة');
-                return;
-            }
+            if (customLinks.length >= 10) { showError('الحد الأقصى 10 روابط'); return; }
             customLinks.push({ title: 'رابط جديد', url: 'https://' });
             renderCustomLinks();
         }
-        
-        function removeCustomLink(index) {
-            customLinks.splice(index, 1);
-            renderCustomLinks();
-        }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // =====================================================
-        // دوال وسائل الدفع
-        // =====================================================
+        function removeCustomLink(index) { customLinks.splice(index, 1); renderCustomLinks(); }
+        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         
         function renderPaymentInputs() {
             const container = document.getElementById('paymentMethodsContainer');
             if (!container) return;
-            
             let html = '';
             for (const wallet of paymentWallets) {
-                html += `
-                    <div class="payment-input-item">
-                        <img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
-                        <div class="method-name">${wallet.name}</div>
-                        <input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${paymentData[wallet.id] || ''}">
-                    </div>
-                `;
+                html += `<div class="payment-input-item"><img src="${wallet.icon}" alt="${wallet.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'"><div class="method-name">${wallet.name}</div><input type="text" id="payment_${wallet.id}" placeholder="رقم المحفظة" value="${paymentData[wallet.id] || ''}"></div>`;
             }
             container.innerHTML = html;
         }
@@ -718,79 +710,41 @@
             const data = {};
             for (const wallet of paymentWallets) {
                 const value = document.getElementById(`payment_${wallet.id}`)?.value.trim();
-                if (value) {
-                    data[wallet.id] = value;
-                }
+                if (value) data[wallet.id] = value;
             }
             return data;
         }
         
         async function loadPaymentData() {
             try {
-                const response = await fetch('/api/payment/load', {
-                    headers: { 'X-User-Id': currentUserId }
-                });
+                const response = await fetch('/api/payment/load', { headers: { 'X-User-Id': currentUserId } });
                 const result = await response.json();
-                
                 if (result.success && result.payment_methods) {
                     paymentData = result.payment_methods;
                     for (const wallet of paymentWallets) {
                         const input = document.getElementById(`payment_${wallet.id}`);
-                        if (input && paymentData[wallet.id]) {
-                            input.value = paymentData[wallet.id];
-                        }
+                        if (input && paymentData[wallet.id]) input.value = paymentData[wallet.id];
                     }
                 }
-            } catch (error) {
-                console.error('Error loading payment data:', error);
-            }
+            } catch (error) { console.error('Error loading payment data:', error); }
         }
         
         async function savePaymentMethods(bioPageId) {
             try {
                 const paymentDataToSave = getPaymentData();
-                const hasData = Object.values(paymentDataToSave).some(value => value && value.trim() !== '');
-                if (!hasData) {
-                    console.log('لا توجد بيانات وسائل دفع للحفظ');
-                    return;
-                }
-                
-                const response = await fetch('/api/payment/save', {
+                const hasData = Object.values(paymentDataToSave).some(v => v && v.trim());
+                if (!hasData) return;
+                await fetch('/api/payment/save', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-User-Id': currentUserId
-                    },
-                    body: JSON.stringify({
-                        payment_methods: paymentDataToSave,
-                        bio_page_id: bioPageId
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-User-Id': currentUserId },
+                    body: JSON.stringify({ payment_methods: paymentDataToSave, bio_page_id: bioPageId })
                 });
-                
-                const result = await response.json();
-                if (result.success) {
-                    console.log('تم حفظ وسائل الدفع بنجاح');
-                } else {
-                    console.error('خطأ في حفظ وسائل الدفع:', result.error);
-                }
-            } catch (error) {
-                console.error('Error saving payment methods:', error);
-            }
+            } catch (error) { console.error('Error saving payment methods:', error); }
         }
         
-        // =====================================================
-        // دالة حفظ البيانات الرئيسية
-        // =====================================================
-        
-        async function saveBioPage() {
-            if (!currentUserId) {
-                showError('الرجاء تسجيل الدخول أولاً');
-                window.location.href = '/';
-                return;
-            }
-            
+        async function saveAllData() {
+            if (!currentUserId) { showError('الرجاء تسجيل الدخول أولاً'); window.location.href = '/'; return; }
             showLoading();
-            
             try {
                 const accounts = {};
                 const youtube = document.getElementById('youtube').value.trim();
@@ -798,13 +752,13 @@
                 const tiktok = document.getElementById('tiktok').value.trim();
                 const facebookRaw = document.getElementById('facebook').value.trim();
                 const twitter = document.getElementById('twitter').value.trim();
-                
                 if (youtube) accounts.youtube = youtube.replace('@', '');
                 if (instagram) accounts.instagram = instagram.replace('@', '');
                 if (tiktok) accounts.tiktok = tiktok.replace('@', '');
                 if (facebookRaw) accounts.facebook = cleanFacebookInput(facebookRaw);
                 if (twitter) accounts.twitter = twitter;
                 
+                const newUsername = document.getElementById('customUsername').value.trim();
                 const bioData = {
                     avatar_url: document.getElementById('avatarUrl').value || null,
                     display_name: document.getElementById('displayName').value || userData.username || 'مستخدم',
@@ -816,220 +770,126 @@
                     updated_at: new Date().toISOString()
                 };
                 
-                let bioPageId = null;
+                if (newUsername && newUsername !== currentUsername) {
+                    const { data: existing } = await supabaseClient.from('bio_pages').select('username').eq('username', newUsername).maybeSingle();
+                    if (existing && existing.username && existing.username !== currentUsername) {
+                        showError('⚠️ اسم المستخدم غير متوفر');
+                        hideLoading();
+                        return;
+                    }
+                    bioData.username = newUsername;
+                }
                 
+                let bioPageId = null;
                 if (currentPageUrl) {
-                    const { data, error } = await supabaseClient
-                        .from('bio_pages')
-                        .update(bioData)
-                        .eq('user_id', parseInt(currentUserId))
-                        .select();
-                    
+                    const { data, error } = await supabaseClient.from('bio_pages').update(bioData).eq('user_id', parseInt(currentUserId)).select();
                     if (error) throw error;
                     if (data && data[0]) bioPageId = data[0].id;
                     showSuccess('✅ تم تحديث صفحة البايو بنجاح!');
-                    
                 } else {
                     const randomId = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 4);
-                    const pageUrl = randomId;
-                    
-                    const newData = {
-                        user_id: parseInt(currentUserId),
-                        page_url: pageUrl,
-                        ...bioData,
-                        is_active: true,
-                        views_count: 0,
-                        created_at: new Date().toISOString()
-                    };
-                    
-                    const { data, error } = await supabaseClient
-                        .from('bio_pages')
-                        .insert([newData])
-                        .select();
-                    
+                    const newData = { user_id: parseInt(currentUserId), page_url: randomId, ...bioData, is_active: true, views_count: 0, created_at: new Date().toISOString() };
+                    const { data, error } = await supabaseClient.from('bio_pages').insert([newData]).select();
                     if (error) throw error;
-                    if (data && data[0]) {
-                        bioPageId = data[0].id;
-                        currentPageUrl = pageUrl;
-                        document.getElementById('pageUrlValue').innerText = currentPageUrl;
-                    }
+                    if (data && data[0]) { bioPageId = data[0].id; currentPageUrl = randomId; document.getElementById('pageUrlValue').innerText = currentPageUrl; }
                     showSuccess('✅ تم إنشاء صفحة البايو بنجاح!');
                 }
-                
-                if (bioPageId) {
-                    await savePaymentMethods(bioPageId);
-                } else {
-                    const { data } = await supabaseClient
-                        .from('bio_pages')
-                        .select('id')
-                        .eq('user_id', parseInt(currentUserId))
-                        .single();
-                    if (data) await savePaymentMethods(data.id);
-                }
-                
-            } catch (error) {
-                console.error('خطأ في الحفظ:', error);
-                showError(error.message || 'حدث خطأ أثناء حفظ البيانات');
-            } finally {
-                hideLoading();
-            }
+                if (bioPageId) await savePaymentMethods(bioPageId);
+            } catch (error) { console.error('خطأ في الحفظ:', error); showError(error.message || 'حدث خطأ أثناء حفظ البيانات'); }
+            finally { hideLoading(); }
         }
-        
-        // =====================================================
-        // تحميل البيانات من قاعدة البيانات
-        // =====================================================
         
         async function loadBioData() {
             if (!currentUserId) return;
-            
             try {
-                const { data, error } = await supabaseClient
-                    .from('bio_pages')
-                    .select('*')
-                    .eq('user_id', parseInt(currentUserId))
-                    .maybeSingle();
-                
-                if (error) {
-                    console.error('خطأ في التحميل:', error);
-                    return;
-                }
-                
+                const { data, error } = await supabaseClient.from('bio_pages').select('*').eq('user_id', parseInt(currentUserId)).maybeSingle();
+                if (error) { console.error('خطأ في التحميل:', error); return; }
                 if (data) {
                     document.getElementById('avatarUrl').value = data.avatar_url || '';
                     document.getElementById('displayName').value = data.display_name || '';
                     document.getElementById('bio').value = data.bio || '';
                     document.getElementById('theme').value = data.theme_name || 'default';
-                    
                     const accounts = data.accounts || {};
                     document.getElementById('youtube').value = accounts.youtube || '';
                     document.getElementById('instagram').value = accounts.instagram || '';
                     document.getElementById('tiktok').value = accounts.tiktok || '';
                     document.getElementById('facebook').value = accounts.facebook || '';
                     document.getElementById('twitter').value = accounts.twitter || '';
-                    
                     loadContacts(data.contacts || {});
-                    
                     currentPageUrl = data.page_url;
+                    currentUsername = data.username || '';
                     document.getElementById('pageUrlValue').innerText = currentPageUrl;
+                    document.getElementById('customUsername').value = currentUsername;
                     customLinks = data.custom_links || [];
                     renderCustomLinks();
                 }
-                
                 await loadPaymentData();
                 renderPaymentInputs();
-                
-            } catch (error) {
-                console.error('خطأ في تحميل البيانات:', error);
-            }
+            } catch (error) { console.error('خطأ في تحميل البيانات:', error); }
         }
-        
-        // =====================================================
-        // دوال المصادقة والمستخدم
-        // =====================================================
         
         function checkSessionValidity() {
             const expiresAt = localStorage.getItem('bio_expires_at');
-            if (!expiresAt || Date.now() > parseInt(expiresAt)) {
-                localStorage.clear();
-                window.location.replace('/');
-                return false;
-            }
+            if (!expiresAt || Date.now() > parseInt(expiresAt)) { localStorage.clear(); window.location.replace('/'); return false; }
             return true;
         }
         
         async function loadUserData() {
             currentUserId = localStorage.getItem('bio_user_id');
             const telegramUsername = localStorage.getItem('bio_username');
-            
-            if (!currentUserId) {
-                window.location.href = '/';
-                return false;
-            }
-            
+            if (!currentUserId) { window.location.href = '/'; return false; }
             try {
-                const { data, error } = await supabaseClient
-                    .from('app_users')
-                    .select('*')
-                    .eq('id', parseInt(currentUserId))
-                    .maybeSingle();
-                
+                const { data, error } = await supabaseClient.from('app_users').select('*').eq('id', parseInt(currentUserId)).maybeSingle();
                 if (data) {
                     userData = data;
-                    const displayName = data.first_name || data.username || `مستخدم ${currentUserId}`;
-                    document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
-                    if (!document.getElementById('displayName').value) {
-                        document.getElementById('displayName').value = displayName;
-                    }
+                    document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> ${data.first_name || data.username || 'مستخدم'}`;
+                    if (!document.getElementById('displayName').value) document.getElementById('displayName').value = data.first_name || data.username;
                 } else {
-                    userData = {
-                        id: currentUserId,
-                        username: telegramUsername || `user_${currentUserId}`,
-                        first_name: telegramUsername || '',
-                        created_at: new Date().toISOString()
-                    };
-                    
-                    const { error: insertError } = await supabaseClient
-                        .from('app_users')
-                        .insert([userData]);
-                    
-                    if (insertError) {
-                        console.error('خطأ في إنشاء المستخدم:', insertError);
-                    } else {
-                        console.log('تم إنشاء مستخدم جديد');
-                    }
                     document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> ${telegramUsername || 'مستخدم جديد'}`;
                 }
                 return true;
-            } catch (error) {
-                console.error('خطأ في تحميل بيانات المستخدم:', error);
-                document.getElementById('userDisplayName').innerHTML = `<i class="fas fa-user"></i> مستخدم`;
-                return true;
-            }
+            } catch (error) { console.error('خطأ في تحميل بيانات المستخدم:', error); return true; }
         }
         
         function previewBioPage() {
-            if (!currentPageUrl) {
-                showError('⚠️ لا يوجد رابط لصفحة البايو بعد\nيرجى حفظ البيانات أولاً');
-                return;
+            if (!currentPageUrl) { showError('⚠️ لا يوجد رابط للحفظ بعد'); return; }
+            const username = document.getElementById('customUsername').value.trim();
+            if (username && document.getElementById('usernameStatus')?.innerText.includes('متوفر')) {
+                window.open(`https://analyzer.social/${username}`, '_blank');
+            } else {
+                window.open(`https://analyzer.social/bio/${currentPageUrl}`, '_blank');
             }
-            const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            window.open(`${baseUrl}/bio/${currentPageUrl}`, '_blank');
         }
         
         function logout() {
             if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.removeItem('bio_token');
-                localStorage.removeItem('bio_user_id');
-                localStorage.removeItem('bio_username');
-                localStorage.removeItem('bio_expires_at');
-                localStorage.removeItem('bio_first_name');
-                localStorage.removeItem('bio_last_name');
+                localStorage.clear();
                 window.location.replace('/');
             }
         }
         
-        // =====================================================
-        // تهيئة الصفحة
-        // =====================================================
-        
-        async function init() {
-            if (!checkSessionValidity()) return;
-            const userLoaded = await loadUserData();
-            if (!userLoaded) return;
-            await loadBioData();
-            console.log('تم تهيئة لوحة التحكم بنجاح');
-        }
-        
-        // ربط الدوال للنطاق العام
         window.addCustomLink = addCustomLink;
         window.removeCustomLink = removeCustomLink;
         window.updateCustomLink = updateCustomLink;
-        window.saveBioPage = saveBioPage;
+        window.saveAllData = saveAllData;
         window.previewBioPage = previewBioPage;
         window.logout = logout;
-        window.copyPageUrl = copyPageUrl;
+        window.copyPageUrl = async function() {
+            const username = document.getElementById('customUsername').value.trim();
+            const url = username ? `https://analyzer.social/${username}` : `https://analyzer.social/bio/${currentPageUrl}`;
+            await navigator.clipboard.writeText(url);
+            showSuccess('✅ تم نسخ الرابط!');
+        };
+        window.checkUsernameAvailability = checkUsernameAvailability;
+        window.upgradeToPlan = upgradeToPlan;
         
-        // بدء التهيئة
+        async function init() {
+            if (!checkSessionValidity()) return;
+            await loadUserData();
+            await loadBioData();
+            await loadSubscriptionStatus();
+            console.log('تم تهيئة لوحة التحكم بنجاح');
+        }
         init();
     </script>
 </body>
