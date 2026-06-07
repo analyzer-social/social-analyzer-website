@@ -1,779 +1,722 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+# -*- coding: utf-8 -*-
+from flask import Flask, render_template, send_from_directory, request, jsonify
+from supabase import create_client, Client
+import os
+from functools import wraps
+from flask import Flask, render_template, send_from_directory, request, jsonify, session, redirect
+from datetime import datetime
+import hashlib
+app = Flask(__name__, template_folder='templates', static_folder='static')
+app.secret_key = os.environ.get('SECRET_KEY', 'bio_social_analyzer_secret_key_2024_secure_9xK7mP2qR5tW8zL1')
+
+# =====================================================
+# متغيرات البيئة - دعم لعدة أسماء ممكنة
+# =====================================================
+
+# محاولة الحصول على URL من عدة أسماء ممكنة
+SUPABASE_BIO_URL = (
+    os.environ.get('SUPABASE_BIO_URL') or 
+    os.environ.get('SUPABASE_URL') or
+    os.environ.get('NEXT_PUBLIC_SUPABASE_URL') or
+    'https://riojthitssmmsdmsqzyc.supabase.co'  # القيمة الافتراضية
+)
+
+# محاولة الحصول على ANON KEY من عدة أسماء ممكنة
+SUPABASE_BIO_ANON_KEY = (
+    os.environ.get('SUPABASE_BIO_ANON_KEY') or
+    os.environ.get('SUPABASE_ANON_KEY') or
+    os.environ.get('NEXT_PUBLIC_SUPABASE_ANON_KEY') or
+    ''  # سيتم التحقق منها بعد
+)
+
+# طباعة معلومات debug (للتأكد من وجود المتغيرات)
+print(f"🔍 Checking environment variables:")
+print(f"   SUPABASE_BIO_URL: {'✅ Found' if SUPABASE_BIO_URL else '❌ Missing'}")
+print(f"   SUPABASE_BIO_ANON_KEY: {'✅ Found' if SUPABASE_BIO_ANON_KEY else '❌ Missing'}")
+print(f"   SECRET_KEY: {'✅ Found' if app.secret_key else '❌ Missing'}")
+
+# التحقق من وجود ANON KEY (بدون إيقاف التشغيل)
+if not SUPABASE_BIO_ANON_KEY:
+    print("⚠️ WARNING: SUPABASE_BIO_ANON_KEY is not set! Some features may not work.")
+    # لا نوقف التشغيل، نعطي قيمة افتراضية فارغة
+
+# تهيئة Supabase للخلفية (حتى لو كان المفتاح فارغاً، سنتعامل معه لاحقاً)
+try:
+    if SUPABASE_BIO_URL and SUPABASE_BIO_ANON_KEY:
+        supabase: Client = create_client(SUPABASE_BIO_URL, SUPABASE_BIO_ANON_KEY)
+        print("✅ Supabase client initialized successfully")
+    else:
+        supabase = None
+        print("⚠️ Supabase client not initialized (missing credentials)")
+except Exception as e:
+    print(f"⚠️ Supabase initialization error: {e}")
+    supabase = None
+
+# =====================================================
+# دوال المصادقة (Decorators)
+# =====================================================
+
+def require_auth(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user_id = request.headers.get('X-User-Id')
+        if not user_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
+# =====================================================
+# واجهات برمجة التطبيقات (API)
+# =====================================================
+
+@app.route('/api/bio/save', methods=['POST'])
+@require_auth
+def save_bio():
+    """حفظ بيانات صفحة البايو"""
+    if not supabase:
+        return jsonify({'error': 'Database not configured'}), 500
     
-    <!-- SEO & Open Graph -->
-    <title>analyzer.social | أنشئ صفحة البايو الاحترافية الخاصة بك</title>
-    <meta name="description" content="منصة متكاملة لإنشاء صفحات بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع الإلكتروني في مكان واحد. مجاني وسهل الاستخدام.">
-    <meta name="keywords" content="صفحة بايو, بايو, روابط, analyzer.social, صفحة روابط, سوشال ميديا">
-    <meta name="author" content="analyzer.social">
-    <meta name="theme-color" content="#667eea">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="analyzer.social | صفحة البايو الاحترافية">
-    <meta property="og:description" content="أنشئ صفحة بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد. مجاني وسهل الاستخدام.">
-    <meta property="og:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:url" content="https://analyzer.social">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="analyzer.social | منصة صفحات البايو الاحترافية">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="analyzer.social | صفحة البايو الاحترافية">
-    <meta name="twitter:description" content="أنشئ صفحة بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد.">
-    <meta name="twitter:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
-    
-    <!-- Favicon - استخدام الصور الموجودة -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
-    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- تمرير المتغيرات من Flask -->
-    <script>
-        window.SUPABASE_URL = '{{ SUPABASE_URL }}';
-        window.SUPABASE_ANON_KEY = '{{ SUPABASE_ANON_KEY }}';
-    </script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    try:
+        data = request.json
+        user_id = request.headers.get('X-User-Id')
+        page_url = data.get('page_url')
+        
+        bio_data = {
+            'avatar_url': data.get('avatar_url'),
+            'display_name': data.get('display_name'),
+            'bio': data.get('bio'),
+            'theme_name': data.get('theme_name'),
+            'accounts': data.get('accounts', {}),
+            'custom_links': data.get('custom_links', []),
+            'updated_at': 'now()'
         }
         
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
-            min-height: 100vh;
-        }
-        
-        /* الهيدر المحسن */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.3rem;
-            font-weight: 800;
-        }
-        
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ffffff, #f0f0f0);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .logo-icon:hover {
-            transform: scale(1.05);
-        }
-        
-        /* استخدام الصورة في الشعار */
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* صورة المستخدم الافتراضية - استخدام الصورة الموجودة */
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffffff, #e0e7ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .user-avatar:hover {
-            transform: scale(1.05);
-            border-color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .user-avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* اضافة قسم للمستخدم في الهيدر */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .nav-links a:hover {
-            opacity: 0.8;
-            text-decoration: underline;
-            transform: translateY(-2px);
-        }
-        
-        /* القسم الرئيسي (Hero) المحسن */
-        .hero {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-        }
-        
-        .hero-content h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-        
-        .hero-content p {
-            color: #4a5568;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 30px;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }
-        
-        .btn-telegram {
-            background: linear-gradient(135deg, #0088cc, #006699);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-telegram:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,136,204,0.3);
-        }
-        
-        .telegram-widget-wrapper {
-            display: inline-block;
-        }
-        
-        .telegram-widget-wrapper iframe {
-            border-radius: 50px !important;
-        }
-        
-        .btn-google {
-            background: white;
-            color: #2d3748;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-        }
-        
-        .btn-google:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            background: #f8f9fa;
-        }
-        
-        .hero-logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .hero-logo-circle {
-            width: 280px;
-            height: 280px;
-            background: linear-gradient(135deg, #667eea15, #764ba215);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .hero-logo-inner {
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 40px rgba(102,126,234,0.3);
-            overflow: hidden;
-        }
-        
-        /* استخدام الصورة في الهيرو */
-        .hero-logo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* الميزات */
-        .features {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 30px;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 40px;
-            color: #2d3748;
-        }
-        
-        .section-title span {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #667eea20, #764ba220);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-        
-        .feature-icon i {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 15px;
-            color: #2d3748;
-        }
-        
-        .feature-card p {
-            color: #718096;
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
-        
-        /* وسائل الدفع المدعومة */
-        .payment-section {
-            background: linear-gradient(135deg, #667eea08, #764ba208);
-            padding: 60px 30px;
-        }
-        
-        .payment-logos {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 25px;
-        }
-        
-        .payment-item {
-            text-align: center;
-            width: 80px;
-            transition: all 0.3s;
-        }
-        
-        .payment-item:hover {
-            transform: translateY(-5px);
-        }
-        
-        .payment-icon {
-            width: 55px;
-            height: 55px;
-            background: white;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 8px;
-            transition: all 0.3s;
-        }
-        
-        .payment-item:hover .payment-icon {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transform: scale(1.05);
-        }
-        
-        .payment-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        .payment-name {
-            font-size: 11px;
-            color: #4a5568;
-            font-weight: 500;
-        }
-        
-        /* الفوتر */
-        .footer {
-            background: #1a202c;
-            color: #a0aec0;
-            padding: 40px 30px 20px;
-        }
-        
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-        }
-        
-        .footer-links h4 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1rem;
-        }
-        
-        .footer-links a {
-            display: block;
-            color: #a0aec0;
-            text-decoration: none;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: #667eea;
-            transform: translateX(-5px);
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            margin-top: 30px;
-            border-top: 1px solid #2d3748;
-            font-size: 0.7rem;
-        }
-        
-        /* تحسينات للشاشات الصغيرة */
-        @media (max-width: 768px) {
-            .hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-                padding: 50px 20px;
+        if page_url:
+            # تحديث صفحة موجودة
+            result = supabase.table('bio_pages')\
+                .update(bio_data)\
+                .eq('user_id', int(user_id))\
+                .execute()
+            
+            if result.data:
+                return jsonify({'success': True, 'data': result.data[0]})
+            else:
+                return jsonify({'error': 'No data updated'}), 400
+        else:
+            # إنشاء صفحة جديدة
+            name = data.get('display_name', 'user')
+            import random
+            import string
+            random_str = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+            new_page_url = f"{name.replace(' ', '_').lower()}_{random_str}"
+            
+            new_data = {
+                'user_id': int(user_id),
+                'page_url': new_page_url,
+                **bio_data,
+                'is_active': True,
+                'views_count': 0,
+                'created_at': 'now()'
             }
             
-            .hero-content h1 {
-                font-size: 2rem;
-            }
+            result = supabase.table('bio_pages')\
+                .insert(new_data)\
+                .execute()
             
-            .hero-buttons {
-                justify-content: center;
-            }
-            
-            .hero-logo-circle {
-                width: 200px;
-                height: 200px;
-            }
-            
-            .hero-logo-inner {
-                width: 140px;
-                height: 140px;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .payment-logos {
-                gap: 15px;
-            }
-            
-            .header-container {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .nav-links {
-                justify-content: center;
-            }
-        }
-        
-        /* تأثيرات إضافية */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .feature-card, .payment-item {
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-        }
-        
-        .feature-card:nth-child(1) { animation-delay: 0.1s; }
-        .feature-card:nth-child(2) { animation-delay: 0.2s; }
-        .feature-card:nth-child(3) { animation-delay: 0.3s; }
-        .feature-card:nth-child(4) { animation-delay: 0.4s; }
-        .feature-card:nth-child(5) { animation-delay: 0.5s; }
-        .feature-card:nth-child(6) { animation-delay: 0.6s; }
-        
-        /* تحسين التمرير */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* تحسين اختيار النص */
-        ::selection {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <!-- الهيدر المحسن مع استخدام الصور -->
-    <div class="header">
-        <div class="header-container">
-            <div class="logo">
-                <div class="logo-icon">
-                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" class="logo-img">
-                </div>
-                <span>analyzer.social</span>
-            </div>
-            <div class="header-actions">
-                <div class="nav-links">
-                    <a href="/">الرئيسية</a>
-                    <a href="/privacy">سياسة الخصوصية</a>
-                    <a href="/terms">شروط الخدمة</a>
-                    <a href="/help">المساعدة</a>
-                </div>
-                <!-- صورة المستخدم الافتراضية باستخدام الصورة الموجودة -->
-                <div class="user-avatar" id="userAvatar" style="display: none;">
-                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="user avatar" class="user-avatar-img">
-                </div>
-            </div>
-        </div>
-    </div>
+            if result.data:
+                return jsonify({'success': True, 'page_url': new_page_url, 'data': result.data[0]})
+            else:
+                return jsonify({'error': 'Failed to create'}), 400
+                
+    except Exception as e:
+        print(f"Error in save_bio: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/bio/load', methods=['GET'])
+@require_auth
+def load_bio():
+    """تحميل بيانات صفحة البايو"""
+    if not supabase:
+        return jsonify({'error': 'Database not configured'}), 500
     
-    <!-- القسم الرئيسي مع استخدام الصورة -->
-    <div class="hero">
-        <div class="hero-content">
-            <h1>أنشئ صفحة البايو الاحترافية الخاصة بك</h1>
-            <p>منصة متكاملة تتيح لك عرض جميع حساباتك وروابطك ووسائل الدفع الإلكتروني في صفحة واحدة أنيقة وسهلة المشاركة.</p>
-            <div class="hero-buttons">
-                <div class="telegram-widget-wrapper">
-                    <script async src="https://telegram.org/js/telegram-widget.js?22"
-                        data-telegram-login="Social_Media_analyzer_bot"
-                        data-size="large"
-                        data-radius="50"
-                        data-auth-url="https://social-analyzer-bio.onrender.com/auth"
-                        data-request-access="write">
-                    </script>
-                </div>
-                <button class="btn-google" onclick="signInWithGoogle()">
-                    <i class="fab fa-google"></i> تسجيل الدخول عبر Google
-                </button>
-            </div>
-            <div style="font-size: 0.8rem; color: #718096; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
-                ⚡ مجاني بالكامل | ✨ ثيمات متعددة | 💳 دعم 12 محفظة إلكترونية
-            </div>
-        </div>
-        <div class="hero-logo">
-            <div class="hero-logo-circle">
-                <div class="hero-logo-inner">
-                    <img src="/static/assets/icons/android-chrome-512x512.png" alt="analyzer.social" class="hero-logo-img">
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- الميزات -->
-    <div class="features">
-        <h2 class="section-title">✨ <span>مميزات</span> المنصة</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-palette"></i></div>
-                <h3>ثيمات متعددة</h3>
-                <p>اختر من 5 ثيمات مختلفة تناسب ذوقك (افتراضي، داكن، أخضر، وردي، محيط)</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-link"></i></div>
-                <h3>روابط مخصصة</h3>
-                <p>أضف روابط إضافية لمواقعك أو متاجرك أو أي رابط تريده</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
-                <h3>وسائل دفع متعددة</h3>
-                <p>دعم جميع المحافظ الإلكترونية اليمنية (جيب، فلوسك، يمن والت، وغيرها)</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-                <h3>إحصائيات دقيقة</h3>
-                <p>تتبع عدد زيارات صفحتك وعدد النقرات على وسائل الدفع</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
-                <h3>تصميم متجاوب</h3>
-                <p>صفحتك تظهر بشكل مثالي على جميع الأجهزة (جوال، تابلت، كمبيوتر)</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-share-alt"></i></div>
-                <h3>سهولة المشاركة</h3>
-                <p>انسخ رابط صفحتك وشاركها في أي مكان مع زر نسخ واحد</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- وسائل الدفع المدعومة -->
-    <div class="payment-section">
-        <h2 class="section-title">💳 <span>وسائل الدفع</span> المدعومة</h2>
-        <div class="payment-logos" id="paymentLogosContainer">
-            <!-- سيتم اضافة الايقونات ديناميكياً -->
-        </div>
-        <p style="text-align: center; margin-top: 20px; color: #718096; font-size: 12px;">
-            <i class="fas fa-info-circle"></i> أكثر من 12 محفظة إلكترونية مدعومة في اليمن
-        </p>
-    </div>
-    
-    <!-- الفوتر -->
-    <div class="footer">
-        <div class="footer-container">
-            <div>
-                <div class="footer-logo">
-                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" style="width: 30px; height: 30px; border-radius: 8px;">
-                    analyzer.social
-                </div>
-                <p style="margin-top: 10px; font-size: 0.8rem;">منصة إنشاء صفحات البايو الاحترافية</p>
-                <p style="margin-top: 5px; font-size: 0.7rem;">👨‍💻 @Alshabany_Ai</p>
-            </div>
-            <div class="footer-links">
-                <h4>روابط مهمة</h4>
-                <a href="/privacy">🔒 سياسة الخصوصية</a>
-                <a href="/terms">⚖️ شروط الخدمة</a>
-                <a href="/help">📖 المساعدة والدعم</a>
-            </div>
-            <div class="footer-links">
-                <h4>تواصل معنا</h4>
-                <a href="https://t.me/analyzer_social_bot" target="_blank"><i class="fab fa-telegram"></i> بوت الدعم</a>
-                <a href="mailto:help@analyzer.social"><i class="fas fa-envelope"></i> help@analyzer.social</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            © 2026 analyzer.social | جميع الحقوق محفوظة
-        </div>
-    </div>
-    
-    <script src="/static/config.js"></script>
-    <script>
-        // التحقق من وجود جلسة سابقة
-        const savedToken = localStorage.getItem('bio_token');
-        if (savedToken) {
-            window.location.href = '/dashboard';
-        }
+    try:
+        user_id = request.headers.get('X-User-Id')
         
-        // اظهار صورة المستخدم اذا كان مسجل دخول
-        const checkUserSession = async () => {
-            try {
-                if (typeof supabase !== 'undefined') {
-                    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    const { data: { session }, error } = await supabaseClient.auth.getSession();
-                    if (session && session.user) {
-                        const userAvatar = document.getElementById('userAvatar');
-                        if (userAvatar) {
-                            userAvatar.style.display = 'flex';
-                            // اذا كان المستخدم لديه صورة شخصية حقيقية نستخدمها
-                            if (session.user.user_metadata?.avatar_url) {
-                                userAvatar.innerHTML = `<img src="${session.user.user_metadata.avatar_url}" class="user-avatar-img" style="border-radius: 50%; object-fit: cover;">`;
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error checking session:', error);
+        result = supabase.table('bio_pages')\
+            .select('*')\
+            .eq('user_id', int(user_id))\
+            .maybe_single()\
+            .execute()
+        
+        if result.data:
+            return jsonify({'success': True, 'data': result.data})
+        else:
+            return jsonify({'success': True, 'data': None})
+            
+    except Exception as e:
+        print(f"Error in load_bio: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/create', methods=['POST'])
+def create_user():
+    """إنشاء مستخدم جديد"""
+    if not supabase:
+        return jsonify({'error': 'Database not configured'}), 500
+    
+    try:
+        data = request.json
+        telegram_id = data.get('telegram_id')
+        
+        if not telegram_id:
+            return jsonify({'success': False, 'error': 'telegram_id required'}), 400
+        
+        # التحقق من وجود المستخدم
+        result = supabase.table('app_users')\
+            .select('*')\
+            .eq('id', int(telegram_id))\
+            .execute()
+        
+        if not result.data:
+            # إنشاء مستخدم جديد
+            new_user = {
+                'id': int(telegram_id),
+                'username': data.get('username', f'user_{telegram_id}'),
+                'first_name': data.get('first_name', ''),
+                'last_name': data.get('last_name', ''),
+                'created_at': 'now()',
+                'updated_at': 'now()'
             }
-        };
+            
+            result = supabase.table('app_users')\
+                .insert(new_user)\
+                .execute()
+            
+            return jsonify({'success': True, 'user': result.data[0] if result.data else None})
+        else:
+            return jsonify({'success': True, 'user': result.data[0], 'exists': True})
         
-        // دالة تسجيل الدخول عبر Google
-        async function signInWithGoogle() {
-            try {
-                if (typeof supabase === 'undefined') {
-                    console.error('Supabase is not loaded');
-                    alert('جاري تحميل الخدمات، الرجاء المحاولة مرة أخرى');
-                    return;
-                }
-                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin + '/auth/google-callback'
-                    }
-                });
-                if (error) throw error;
-            } catch (error) {
-                console.error('Google Sign In Error:', error);
-                alert('حدث خطأ في تسجيل الدخول عبر Google. الرجاء المحاولة مرة أخرى.');
-            }
-        }
+    except Exception as e:
+        print(f"Error in create_user: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/user/verify', methods=['GET'])
+@require_auth
+def verify_user():
+    """التحقق من صحة المستخدم"""
+    if not supabase:
+        return jsonify({'error': 'Database not configured'}), 500
+    
+    try:
+        user_id = request.headers.get('X-User-Id')
         
-        // عرض وسائل الدفع
-        const paymentMethods = [
-            { name: 'جيب', icon: '/static/assets/payment-icons/jaib.webp' },
-            { name: 'فلوسك', icon: '/static/assets/payment-icons/floosak.webp' },
-            { name: 'جوالي', icon: '/static/assets/payment-icons/jawaly.webp' },
-            { name: 'يمن والت', icon: '/static/assets/payment-icons/yemenwallet.webp' },
-            { name: 'موبايل موني', icon: '/static/assets/payment-icons/mobilemoney.webp' },
-            { name: 'كريمي', icon: '/static/assets/payment-icons/kremi.webp' },
-            { name: 'محفظتي', icon: '/static/assets/payment-icons/mahfazti.webp' },
-            { name: 'ون كاش', icon: '/static/assets/payment-icons/onecash.webp' },
-            { name: 'شلن', icon: '/static/assets/payment-icons/shilling.webp' },
-            { name: 'سهل', icon: '/static/assets/payment-icons/easywallet.webp' },
-            { name: 'كاش', icon: '/static/assets/payment-icons/cash.webp' },
-            { name: 'MTN', icon: '/static/assets/payment-icons/mtnmomo.webp' }
-        ];
+        result = supabase.table('app_users')\
+            .select('id, username, first_name')\
+            .eq('id', int(user_id))\
+            .maybe_single()\
+            .execute()
         
-        const container = document.getElementById('paymentLogosContainer');
-        if (container) {
-            let html = '';
-            paymentMethods.forEach(method => {
-                html += `
-                    <div class="payment-item">
-                        <div class="payment-icon">
-                            <img src="${method.icon}" alt="${method.name}" onerror="this.src='/static/assets/icons/android-chrome-192x192.png'">
-                        </div>
-                        <div class="payment-name">${method.name}</div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
+        if result.data:
+            return jsonify({'success': True, 'user': result.data})
+        else:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# =====================================================
+# الصفحات الرئيسية
+# =====================================================
+
+@app.route('/')
+def index():
+    """الصفحة الرئيسية (تسجيل الدخول)"""
+    return render_template('index.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
+
+@app.route('/dashboard')
+def dashboard():
+    """لوحة تحكم المستخدم"""
+    return render_template('dashboard.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
+
+@app.route('/auth')
+def auth():
+    """معالج مصادقة تلغرام"""
+    return render_template('auth.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
+
+@app.route('/bio/<page_url>')
+def bio_page(page_url):
+    """صفحة عرض البايو العامة"""
+    return render_template('bio.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY,
+                         page_url=page_url)
+
+# =====================================================
+
+# =====================================================
+# نقطة نهاية فحص الصحة (لـ Render)
+# =====================================================
+
+@app.route('/health')
+@app.route('/healthcheck')
+def health():
+    return {"status": "ok", "supabase_configured": supabase is not None}, 200
+
+# =====================================================
+# الملفات الثابتة
+# =====================================================
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
+# =====================================================    
+@app.route('/static/assets/icons/<path:filename>')
+def serve_icon(filename):
+    return send_from_directory('static/assets/icons', filename)
+# =====================================================
+# APIs لوسائل الدفع
+# =====================================================
+
+@app.route('/api/payment/save', methods=['POST'])
+@require_auth
+def save_payment_methods():
+    """حفظ وسائل الدفع للمستخدم"""
+    try:
+        user_id = request.headers.get('X-User-Id')
+        data = request.json
+        payment_methods = data.get('payment_methods', {})
+        bio_page_id = data.get('bio_page_id')
         
-        // استدعاء دالة التحقق من الجلسة بعد تحميل supabase
-        setTimeout(() => {
-            if (typeof supabase !== 'undefined') {
-                checkUserSession();
-            }
-        }, 500);
+        print(f"🔍 1. user_id: {user_id}")
+        print(f"🔍 2. bio_page_id المستلم: {bio_page_id}")
+        print(f"🔍 3. payment_methods: {payment_methods}")
         
-        window.signInWithGoogle = signInWithGoogle;
-    </script>
-</body>
-</html>
+        # الحصول على bio_page_id إذا لم يتم إرساله
+        if not bio_page_id:
+            page_result = supabase.table('bio_pages')\
+                .select('id')\
+                .eq('user_id', int(user_id))\
+                .execute()
+            
+            if page_result.data and len(page_result.data) > 0:
+                bio_page_id = page_result.data[0]['id']
+                print(f"🔍 4. تم العثور على bio_page_id: {bio_page_id}")
+            else:
+                print("❌ لم يتم العثور على bio_page_id")
+                return jsonify({'error': 'Bio page not found for this user'}), 404
+        
+        # قائمة المحافظ
+        payment_wallets = [
+            {'key': 'jaib', 'name': 'جيب'},
+            {'key': 'floosak', 'name': 'فلوسك'},
+            {'key': 'jawaly', 'name': 'جوالي'},
+            {'key': 'mahfazti', 'name': 'محفظتي'},
+            {'key': 'mobilemoney', 'name': 'موبايل موني'},
+            {'key': 'yemenwallet', 'name': 'يمن والت'},
+            {'key': 'shilling', 'name': 'شلن'},
+            {'key': 'easywallet', 'name': 'سهل'},
+            {'key': 'onecash', 'name': 'ون كاش'},
+            {'key': 'kremi', 'name': 'كريمي'},
+            {'key': 'cash', 'name': 'كاش'},
+            {'key': 'mtnmomo', 'name': 'MTN Mobile Money'}
+        ]
+        
+        for wallet in payment_wallets:
+            account_number = payment_methods.get(wallet['key'], '')
+            print(f"🔍 5. معالجة {wallet['key']}: account_number={account_number}")
+            
+            # البحث عن سجل موجود - الطريقة الصحيحة لـ Supabase
+            try:
+                existing_result = supabase.table('payment_methods')\
+                    .select('id')\
+                    .eq('user_id', int(user_id))\
+                    .eq('method_key', wallet['key'])\
+                    .execute()
+                
+                # التحقق من وجود بيانات في الاستجابة
+                if existing_result and hasattr(existing_result, 'data') and existing_result.data and len(existing_result.data) > 0:
+                    # يوجد سجل => تحديث
+                    existing_id = existing_result.data[0]['id']
+                    print(f"🔍 6. سجل موجود: {existing_id}")
+                    
+                    if account_number:
+                        supabase.table('payment_methods')\
+                            .update({
+                                'account_number': account_number,
+                                'updated_at': 'now()'
+                            })\
+                            .eq('id', existing_id)\
+                            .execute()
+                        print(f"✅ تم تحديث {wallet['key']}: {account_number}")
+                    else:
+                        supabase.table('payment_methods')\
+                            .delete()\
+                            .eq('id', existing_id)\
+                            .execute()
+                        print(f"🗑️ تم حذف {wallet['key']}")
+                else:
+                    # لا يوجد سجل => إدراج جديد
+                    print(f"🔍 7. لا يوجد سجل لـ {wallet['key']}")
+                    if account_number:
+                        insert_result = supabase.table('payment_methods')\
+                            .insert({
+                                'user_id': int(user_id),
+                                'bio_page_id': bio_page_id,
+                                'method_key': wallet['key'],
+                                'method_name': wallet['name'],
+                                'account_number': account_number,
+                                'created_at': 'now()'
+                            })\
+                            .execute()
+                        print(f"✅ تم إضافة {wallet['key']}: {account_number}")
+                        print(f"🔍 8. نتيجة الإضافة: {insert_result.data if insert_result else 'No data'}")
+            except Exception as inner_error:
+                print(f"⚠️ خطأ في معالجة {wallet['key']}: {str(inner_error)}")
+        
+        print("✅ تمت معالجة جميع وسائل الدفع بنجاح")
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        print(f"❌ خطأ في حفظ وسائل الدفع: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/load', methods=['GET'])
+@require_auth
+def load_payment_methods():
+    """تحميل وسائل الدفع للمستخدم"""
+    try:
+        user_id = request.headers.get('X-User-Id')
+        
+        result = supabase.table('payment_methods')\
+            .select('method_key, account_number')\
+            .eq('user_id', int(user_id))\
+            .execute()
+        
+        payment_methods = {}
+        for item in result.data:
+            payment_methods[item['method_key']] = item['account_number']
+        
+        return jsonify({'success': True, 'payment_methods': payment_methods})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/click', methods=['POST'])
+def track_payment_click():
+    """تسجيل نقرة على وسيلة دفع - يجمع بين التحديث الفوري والتسجيل التفصيلي"""
+    try:
+        data = request.json
+        method_key = data.get('method_key')
+        account_number = data.get('account_number')
+        page_url = data.get('page_url')
+        
+        print(f"🔍 تسجيل نقرة: {method_key} - {account_number} - {page_url}")
+        
+        # 1. الحصول على bio_page_id و user_id من page_url
+        bio_result = supabase.table('bio_pages')\
+            .select('id, user_id')\
+            .eq('page_url', page_url)\
+            .execute()
+        
+        if not bio_result.data or len(bio_result.data) == 0:
+            print(f"❌ لم يتم العثور على الصفحة: {page_url}")
+            return jsonify({'error': 'Bio page not found'}), 404
+        
+        bio_page_id = bio_result.data[0]['id']
+        user_id = bio_result.data[0]['user_id']
+        
+        # 2. الحصول على payment_method_id
+        pm_result = supabase.table('payment_methods')\
+            .select('id')\
+            .eq('user_id', user_id)\
+            .eq('method_key', method_key)\
+            .eq('bio_page_id', bio_page_id)\
+            .execute()
+        
+        if pm_result.data and len(pm_result.data) > 0:
+            payment_method_id = pm_result.data[0]['id']
+            print(f"🔍 payment_method_id={payment_method_id}")
+            
+            # =====================================================
+            # 3. تحديث إجمالي النقرات في جدول payment_methods
+            # =====================================================
+            # استعلم عن العدد الحالي
+            current_record = supabase.table('payment_methods')\
+                .select('clicks_count')\
+                .eq('id', payment_method_id)\
+                .execute()
+
+            if current_record.data:
+                current_clicks = current_record.data[0].get('clicks_count', 0)
+                new_clicks = current_clicks + 1
+                
+                # قم بالتحديث بالقيمة الجديدة
+                supabase.table('payment_methods')\
+                    .update({
+                        'clicks_count': new_clicks,
+                        'last_click_at': 'now()'
+                    })\
+                    .eq('id', payment_method_id)\
+                    .execute()
+                print(f"✅ تم تحديث عدد النقرات إلى {new_clicks}")
+            # =====================================================
+            
+            # =====================================================
+            # 4. تسجيل التفاصيل في جدول payment_clicks (للتحليل)
+            # =====================================================
+            supabase.table('payment_clicks')\
+                .insert({
+                    'payment_method_id': payment_method_id,
+                    'user_id': user_id,
+                    'bio_page_id': bio_page_id,
+                    'method_key': method_key,
+                    'clicker_ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                    'clicker_user_agent': request.headers.get('User-Agent'),
+                    'clicked_at': 'now()'
+                })\
+                .execute()
+            print(f"✅ تم تسجيل تفاصيل النقرة في payment_clicks")
+            # =====================================================
+            
+            return jsonify({'success': True})
+        else:
+            print(f"⚠️ لم يتم العثور على payment_method_id للمفتاح: {method_key}")
+            return jsonify({'error': 'Payment method not found'}), 404
+        
+    except Exception as e:
+        print(f"❌ خطأ في تسجيل النقرة: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/payment/stats/<int:user_id>', methods=['GET'])
+@require_auth
+def get_payment_stats(user_id):
+    """إحصائيات نقرات وسائل الدفع للمستخدم"""
+    try:
+        result = supabase.table('payment_methods')\
+            .select('method_name, method_key, account_number, clicks_count, last_click_at')\
+            .eq('user_id', user_id)\
+            .order('clicks_count', desc=True)\
+            .execute()
+        
+        return jsonify({'success': True, 'stats': result.data})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500 
+# =====================================================        
+@app.route('/api/payment/load-page', methods=['GET'])
+def load_payment_methods_for_page():
+    """تحميل وسائل الدفع لصفحة عامة (للعرض العام)"""
+    try:
+        page_url = request.args.get('page_url')
+        
+        if not page_url:
+            return jsonify({'error': 'page_url required'}), 400
+        
+        print(f"🔍 جلب وسائل الدفع للصفحة: {page_url}")
+        
+        # الحصول على bio_page_id من page_url
+        bio_result = supabase.table('bio_pages')\
+            .select('id')\
+            .eq('page_url', page_url)\
+            .execute()
+        
+        if not bio_result.data or len(bio_result.data) == 0:
+            print(f"❌ لم يتم العثور على الصفحة: {page_url}")
+            return jsonify({'success': False, 'error': 'Page not found'}), 404
+        
+        bio_page_id = bio_result.data[0]['id']
+        print(f"🔍 bio_page_id: {bio_page_id}")
+        
+        # جلب وسائل الدفع
+        result = supabase.table('payment_methods')\
+            .select('method_key, account_number')\
+            .eq('bio_page_id', bio_page_id)\
+            .eq('is_active', True)\
+            .execute()
+        
+        payment_methods = {}
+        if result.data:
+            for item in result.data:
+                if item.get('account_number'):
+                    payment_methods[item['method_key']] = item['account_number']
+        
+        print(f"✅ تم تحميل وسائل الدفع: {payment_methods}")
+        return jsonify({'success': True, 'payment_methods': payment_methods})
+        
+    except Exception as e:
+        print(f"❌ خطأ في تحميل وسائل الدفع للصفحة: {str(e)}")
+        return jsonify({'error': str(e)}), 500 
+# =====================================================
+# إعدادات الجلسات والأمان للمدير
+# =====================================================
+
+import hashlib
+from datetime import datetime
+from flask import session, redirect, url_for
+
+# كلمة مرور المدير (من متغيرات البيئة)
+ADMIN_PASSWORD_HASH = hashlib.sha256(
+    os.environ.get('ADMIN_PASSWORD', 'default_admin_password').encode()
+).hexdigest()
+
+def verify_admin(password):
+    """التحقق من كلمة مرور المدير"""
+    return hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH
+
+# =====================================================
+# =====================================================
+# صفحات المعلومات (سياسة الخصوصية، شروط الخدمة، المساعدة)
+# =====================================================
+
+@app.route('/privacy')
+def privacy_policy():
+    """صفحة سياسة الخصوصية"""
+    return render_template('privacy.html')
+
+@app.route('/terms')
+def terms_of_service():
+    """صفحة شروط الخدمة"""
+    return render_template('terms.html')
+
+@app.route('/help')
+def help_page():
+    """صفحة الدليل والمساعدة"""
+    return render_template('help.html')
+# =====================================================
+# لوحة تحكم المدير
+# =====================================================
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """صفحة تسجيل دخول المدير"""
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        if verify_admin(password):
+            session['admin_logged_in'] = True
+            return redirect('/admin/dashboard')
+        return render_template('admin_login.html', error='كلمة المرور غير صحيحة')
+    return render_template('admin_login.html')
+
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    """لوحة تحكم المدير"""
+    if not session.get('admin_logged_in'):
+        return redirect('/admin/login')
+    
+    if not supabase:
+        return render_template('admin_dashboard.html', stats={}, users=[], now_date=datetime.now().strftime('%Y-%m-%d %H:%M'), error='قاعدة البيانات غير متصلة')
+    
+    # جلب جميع المستخدمين
+    users_result = supabase.table('app_users').select('*').order('created_at', desc=True).execute()
+    
+    users_data = []
+    total_views = 0
+    total_clicks = 0
+    total_payment_methods = 0
+    
+    for user in users_result.data:
+        # جلب صفحة البايو
+        bio_page = supabase.table('bio_pages')\
+            .select('*')\
+            .eq('user_id', user['id'])\
+            .maybe_single()\
+            .execute()
+        
+        # جلب إحصائيات الدفع
+        payment_stats = []
+        payment_clicks = 0
+        
+        if bio_page.data:
+            payment_stats_result = supabase.table('payment_methods')\
+                .select('method_name, clicks_count')\
+                .eq('user_id', user['id'])\
+                .execute()
+            payment_stats = payment_stats_result.data
+            payment_clicks = sum(p.get('clicks_count', 0) for p in payment_stats)
+            total_payment_methods += len([p for p in payment_stats if p.get('clicks_count', 0) > 0])
+        
+        views_count = bio_page.data.get('views_count', 0) if bio_page.data else 0
+        total_views += views_count
+        total_clicks += payment_clicks
+        
+        users_data.append({
+            'id': user['id'],
+            'username': user.get('username', ''),
+            'first_name': user.get('first_name', ''),
+            'created_at': user.get('created_at', ''),
+            'bio_page': bio_page.data,
+            'payment_stats': payment_stats,
+            'total_clicks': payment_clicks,
+            'views_count': views_count
+        })
+    
+    stats = {
+        'total_users': len(users_result.data),
+        'total_bio_pages': len([u for u in users_data if u['bio_page']]),
+        'total_views': total_views,
+        'total_clicks': total_clicks,
+        'total_payment_methods': total_payment_methods
+    }
+    
+    return render_template('admin_dashboard.html', 
+                         stats=stats, 
+                         users=users_data,
+                         now_date=datetime.now().strftime('%Y-%m-%d %H:%M'))
+
+
+@app.route('/admin/logout')
+def admin_logout():
+    """تسجيل خروج المدير"""
+    session.pop('admin_logged_in', None)
+    return redirect('/admin/login')
+
+
+# =====================================================
+# API إضافية للوحة التحكم
+# =====================================================
+
+@app.route('/api/admin/stats', methods=['GET'])
+def admin_stats():
+    """API لجلب الإحصائيات العامة (للاستخدام في JavaScript)"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not supabase:
+        return jsonify({'error': 'Database not configured'}), 500
+    
+    # إحصائيات سريعة
+    users_count = supabase.table('app_users').select('*', count='exact').execute().count
+    bio_pages_count = supabase.table('bio_pages').select('*', count='exact').execute().count
+    
+    views_result = supabase.table('bio_pages').select('views_count').execute()
+    total_views = sum(v.get('views_count', 0) for v in views_result.data)
+    
+    clicks_result = supabase.table('payment_methods').select('clicks_count').execute()
+    total_clicks = sum(c.get('clicks_count', 0) for c in clicks_result.data)
+    
+    return jsonify({
+        'total_users': users_count or 0,
+        'total_bio_pages': bio_pages_count or 0,
+        'total_views': total_views,
+        'total_clicks': total_clicks
+    })                  
+# =====================================================
+# تشغيل التطبيق
+# =====================================================
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port, debug=False)

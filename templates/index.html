@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
     <!-- SEO & Open Graph -->
     <title>analyzer.social | أنشئ صفحة البايو الاحترافية الخاصة بك</title>
@@ -27,7 +27,7 @@
     <meta name="twitter:description" content="أنشئ صفحة بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد.">
     <meta name="twitter:image" content="https://bio.analyzer.social/static/assets/icons/og-image.jpg">
     
-    <!-- Favicon -->
+    <!-- Favicon - استخدام الصور الموجودة -->
     <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
@@ -43,14 +43,19 @@
     </script>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Tajawal', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
             min-height: 100vh;
         }
         
-        /* الهيدر */
+        /* الهيدر المحسن */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -59,7 +64,9 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
+        
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -69,6 +76,7 @@
             flex-wrap: wrap;
             gap: 15px;
         }
+        
         .logo {
             display: flex;
             align-items: center;
@@ -76,22 +84,73 @@
             font-size: 1.3rem;
             font-weight: 800;
         }
+        
         .logo-icon {
-            width: 35px;
-            height: 35px;
-            background: white;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff, #f0f0f0);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            overflow: hidden;
         }
-        .logo-icon i { font-size: 1.2rem; color: #667eea; }
-        .logo span { font-size: 1.2rem; }
+        
+        .logo-icon:hover {
+            transform: scale(1.05);
+        }
+        
+        /* استخدام الصورة في الشعار */
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* صورة المستخدم الافتراضية - استخدام الصورة الموجودة */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffffff, #e0e7ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+            border-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .user-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* اضافة قسم للمستخدم في الهيدر */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
         .nav-links {
             display: flex;
             gap: 25px;
             flex-wrap: wrap;
+            align-items: center;
         }
+        
         .nav-links a {
             color: white;
             text-decoration: none;
@@ -99,9 +158,14 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
-        .nav-links a:hover { opacity: 0.8; text-decoration: underline; }
         
-        /* القسم الرئيسي (Hero) */
+        .nav-links a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+        
+        /* القسم الرئيسي (Hero) المحسن */
         .hero {
             max-width: 1200px;
             margin: 0 auto;
@@ -111,25 +175,30 @@
             gap: 50px;
             align-items: center;
         }
+        
         .hero-content h1 {
             font-size: 2.8rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
+            line-height: 1.3;
         }
+        
         .hero-content p {
             color: #4a5568;
             font-size: 1.1rem;
             line-height: 1.8;
             margin-bottom: 30px;
         }
+        
         .hero-buttons {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
             margin-bottom: 30px;
         }
+        
         .btn-telegram {
             background: linear-gradient(135deg, #0088cc, #006699);
             color: white;
@@ -144,11 +213,16 @@
             border: none;
             cursor: pointer;
         }
-        .btn-telegram:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,136,204,0.3); }
+        
+        .btn-telegram:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,136,204,0.3);
+        }
         
         .telegram-widget-wrapper {
             display: inline-block;
         }
+        
         .telegram-widget-wrapper iframe {
             border-radius: 50px !important;
         }
@@ -167,13 +241,19 @@
             border: 1px solid #e2e8f0;
             cursor: pointer;
         }
-        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        .btn-google:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+        }
         
         .hero-logo {
             display: flex;
             justify-content: center;
             align-items: center;
         }
+        
         .hero-logo-circle {
             width: 280px;
             height: 280px;
@@ -182,7 +262,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
         }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
         .hero-logo-inner {
             width: 200px;
             height: 200px;
@@ -192,10 +279,14 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 20px 40px rgba(102,126,234,0.3);
+            overflow: hidden;
         }
-        .hero-logo-inner i {
-            font-size: 100px;
-            color: white;
+        
+        /* استخدام الصورة في الهيرو */
+        .hero-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         /* الميزات */
@@ -204,18 +295,27 @@
             margin: 0 auto;
             padding: 60px 30px;
         }
+        
         .section-title {
             text-align: center;
             font-size: 2rem;
             margin-bottom: 40px;
             color: #2d3748;
         }
-        .section-title span { color: #667eea; }
+        
+        .section-title span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
+        
         .feature-card {
             background: white;
             border-radius: 20px;
@@ -224,7 +324,12 @@
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
         .feature-icon {
             width: 70px;
             height: 70px;
@@ -235,15 +340,32 @@
             justify-content: center;
             margin: 0 auto 20px;
         }
-        .feature-icon i { font-size: 2rem; color: #667eea; }
-        .feature-card h3 { margin-bottom: 15px; color: #2d3748; }
-        .feature-card p { color: #718096; font-size: 0.85rem; line-height: 1.6; }
+        
+        .feature-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .feature-card p {
+            color: #718096;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
         
         /* وسائل الدفع المدعومة */
         .payment-section {
             background: linear-gradient(135deg, #667eea08, #764ba208);
             padding: 60px 30px;
         }
+        
         .payment-logos {
             max-width: 1200px;
             margin: 0 auto;
@@ -253,12 +375,17 @@
             flex-wrap: wrap;
             gap: 25px;
         }
+        
         .payment-item {
             text-align: center;
             width: 80px;
             transition: all 0.3s;
         }
-        .payment-item:hover { transform: translateY(-5px); }
+        
+        .payment-item:hover {
+            transform: translateY(-5px);
+        }
+        
         .payment-icon {
             width: 55px;
             height: 55px;
@@ -270,9 +397,25 @@
             margin: 0 auto 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             padding: 8px;
+            transition: all 0.3s;
         }
-        .payment-icon img { width: 100%; height: 100%; object-fit: contain; }
-        .payment-name { font-size: 11px; color: #4a5568; }
+        
+        .payment-item:hover .payment-icon {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transform: scale(1.05);
+        }
+        
+        .payment-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .payment-name {
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 500;
+        }
         
         /* الفوتر */
         .footer {
@@ -280,6 +423,7 @@
             color: #a0aec0;
             padding: 40px 30px 20px;
         }
+        
         .footer-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -287,42 +431,150 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
         }
-        .footer-logo { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: bold; color: white; }
-        .footer-links h4 { color: white; margin-bottom: 15px; font-size: 1rem; }
-        .footer-links a { display: block; color: #a0aec0; text-decoration: none; margin-bottom: 10px; font-size: 0.85rem; }
-        .footer-links a:hover { color: #667eea; }
-        .footer-bottom { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2d3748; font-size: 0.7rem; }
         
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .footer-links h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: #a0aec0;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #667eea;
+            transform: translateX(-5px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2d3748;
+            font-size: 0.7rem;
+        }
+        
+        /* تحسينات للشاشات الصغيرة */
         @media (max-width: 768px) {
-            .hero { grid-template-columns: 1fr; text-align: center; padding: 50px 20px; }
-            .hero-content h1 { font-size: 2rem; }
-            .hero-buttons { justify-content: center; }
-            .hero-logo-circle { width: 200px; height: 200px; }
-            .hero-logo-inner { width: 140px; height: 140px; }
-            .hero-logo-inner i { font-size: 60px; }
-            .features-grid { grid-template-columns: 1fr; }
-            .payment-logos { gap: 15px; }
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 50px 20px;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-logo-circle {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .hero-logo-inner {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-logos {
+                gap: 15px;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                justify-content: center;
+            }
+        }
+        
+        /* تأثيرات إضافية */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feature-card, .payment-item {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        /* تحسين التمرير */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* تحسين اختيار النص */
+        ::selection {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <!-- الهيدر مع الشعار -->
+    <!-- الهيدر المحسن مع استخدام الصور -->
     <div class="header">
         <div class="header-container">
             <div class="logo">
-                <div class="logo-icon"><i class="fas fa-link"></i></div>
+                <div class="logo-icon">
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" class="logo-img">
+                </div>
                 <span>analyzer.social</span>
             </div>
-            <div class="nav-links">
-                <a href="/">الرئيسية</a>
-                <a href="/privacy">سياسة الخصوصية</a>
-                <a href="/terms">شروط الخدمة</a>
-                <a href="/help">المساعدة</a>
+            <div class="header-actions">
+                <div class="nav-links">
+                    <a href="/">الرئيسية</a>
+                    <a href="/privacy">سياسة الخصوصية</a>
+                    <a href="/terms">شروط الخدمة</a>
+                    <a href="/help">المساعدة</a>
+                </div>
+                <!-- صورة المستخدم الافتراضية باستخدام الصورة الموجودة -->
+                <div class="user-avatar" id="userAvatar" style="display: none;">
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="user avatar" class="user-avatar-img">
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- القسم الرئيسي -->
+    <!-- القسم الرئيسي مع استخدام الصورة -->
     <div class="hero">
         <div class="hero-content">
             <h1>أنشئ صفحة البايو الاحترافية الخاصة بك</h1>
@@ -348,7 +600,7 @@
         <div class="hero-logo">
             <div class="hero-logo-circle">
                 <div class="hero-logo-inner">
-                    <i class="fas fa-link"></i>
+                    <img src="/static/assets/icons/android-chrome-512x512.png" alt="analyzer.social" class="hero-logo-img">
                 </div>
             </div>
         </div>
@@ -395,7 +647,7 @@
     <div class="payment-section">
         <h2 class="section-title">💳 <span>وسائل الدفع</span> المدعومة</h2>
         <div class="payment-logos" id="paymentLogosContainer">
-            <!-- سيتم إضافة الأيقونات ديناميكياً -->
+            <!-- سيتم اضافة الايقونات ديناميكياً -->
         </div>
         <p style="text-align: center; margin-top: 20px; color: #718096; font-size: 12px;">
             <i class="fas fa-info-circle"></i> أكثر من 12 محفظة إلكترونية مدعومة في اليمن
@@ -406,7 +658,10 @@
     <div class="footer">
         <div class="footer-container">
             <div>
-                <div class="footer-logo"><i class="fas fa-link"></i> analyzer.social</div>
+                <div class="footer-logo">
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" style="width: 30px; height: 30px; border-radius: 8px;">
+                    analyzer.social
+                </div>
                 <p style="margin-top: 10px; font-size: 0.8rem;">منصة إنشاء صفحات البايو الاحترافية</p>
                 <p style="margin-top: 5px; font-size: 0.7rem;">👨‍💻 @Alshabany_Ai</p>
             </div>
@@ -435,9 +690,36 @@
             window.location.href = '/dashboard';
         }
         
+        // اظهار صورة المستخدم اذا كان مسجل دخول
+        const checkUserSession = async () => {
+            try {
+                if (typeof supabase !== 'undefined') {
+                    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const { data: { session }, error } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        const userAvatar = document.getElementById('userAvatar');
+                        if (userAvatar) {
+                            userAvatar.style.display = 'flex';
+                            // اذا كان المستخدم لديه صورة شخصية حقيقية نستخدمها
+                            if (session.user.user_metadata?.avatar_url) {
+                                userAvatar.innerHTML = `<img src="${session.user.user_metadata.avatar_url}" class="user-avatar-img" style="border-radius: 50%; object-fit: cover;">`;
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+            }
+        };
+        
         // دالة تسجيل الدخول عبر Google
         async function signInWithGoogle() {
             try {
+                if (typeof supabase === 'undefined') {
+                    console.error('Supabase is not loaded');
+                    alert('جاري تحميل الخدمات، الرجاء المحاولة مرة أخرى');
+                    return;
+                }
                 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
@@ -475,7 +757,7 @@
                 html += `
                     <div class="payment-item">
                         <div class="payment-icon">
-                            <img src="${method.icon}" alt="${method.name}" onerror="this.src='/static/assets/payment-icons/placeholder.png'">
+                            <img src="${method.icon}" alt="${method.name}" onerror="this.src='/static/assets/icons/android-chrome-192x192.png'">
                         </div>
                         <div class="payment-name">${method.name}</div>
                     </div>
@@ -483,6 +765,13 @@
             });
             container.innerHTML = html;
         }
+        
+        // استدعاء دالة التحقق من الجلسة بعد تحميل supabase
+        setTimeout(() => {
+            if (typeof supabase !== 'undefined') {
+                checkUserSession();
+            }
+        }, 500);
         
         window.signInWithGoogle = signInWithGoogle;
     </script>
