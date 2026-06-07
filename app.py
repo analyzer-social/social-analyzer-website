@@ -1094,8 +1094,22 @@ def sitemap():
                 xml += f'    <loc>https://analyzer.social/bio/{username}</loc>\n'
                 xml += '    <priority>0.7</priority>\n'
                 xml += '    <changefreq>weekly</changefreq>\n'
+                
+                # معالجة التاريخ بشكل صحيح
                 if page.get('updated_at'):
-                    xml += f'    <lastmod>{page["updated_at"]}</lastmod>\n'
+                    from datetime import datetime
+                    updated = page["updated_at"]
+                    try:
+                        if isinstance(updated, str):
+                            updated_date = datetime.fromisoformat(updated.replace('Z', '+00:00'))
+                        else:
+                            updated_date = updated
+                        formatted_date = updated_date.strftime('%Y-%m-%d')
+                        xml += f'    <lastmod>{formatted_date}</lastmod>\n'
+                    except:
+                        # إذا فشل التحويل، لا نضيف lastmod
+                        pass
+                
                 xml += '  </url>\n'
         
         xml += '</urlset>'
