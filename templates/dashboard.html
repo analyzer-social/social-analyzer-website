@@ -175,144 +175,44 @@
             cursor: pointer;
         }
         
+                /* ===================================================== */
+        /* القسم 2: زر الاشتراك المميز (نسخة مبسطة)              */
         /* ===================================================== */
-        /* القسم 2: زر الاشتراك المميز - جوهرة ماسة              */
-        /* ===================================================== */
         
-        .premium-upgrade-card {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border: 2px solid transparent;
-            background-image: linear-gradient(white, white), linear-gradient(135deg, #667eea, #764ba2);
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .premium-upgrade-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
-            animation: shimmer 3s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translate(-30%, -30%) rotate(0deg); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translate(30%, 30%) rotate(180deg); opacity: 0; }
-        }
-        
-        .premium-upgrade-section {
-            text-align: center;
-            padding: 10px 0;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .premium-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #f5b042, #f59e0b);
-            padding: 8px 20px;
-            border-radius: 50px;
-            color: white;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 14px;
-            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
-        }
-        
-        .premium-badge i {
-            font-size: 18px;
-            animation: gemPulse 2s infinite;
-        }
-        
-        @keyframes gemPulse {
-            0%, 100% { transform: scale(1); text-shadow: 0 0 0px gold; }
-            50% { transform: scale(1.1); text-shadow: 0 0 10px gold; }
-        }
-        
-        .premium-title {
-            font-size: 24px;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-        
-        .premium-desc {
-            color: #718096;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .premium-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 12px;
-            margin: 20px 0;
-            text-align: right;
-        }
-        
-        .premium-feature {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #2d3748;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .premium-feature i {
-            color: #28a745;
-            font-size: 16px;
-        }
-        
-        .premium-upgrade-btn {
+        .simple-premium-btn {
             background: linear-gradient(135deg, #f5b042, #f59e0b);
             color: white;
             border: none;
-            padding: 16px 25px;
+            padding: 14px 28px;
             border-radius: 60px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            margin: 15px 0;
             transition: all 0.3s ease;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            box-shadow: 0 8px 20px rgba(245,158,11,0.3);
-            position: relative;
-            overflow: hidden;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+            width: auto;
+            min-width: 220px;
         }
         
-        .premium-upgrade-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(245,158,11,0.4);
+        .simple-premium-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245,158,11,0.4);
         }
         
-        .premium-upgrade-btn:active {
-            transform: translateY(0px);
+        .simple-premium-btn i.fa-gem {
+            animation: simpleGemShine 1.5s ease-in-out infinite;
         }
         
-        .premium-upgrade-btn i.fa-gem {
-            animation: gemShine 1.5s ease-in-out infinite;
+        @keyframes simpleGemShine {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); text-shadow: 0 0 5px gold; }
         }
         
-        @keyframes gemShine {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 5px gold; }
-        }
-        
-        .premium-note {
+        .simple-premium-note {
             font-size: 12px;
             color: #718096;
             margin-top: 10px;
@@ -552,34 +452,17 @@
             </div>
         </div>
 
-        <!-- القسم 10.5: زر الاشتراك المميز - جوهرة ماسة -->
-        <div class="card premium-upgrade-card">
-            <div class="premium-upgrade-section">
-                <div class="premium-badge">
-                    <i class="fas fa-gem"></i>
-                    <span>جوهرة ماسة</span>
-                    <i class="fas fa-star"></i>
-                </div>
-                <h2 class="premium-title">✨ رتّب وجودك الرقمي باحترافية</h2>
-                <p class="premium-desc">احصل على صفحة بايو احترافية، روابط غير محدودة، إحصائيات متقدمة، ودعم VIP</p>
-                
-                <div class="premium-features">
-                    <div class="premium-feature"><i class="fas fa-check-circle"></i> رابط مخصص bio.analyzer.social/اسمك</div>
-                    <div class="premium-feature"><i class="fas fa-check-circle"></i> جميع الثيمات والتصاميم</div>
-                    <div class="premium-feature"><i class="fas fa-check-circle"></i> وسائل دفع غير محدودة</div>
-                    <div class="premium-feature"><i class="fas fa-check-circle"></i> إحصائيات متقدمة للمشاهدات</div>
-                    <div class="premium-feature"><i class="fas fa-check-circle"></i> دعم VIP وأولوية في المعالجة</div>
-                    <div class="premium-feature"><i class="fas fa-check-circle"></i> إمكانية إضافة روابط مخصصة غير محدودة</div>
-                </div>
-                
-                <button class="premium-upgrade-btn" onclick="goToPlansPage()">
-                    <i class="fas fa-gem"></i> 
-                    ✨ اشتراك مميز - جوهرة ماسة ✨
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <div class="premium-note">
-                    🎯 خطط تبدأ من $2 فقط | دفع آمن عبر نجوم Telegram أو التحويل البنكي
-                </div>
+                <!-- ===================================================== -->
+        <!-- القسم 10.5: زر الاشتراك المميز (نسخة مبسطة)           -->
+        <!-- ===================================================== -->
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #667eea08, #764ba208);">
+            <button class="simple-premium-btn" onclick="goToPlansPage()">
+                <i class="fas fa-gem fa-fw"></i>
+                ✨ اشتراك مميز
+                <i class="fas fa-gem fa-fw"></i>
+            </button>
+            <div class="simple-premium-note">
+                ⭐ خطط تبدأ من $2 | دفع آمن عبر نجوم Telegram أو التحويل البنكي
             </div>
         </div>
 
