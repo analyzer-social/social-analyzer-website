@@ -317,12 +317,17 @@ def increment_views_count(page_id):
 # =====================================================
 
 @app.route('/')
-def index():
-    """الصفحة الرئيسية (تسجيل الدخول)"""
-    return render_template('index.html', 
+def home():
+    """الصفحة الرئيسية - تعرض جميع خدمات المنصة"""
+    return render_template('home.html', 
                          SUPABASE_URL=SUPABASE_BIO_URL, 
                          SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
 
+@app.route('/bio/')
+def bio_home():
+    """صفحة البايو الرئيسية (تسجيل الدخول)"""
+    return render_template('index.html', ...)  # ملفك الحالي
+    
 @app.route('/dashboard')
 def dashboard():
     """لوحة تحكم المستخدم"""

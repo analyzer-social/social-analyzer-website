@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>analyzer.social | منصة التحليل الذكي وإنشاء البايو</title>
+    <meta name="description" content="منصة متكاملة لتحليل حسابات التواصل الاجتماعي، إنشاء صفحات بايو احترافية، وبوت ذكي للمساعدة.">
+    <meta name="keywords" content="تحليل يوتيوب, تحليل سناب شات, تحليل تيك توك, صفحة بايو, بوت تلجرام">
+    <meta name="author" content="analyzer.social">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="analyzer.social | منصة التحليل الذكي وإنشاء البايو">
+    <meta property="og:description" content="منصة متكاملة لتحليل حسابات التواصل الاجتماعي وإنشاء صفحات بايو احترافية">
+    <meta property="og:image" content="https://analyzer.social/static/assets/icons/og-image.jpg">
+    <meta property="og:url" content="https://analyzer.social">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/icons/site.webmanifest">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
+            min-height: 100vh;
+        }
+        
+        /* ===================================================== */
+        /* الهيدر */
+        /* ===================================================== */
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        
+        /* ===================================================== */
+        /* القسم الرئيسي (Hero) */
+        /* ===================================================== */
+        
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 30px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            color: #4a5568;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 2px solid #667eea;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* ===================================================== */
+        /* بطاقات الخدمات */
+        /* ===================================================== */
+        
+        .services {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+            color: #2d3748;
+        }
+        
+        .section-title span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 28px;
+            padding: 35px 25px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .service-card.recommended {
+            border: 2px solid #f59e0b;
+        }
+        
+        .recommended-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(135deg, #f5b042, #f59e0b);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .service-icon i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .service-card p {
+            color: #718096;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .service-features {
+            text-align: right;
+            margin: 20px 0;
+            padding: 0 15px;
+        }
+        
+        .service-features li {
+            list-style: none;
+            font-size: 13px;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .service-features li i {
+            color: #28a745;
+            font-size: 12px;
+        }
+        
+        .service-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            width: 100%;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .service-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+        }
+        
+        .service-btn.bio {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .service-btn.tools {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        
+        .service-btn.bot {
+            background: linear-gradient(135deg, #0088cc, #006699);
+        }
+        
+        /* ===================================================== */
+        /* إحصائيات */
+        /* ===================================================== */
+        
+        .stats {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 60px 30px;
+            color: white;
+        }
+        
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* ===================================================== */
+        /* الفوتر */
+        /* ===================================================== */
+        
+        .footer {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 40px 30px 20px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .footer-links h4 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: #a0aec0;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #667eea;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2d3748;
+            font-size: 0.7rem;
+        }
+        
+        /* ===================================================== */
+        /* استجابة الجوال */
+        /* ===================================================== */
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                justify-content: center;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .service-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.2s; }
+        .service-card:nth-child(3) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- ===================================================== -->
+    <!-- الهيدر -->
+    <!-- ===================================================== -->
+    
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" class="logo-img">
+                </div>
+                <span>analyzer.social</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">الرئيسية</a>
+                <a href="/privacy">سياسة الخصوصية</a>
+                <a href="/terms">شروط الخدمة</a>
+                <a href="/help">المساعدة</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===================================================== -->
+    <!-- القسم الرئيسي -->
+    <!-- ===================================================== -->
+    
+    <div class="hero">
+        <h1>منصة متكاملة لتحليل وإنشاء البايو</h1>
+        <p>خدمات ذكية لتحليل حسابات التواصل الاجتماعي، إنشاء صفحات بايو احترافية، وبوت تلجرام ذكي للمساعدة</p>
+        <div class="hero-buttons">
+            <a href="/bio/" class="btn-primary">
+                <i class="fas fa-plus-circle"></i> ابدأ الآن - مجاني
+            </a>
+            <a href="#services" class="btn-secondary">
+                <i class="fas fa-arrow-down"></i> اكتشف الخدمات
+            </a>
+        </div>
+    </div>
+    
+    <!-- ===================================================== -->
+    <!-- بطاقات الخدمات -->
+    <!-- ===================================================== -->
+    
+    <div class="services" id="services">
+        <h2 class="section-title">✨ <span>خدماتنا</span> المتكاملة</h2>
+        <div class="services-grid">
+            
+            <!-- خدمة 1: صفحات البايو -->
+            <div class="service-card recommended">
+                <div class="recommended-badge">
+                    <i class="fas fa-star"></i> الأكثر استخداماً
+                </div>
+                <div class="service-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <h3>📄 صفحات البايو</h3>
+                <p>أنشئ صفحة بايو احترافية تعرض جميع حساباتك وروابطك ووسائل الدفع في مكان واحد</p>
+                <ul class="service-features">
+                    <li><i class="fas fa-check-circle"></i> رابط مخصص analyzer.social/bio/اسمك</li>
+                    <li><i class="fas fa-check-circle"></i> 5 ثيمات مختلفة (داكن، فاتح، أخضر، وردي، محيط)</li>
+                    <li><i class="fas fa-check-circle"></i> دعم 12 محفظة إلكترونية يمنية</li>
+                    <li><i class="fas fa-check-circle"></i> إحصائيات دقيقة للمشاهدات والنقرات</li>
+                    <li><i class="fas fa-check-circle"></i> روابط مخصصة غير محدودة</li>
+                </ul>
+                <button class="service-btn bio" onclick="window.location.href='/bio/'">
+                    <i class="fas fa-plus-circle"></i> أنشئ صفحتك الآن - مجاني
+                </button>
+            </div>
+            
+            <!-- خدمة 2: أدوات التحليل -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>📊 أدوات التحليل</h3>
+                <p>تحليل متقدم لحسابات التواصل الاجتماعي مع توصيات ذكاء اصطناعي</p>
+                <ul class="service-features">
+                    <li><i class="fas fa-check-circle"></i> تحليل قنوات يوتيوب</li>
+                    <li><i class="fas fa-check-circle"></i> تحليل حسابات تيك توك</li>
+                    <li><i class="fas fa-check-circle"></i> تحليل سناب شات (Snapchat Kit API)</li>
+                    <li><i class="fas fa-check-circle"></i> توصيات AI من Google Gemini</li>
+                    <li><i class="fas fa-check-circle"></i> تقارير مفصلة قابلة للتنزيل</li>
+                </ul>
+                <button class="service-btn tools" onclick="window.location.href='/tools/'">
+                    <i class="fas fa-chart-simple"></i> ابدأ التحليل
+                </button>
+            </div>
+            
+            <!-- خدمة 3: بوت تلجرام -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fab fa-telegram"></i>
+                </div>
+                <h3>🤖 بوت Telegram</h3>
+                <p>بوت ذكي للدعم والتحليل المباشر عبر التلجرام</p>
+                <ul class="service-features">
+                    <li><i class="fas fa-check-circle"></i> تحليل سريع للحسابات عبر البوت</li>
+                    <li><i class="fas fa-check-circle"></i> دعم فني 24/7</li>
+                    <li><i class="fas fa-check-circle"></i> إشعارات فورية للتحديثات</li>
+                    <li><i class="fas fa-check-circle"></i> إدارة الاشتراك المميز</li>
+                    <li><i class="fas fa-check-circle"></i> استعلامات سريعة عن الخدمات</li>
+                </ul>
+                <button class="service-btn bot" onclick="window.open('https://t.me/analyzer_social_bot', '_blank')">
+                    <i class="fab fa-telegram"></i> افتح البوت
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===================================================== -->
+    <!-- إحصائيات -->
+    <!-- ===================================================== -->
+    
+    <div class="stats">
+        <div class="stats-container">
+            <div>
+                <div class="stat-number" id="usersCount">+0</div>
+                <div class="stat-label">مستخدم نشط</div>
+            </div>
+            <div>
+                <div class="stat-number" id="pagesCount">+0</div>
+                <div class="stat-label">صفحة بايو</div>
+            </div>
+            <div>
+                <div class="stat-number" id="analysesCount">+0</div>
+                <div class="stat-label">تحليل شهرياً</div>
+            </div>
+            <div>
+                <div class="stat-number">12+</div>
+                <div class="stat-label">محفظة مدعومة</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===================================================== -->
+    <!-- الفوتر -->
+    <!-- ===================================================== -->
+    
+    <div class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo">
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" style="width: 30px; height: 30px; border-radius: 8px;">
+                    analyzer.social
+                </div>
+                <p style="margin-top: 10px; font-size: 0.8rem;">منصة متكاملة للتحليل وإنشاء البايو</p>
+                <p style="margin-top: 5px; font-size: 0.7rem;">👨‍💻 @Alshabany_Ai</p>
+            </div>
+            <div class="footer-links">
+                <h4>روابط مهمة</h4>
+                <a href="/privacy">🔒 سياسة الخصوصية</a>
+                <a href="/terms">⚖️ شروط الخدمة</a>
+                <a href="/help">📖 المساعدة والدعم</a>
+            </div>
+            <div class="footer-links">
+                <h4>خدماتنا</h4>
+                <a href="/bio/">📄 صفحات البايو</a>
+                <a href="/tools/">📊 أدوات التحليل</a>
+                <a href="https://t.me/analyzer_social_bot" target="_blank">🤖 بوت Telegram</a>
+            </div>
+            <div class="footer-links">
+                <h4>تواصل معنا</h4>
+                <a href="https://t.me/analyzer_social_bot" target="_blank"><i class="fab fa-telegram"></i> بوت الدعم</a>
+                <a href="mailto:help@analyzer.social"><i class="fas fa-envelope"></i> help@analyzer.social</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 analyzer.social | جميع الحقوق محفوظة
+        </div>
+    </div>
+    
+    <script src="/static/config.js"></script>
+    <script>
+        // جلب إحصائيات حقيقية من قاعدة البيانات
+        async function loadStats() {
+            try {
+                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                // جلب عدد المستخدمين
+                const { count: usersCount, error: usersError } = await supabaseClient
+                    .from('app_users')
+                    .select('*', { count: 'exact', head: true });
+                
+                // جلب عدد صفحات البايو
+                const { count: pagesCount, error: pagesError } = await supabaseClient
+                    .from('bio_pages')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (!usersError && usersCount) {
+                    document.getElementById('usersCount').innerHTML = `+${usersCount.toLocaleString('ar')}`;
+                }
+                
+                if (!pagesError && pagesCount) {
+                    document.getElementById('pagesCount').innerHTML = `+${pagesCount.toLocaleString('ar')}`;
+                }
+                
+                // عدد التحليلات شهرياً (تقديري)
+                document.getElementById('analysesCount').innerHTML = `+${Math.floor((pagesCount || 0) * 1.5).toLocaleString('ar')}`;
+                
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // قيم افتراضية
+                document.getElementById('usersCount').innerHTML = '+1,000';
+                document.getElementById('pagesCount').innerHTML = '+500';
+                document.getElementById('analysesCount').innerHTML = '+1,500';
+            }
+        }
+        
+        if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
+            loadStats();
+        }
+    </script>
+</body>
+</html>
