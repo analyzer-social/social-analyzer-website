@@ -2,30 +2,59 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>analyzer.social | منصة التحليل الذكي وإنشاء البايو</title>
-    <meta name="description" content="منصة متكاملة لتحليل حسابات التواصل الاجتماعي، إنشاء صفحات بايو احترافية، وبوت ذكي للمساعدة.">
-    <meta name="keywords" content="تحليل يوتيوب, تحليل سناب شات, تحليل تيك توك, صفحة بايو, بوت تلجرام">
-    <meta name="author" content="analyzer.social">
-    <meta name="theme-color" content="#667eea">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="google-site-verification" content="OXJkNinGB3mqTHTdKGapfzumI5_QIIsdwnVySZ59FX0" />
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="analyzer.social | منصة التحليل الذكي وإنشاء البايو">
-    <meta property="og:description" content="منصة متكاملة لتحليل حسابات التواصل الاجتماعي وإنشاء صفحات بايو احترافية">
+    <!-- ===================================================== -->
+    <!-- SEO الأساسي -->
+    <!-- ===================================================== -->
+    <title>Analyzer Social | منصتك المتكاملة للتحليل وصفحات البايو</title>
+    <meta name="description" content="Analyzer Social: منصة متكاملة لإنشاء صفحات بايو احترافية، تحليل حسابات يوتيوب، سناب شات، تيك توك، وبوتات تلجرام مدعومة بالذكاء الاصطناعي Gemini">
+    <meta name="keywords" content="صفحة بايو, تحليل يوتيوب, تحليل سناب شات, تحليل تيك توك, بوت تلجرام, ذكاء اصطناعي, Gemini AI, analyzer social">
+    <meta name="author" content="Analyzer Social">
+    <meta name="theme-color" content="#667eea">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Arabic">
+    
+    <!-- ===================================================== -->
+    <!-- Open Graph / فيسبوك، واتساب، تليجرام -->
+    <!-- ===================================================== -->
+    <meta property="og:title" content="Analyzer Social | منصتك المتكاملة">
+    <meta property="og:description" content="منصة متكاملة لإنشاء صفحات البايو، تحليل حسابات التواصل الاجتماعي، وبوتات تلجرام مدعومة بالذكاء الاصطناعي">
     <meta property="og:image" content="https://analyzer.social/static/assets/icons/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://analyzer.social">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Analyzer Social">
     
-    <!-- Favicon -->
+    <!-- ===================================================== -->
+    <!-- تويتر كارد -->
+    <!-- ===================================================== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Analyzer Social | منصتك المتكاملة">
+    <meta name="twitter:description" content="منصة متكاملة لإنشاء صفحات البايو، تحليل حسابات التواصل الاجتماعي، وبوتات تلجرام مدعومة بالذكاء الاصطناعي">
+    <meta name="twitter:image" content="https://analyzer.social/static/assets/icons/og-image.jpg">
+    
+    <!-- ===================================================== -->
+    <!-- أيقونات الموقع (Favicon) -->
+    <!-- ===================================================== -->
     <link rel="apple-touch-icon" sizes="180x180" href="/static/assets/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/icons/favicon-16x16.png">
     <link rel="manifest" href="/static/assets/icons/site.webmanifest">
     
+    <!-- ===================================================== -->
+    <!-- الخطوط والأيقونات -->
+    <!-- ===================================================== -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
+        /* ===================================================== */
+        /* القواعد الأساسية */
+        /* ===================================================== */
+        
         * {
             margin: 0;
             padding: 0;
@@ -39,17 +68,32 @@
         }
         
         /* ===================================================== */
-        /* الهيدر */
+        /* الهيدر المحسن مع صورة الخلفية */
         /* ===================================================== */
         
-        .header {
+        .hero-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            position: sticky;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-header-bg {
+            position: absolute;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        .header {
+            position: relative;
+            z-index: 2;
+            padding: 15px 30px;
+            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.1);
         }
         
         .header-container {
@@ -66,19 +110,22 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         
         .logo-img {
@@ -98,11 +145,29 @@
             text-decoration: none;
             transition: all 0.3s;
             font-weight: 500;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+            left: 0;
+            right: auto;
         }
         
         .nav-links a:hover {
-            opacity: 0.8;
-            text-decoration: underline;
+            opacity: 0.9;
         }
         
         /* ===================================================== */
@@ -114,18 +179,26 @@
             margin: 0 auto;
             padding: 80px 30px;
             text-align: center;
+            position: relative;
+            z-index: 2;
         }
         
         .hero h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 3.5rem;
+            color: white;
             margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .hero h1 span {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .hero p {
-            color: #4a5568;
+            color: rgba(255,255,255,0.95);
             font-size: 1.2rem;
             max-width: 700px;
             margin: 0 auto 30px;
@@ -139,44 +212,46 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
+            background: white;
+            color: #667eea;
+            padding: 14px 35px;
+            border-radius: 60px;
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         
         .btn-secondary {
-            background: white;
-            color: #667eea;
-            padding: 12px 30px;
-            border-radius: 50px;
+            background: transparent;
+            color: white;
+            padding: 14px 35px;
+            border-radius: 60px;
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s;
-            border: 2px solid #667eea;
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            border: 2px solid white;
         }
         
         .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         
         /* ===================================================== */
-        /* بطاقات الخدمات */
+        /* بطاقات الخدمات المحسنة */
         /* ===================================================== */
         
         .services {
@@ -201,7 +276,7 @@
         
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 30px;
         }
         
@@ -211,15 +286,31 @@
             padding: 35px 25px;
             text-align: center;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             cursor: pointer;
             position: relative;
             overflow: hidden;
         }
         
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+        
         .service-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.12);
         }
         
         .service-card.recommended {
@@ -239,8 +330,8 @@
         }
         
         .service-icon {
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             background: linear-gradient(135deg, #667eea15, #764ba215);
             border-radius: 25px;
             display: flex;
@@ -250,7 +341,7 @@
         }
         
         .service-icon i {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             background-clip: text;
@@ -258,7 +349,7 @@
         }
         
         .service-card h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             margin-bottom: 15px;
             color: #2d3748;
         }
@@ -279,35 +370,42 @@
         .service-features li {
             list-style: none;
             font-size: 13px;
-            padding: 6px 0;
+            padding: 8px 0;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             color: #4a5568;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .service-features li:last-child {
+            border-bottom: none;
         }
         
         .service-features li i {
             color: #28a745;
-            font-size: 12px;
+            font-size: 14px;
+            width: 20px;
         }
         
         .service-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
+            padding: 14px 25px;
+            border-radius: 60px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
             transition: all 0.3s;
             width: 100%;
             font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
         }
         
         .service-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.4);
         }
         
         .service-btn.bio {
@@ -323,43 +421,14 @@
         }
         
         /* ===================================================== */
-        /* إحصائيات */
-        /* ===================================================== */
-        
-        .stats {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 60px 30px;
-            color: white;
-        }
-        
-        .stats-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        /* ===================================================== */
-        /* الفوتر */
+        /* الفوتر المحسن */
         /* ===================================================== */
         
         .footer {
             background: #1a202c;
             color: #a0aec0;
-            padding: 40px 30px 20px;
+            padding: 50px 30px 25px;
+            margin-top: 60px;
         }
         
         .footer-container {
@@ -367,46 +436,72 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
+            gap: 40px;
         }
         
         .footer-logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: white;
+            margin-bottom: 15px;
+        }
+        
+        .footer-logo img {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+        }
+        
+        .footer-about p {
+            line-height: 1.6;
+            font-size: 0.85rem;
         }
         
         .footer-links h4 {
             color: white;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            font-size: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-links h4::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 30px;
+            height: 2px;
+            background: #667eea;
         }
         
         .footer-links a {
             display: block;
             color: #a0aec0;
             text-decoration: none;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-size: 0.85rem;
             transition: all 0.3s;
         }
         
         .footer-links a:hover {
             color: #667eea;
+            transform: translateX(-5px);
         }
         
         .footer-bottom {
             text-align: center;
             padding-top: 30px;
-            margin-top: 30px;
+            margin-top: 40px;
             border-top: 1px solid #2d3748;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
         }
         
         /* ===================================================== */
-        /* استجابة الجوال */
+        /* استجابة الجوال المحسنة */
         /* ===================================================== */
         
         @media (max-width: 768px) {
@@ -430,7 +525,15 @@
             .nav-links {
                 justify-content: center;
             }
+            
+            .service-card h3 {
+                font-size: 1.3rem;
+            }
         }
+        
+        /* ===================================================== */
+        /* تأثيرات الحركة */
+        /* ===================================================== */
         
         @keyframes fadeInUp {
             from {
@@ -451,44 +554,54 @@
         .service-card:nth-child(1) { animation-delay: 0.1s; }
         .service-card:nth-child(2) { animation-delay: 0.2s; }
         .service-card:nth-child(3) { animation-delay: 0.3s; }
+        
+        /* تحديد النص */
+        ::selection {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
     </style>
 </head>
 <body>
     <!-- ===================================================== -->
-    <!-- الهيدر -->
+    <!-- الهيدر مع صورة الخلفية -->
     <!-- ===================================================== -->
     
-    <div class="header">
-        <div class="header-container">
-            <div class="logo">
-                <div class="logo-icon">
-                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" class="logo-img">
+    <div class="hero-header">
+        <img src="/static/assets/icons/Hero Header-2076×757.webp" alt="Analyzer Social Header" class="hero-header-bg">
+        
+        <div class="header">
+            <div class="header-container">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="/static/assets/icons/android-chrome-192x192.png" alt="Analyzer Social" class="logo-img">
+                    </div>
+                    <span>Analyzer Social</span>
                 </div>
-                <span>analyzer.social</span>
-            </div>
-            <div class="nav-links">
-                <a href="/">الرئيسية</a>
-                <a href="/privacy">سياسة الخصوصية</a>
-                <a href="/terms">شروط الخدمة</a>
-                <a href="/help">المساعدة</a>
+                <div class="nav-links">
+                    <a href="/">الرئيسية</a>
+                    <a href="/privacy">سياسة الخصوصية</a>
+                    <a href="/terms">شروط الخدمة</a>
+                    <a href="/help">المساعدة</a>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- ===================================================== -->
-    <!-- القسم الرئيسي -->
-    <!-- ===================================================== -->
-    
-    <div class="hero">
-        <h1>منصة متكاملة لتحليل وإنشاء البايو</h1>
-        <p>خدمات ذكية لتحليل حسابات التواصل الاجتماعي، إنشاء صفحات بايو احترافية، وبوت تلجرام ذكي للمساعدة</p>
-        <div class="hero-buttons">
-            <a href="/bio/" class="btn-primary">
-                <i class="fas fa-plus-circle"></i> ابدأ الآن - مجاني
-            </a>
-            <a href="#services" class="btn-secondary">
-                <i class="fas fa-arrow-down"></i> اكتشف الخدمات
-            </a>
+        
+        <!-- ===================================================== -->
+        <!-- القسم الرئيسي -->
+        <!-- ===================================================== -->
+        
+        <div class="hero">
+            <h1>Analyzer <span>Social</span></h1>
+            <p>منصة متكاملة لإنشاء صفحات البايو، تحليل حسابات التواصل الاجتماعي، وبوتات تلجرام مدعومة بالذكاء الاصطناعي Gemini</p>
+            <div class="hero-buttons">
+                <a href="/bio/" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> ابدأ الآن - مجاني
+                </a>
+                <a href="#services" class="btn-secondary">
+                    <i class="fas fa-arrow-down"></i> اكتشف الخدمات
+                </a>
+            </div>
         </div>
     </div>
     
@@ -528,12 +641,12 @@
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <h3>📊 أدوات التحليل</h3>
-                <p>تحليل متقدم لحسابات التواصل الاجتماعي مع توصيات ذكاء اصطناعي</p>
+                <p>تحليل متقدم لحسابات التواصل الاجتماعي مع توصيات ذكاء اصطناعي Gemini</p>
                 <ul class="service-features">
-                    <li><i class="fas fa-check-circle"></i> تحليل قنوات يوتيوب</li>
-                    <li><i class="fas fa-check-circle"></i> تحليل حسابات تيك توك</li>
+                    <li><i class="fas fa-check-circle"></i> تحليل قنوات يوتيوب (YouTube API)</li>
+                    <li><i class="fas fa-check-circle"></i> تحليل حسابات تيك توك (TikTok API)</li>
                     <li><i class="fas fa-check-circle"></i> تحليل سناب شات (Snapchat Kit API)</li>
-                    <li><i class="fas fa-check-circle"></i> توصيات AI من Google Gemini</li>
+                    <li><i class="fas fa-check-circle"></i> توصيات AI مخصصة من Google Gemini</li>
                     <li><i class="fas fa-check-circle"></i> تقارير مفصلة قابلة للتنزيل</li>
                 </ul>
                 <button class="service-btn tools" onclick="window.location.href='/tools/'">
@@ -541,19 +654,19 @@
                 </button>
             </div>
             
-            <!-- خدمة 3: بوت تلجرام -->
+            <!-- خدمة 3: بوتات الذكاء الاصطناعي -->
             <div class="service-card">
                 <div class="service-icon">
                     <i class="fab fa-telegram"></i>
                 </div>
-                <h3>🤖 بوت Telegram</h3>
-                <p>بوت ذكي للدعم والتحليل المباشر عبر التلجرام</p>
+                <h3>🤖 بوتات الذكاء الاصطناعي</h3>
+                <p>بوتات تلجرام مدعومة بـ Gemini AI للتحليل والمساعدة الفورية</p>
                 <ul class="service-features">
                     <li><i class="fas fa-check-circle"></i> تحليل سريع للحسابات عبر البوت</li>
+                    <li><i class="fas fa-check-circle"></i> مساعد ذكي للإجابة على الاستفسارات</li>
                     <li><i class="fas fa-check-circle"></i> دعم فني 24/7</li>
                     <li><i class="fas fa-check-circle"></i> إشعارات فورية للتحديثات</li>
                     <li><i class="fas fa-check-circle"></i> إدارة الاشتراك المميز</li>
-                    <li><i class="fas fa-check-circle"></i> استعلامات سريعة عن الخدمات</li>
                 </ul>
                 <button class="service-btn bot" onclick="window.open('https://t.me/analyzer_social_bot', '_blank')">
                     <i class="fab fa-telegram"></i> افتح البوت
@@ -563,87 +676,58 @@
     </div>
     
     <!-- ===================================================== -->
-    <!-- إحصائيات -->
-    <!-- ===================================================== -->
-    
-
-    
-    <!-- ===================================================== -->
-    <!-- الفوتر -->
+    <!-- الفوتر المحسن -->
     <!-- ===================================================== -->
     
     <div class="footer">
         <div class="footer-container">
-            <div>
+            <div class="footer-about">
                 <div class="footer-logo">
-                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="analyzer.social" style="width: 30px; height: 30px; border-radius: 8px;">
-                    analyzer.social
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="Analyzer Social">
+                    <span>Analyzer Social</span>
                 </div>
-                <p style="margin-top: 10px; font-size: 0.8rem;">منصة متكاملة للتحليل وإنشاء البايو</p>
-                <p style="margin-top: 5px; font-size: 0.7rem;">👨‍💻 @Alshabany_Ai</p>
+                <p>منصة متكاملة للتحليل الذكي وإنشاء صفحات البايو</p>
+                <p style="margin-top: 10px; font-size: 0.8rem;">👨‍💻 المطور: @Alshabany_Ai</p>
             </div>
             <div class="footer-links">
                 <h4>روابط مهمة</h4>
-                <a href="/privacy">🔒 سياسة الخصوصية</a>
-                <a href="/terms">⚖️ شروط الخدمة</a>
-                <a href="/help">📖 المساعدة والدعم</a>
+                <a href="/privacy"><i class="fas fa-lock"></i> سياسة الخصوصية</a>
+                <a href="/terms"><i class="fas fa-file-contract"></i> شروط الخدمة</a>
+                <a href="/help"><i class="fas fa-question-circle"></i> المساعدة والدعم</a>
             </div>
             <div class="footer-links">
                 <h4>خدماتنا</h4>
-                <a href="/bio/">📄 صفحات البايو</a>
-                <a href="/tools/">📊 أدوات التحليل</a>
-                <a href="https://t.me/analyzer_social_bot" target="_blank">🤖 بوت Telegram</a>
+                <a href="/bio/"><i class="fas fa-id-card"></i> صفحات البايو</a>
+                <a href="/tools/"><i class="fas fa-chart-line"></i> أدوات التحليل</a>
+                <a href="https://t.me/analyzer_social_bot" target="_blank"><i class="fab fa-telegram"></i> بوت Telegram</a>
             </div>
             <div class="footer-links">
                 <h4>تواصل معنا</h4>
                 <a href="https://t.me/analyzer_social_bot" target="_blank"><i class="fab fa-telegram"></i> بوت الدعم</a>
+                <a href="https://t.me/Alshabany_Ai" target="_blank"><i class="fab fa-telegram"></i> المطور</a>
                 <a href="mailto:help@analyzer.social"><i class="fas fa-envelope"></i> help@analyzer.social</a>
             </div>
         </div>
         <div class="footer-bottom">
-            © 2026 analyzer.social | جميع الحقوق محفوظة
+            © 2026 Analyzer Social | جميع الحقوق محفوظة
         </div>
     </div>
     
     <script src="/static/config.js"></script>
     <script>
-        // جلب إحصائيات حقيقية من قاعدة البيانات
-        async function loadStats() {
-            try {
-                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                // جلب عدد المستخدمين
-                const { count: usersCount, error: usersError } = await supabaseClient
-                    .from('app_users')
-                    .select('*', { count: 'exact', head: true });
-                
-                // جلب عدد صفحات البايو
-                const { count: pagesCount, error: pagesError } = await supabaseClient
-                    .from('bio_pages')
-                    .select('*', { count: 'exact', head: true });
-                
-                if (!usersError && usersCount) {
-                    document.getElementById('usersCount').innerHTML = `+${usersCount.toLocaleString('ar')}`;
-                }
-                
-                if (!pagesError && pagesCount) {
-                    document.getElementById('pagesCount').innerHTML = `+${pagesCount.toLocaleString('ar')}`;
-                }
-                
-                // عدد التحليلات شهرياً (تقديري)
-                document.getElementById('analysesCount').innerHTML = `+${Math.floor((pagesCount || 0) * 1.5).toLocaleString('ar')}`;
-                
-            } catch (error) {
-                console.error('Error loading stats:', error);
-                // قيم افتراضية
-                document.getElementById('usersCount').innerHTML = '+1,000';
-                document.getElementById('pagesCount').innerHTML = '+500';
-                document.getElementById('analysesCount').innerHTML = '+1,500';
-            }
-        }
+        // تمرير المتغيرات من Flask
+        const SUPABASE_URL = window.SUPABASE_URL || '{{ SUPABASE_URL }}';
+        const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '{{ SUPABASE_ANON_KEY }}';
         
-        if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
-            loadStats();
+        // لا توجيه تلقائي - المستخدم يختار متى يسجل دخوله
+        const savedToken = localStorage.getItem('bio_token');
+        if (savedToken) {
+            // تغيير زر "أنشئ صفحتك" إلى "لوحة التحكم" إذا كان المستخدم مسجلاً
+            const serviceBtn = document.querySelector('.service-btn.bio');
+            if (serviceBtn) {
+                serviceBtn.innerHTML = '<i class="fas fa-tachometer-alt"></i> لوحة التحكم';
+                serviceBtn.onclick = () => window.location.href = '/bio/dashboard';
+            }
         }
     </script>
 </body>
