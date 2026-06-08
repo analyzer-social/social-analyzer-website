@@ -792,9 +792,9 @@
         async function copyPageUrl() {
             let url;
             if (currentUsername) {
-                url = `https://bio.analyzer.social/${currentUsername}`;
+                url = `https://analyzer.social/bio/${currentUsername}`;
             } else if (currentPageUrl) {
-                url = `https://bio.analyzer.social/bio/${currentPageUrl}`;
+                url = `https://analyzer.social/bio/${currentPageUrl}`;
             } else {
                 showError('⚠️ لا يوجد رابط للحفظ بعد');
                 return;
