@@ -337,7 +337,7 @@ def dashboard():
                          SUPABASE_URL=SUPABASE_BIO_URL, 
                          SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
 
-@app.route('/auth')
+@app.route('/bio/auth')
 def auth():
     """معالج مصادقة تلغرام"""
     return render_template('auth.html', 
