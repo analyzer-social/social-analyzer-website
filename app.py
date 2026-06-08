@@ -859,6 +859,17 @@ def terms_of_service():
 def help_page():
     """صفحة الدليل والمساعدة"""
     return render_template('help.html')
+ # =====================================================
+# صفحة أدوات التحليل
+# =====================================================
+
+@app.route('/tools/')
+def tools_page():
+    """الصفحة الرئيسية لأدوات التحليل"""
+    # استخدم القالب الجاهز الذي ستنشئه
+    return render_template('tools.html', 
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)   
 
 # =====================================================
 # لوحة تحكم المدير
