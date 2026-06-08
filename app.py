@@ -328,7 +328,7 @@ def bio_home():
     """صفحة البايو الرئيسية (تسجيل الدخول)"""
     return render_template('index.html', ...)  # ملفك الحالي
     
-@app.route('/dashboard')
+@app.route('/bio/dashboard')
 def dashboard():
     """لوحة تحكم المستخدم"""
     return render_template('dashboard.html', 

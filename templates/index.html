@@ -688,7 +688,7 @@
         // التحقق من وجود جلسة سابقة
         const savedToken = localStorage.getItem('bio_token');
         if (savedToken) {
-            window.location.href = '/dashboard';
+            window.location.href = '/bio/dashboard';
         }
         
         // اظهار صورة المستخدم اذا كان مسجل دخول
@@ -725,7 +725,7 @@
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + '/auth/google-callback'
+                        redirectTo: window.location.origin + '/bio/auth/google-callback'
                     }
                 });
                 if (error) throw error;
