@@ -68,107 +68,173 @@
         }
         
         /* ===================================================== */
-        /* الهيدر المحسن مع صورة الخلفية */
-        /* ===================================================== */
-        
-        .hero-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-header-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.15;
-            pointer-events: none;
-        }
-        
-        .header {
-            position: relative;
-            z-index: 2;
-            padding: 15px 30px;
-            backdrop-filter: blur(5px);
-            background: rgba(0,0,0,0.1);
-        }
-        
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .logo-icon {
-            width: 45px;
-            height: 45px;
-            background: white;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-weight: 500;
-            padding: 5px 0;
-            position: relative;
-        }
-        
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 0;
-            height: 2px;
-            background: white;
-            transition: width 0.3s;
-        }
-        
-        .nav-links a:hover::after {
-            width: 100%;
-            left: 0;
-            right: auto;
-        }
-        
-        .nav-links a:hover {
-            opacity: 0.9;
-        }
+/* الهيدر مع صورة الخلفية (الصورة مرئية بالكامل) */
+/* ===================================================== */
+
+.hero-header {
+    position: relative;
+    min-height: 400px;
+}
+
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 15px 30px;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo-icon {
+    width: 45px;
+    height: 45px;
+    background: white;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+    padding: 5px 0;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: width 0.3s;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+    left: 0;
+    right: auto;
+}
+
+/* ===================================================== */
+/* النصوص تحت الصورة */
+/* ===================================================== */
+
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 30px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    color: #4a5568;
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 14px 35px;
+    border-radius: 60px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #667eea;
+    padding: 14px 35px;
+    border-radius: 60px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+    background: rgba(102,126,234,0.1);
+    transform: translateY(-3px);
+}
         
         /* ===================================================== */
         /* القسم الرئيسي (Hero) */
@@ -563,29 +629,50 @@
     </style>
 </head>
 <body>
-    <!-- ===================================================== -->
-    <!-- الهيدر مع صورة الخلفية -->
-    <!-- ===================================================== -->
+<!-- ===================================================== -->
+<!-- الهيدر مع صورة الخلفية (الصورة مرئية بالكامل) -->
+<!-- ===================================================== -->
+
+<div class="hero-header" style="background-image: url('/static/assets/icons/Hero Header-2076×757.webp'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 400px;">
     
-    <div class="hero-header">
-        <img src="/static/assets/icons/Hero Header-2076×757.webp" alt="Analyzer Social Header" class="hero-header-bg">
-        
-        <div class="header">
-            <div class="header-container">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <img src="/static/assets/icons/android-chrome-192x192.png" alt="Analyzer Social" class="logo-img">
-                    </div>
-                    <span>Analyzer Social</span>
+    <!-- الهيدر (الشريط العلوي) فقط فوق الصورة -->
+    <div class="header" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="/static/assets/icons/android-chrome-192x192.png" alt="Analyzer Social" class="logo-img">
                 </div>
-                <div class="nav-links">
-                    <a href="/">الرئيسية</a>
-                    <a href="/privacy">سياسة الخصوصية</a>
-                    <a href="/terms">شروط الخدمة</a>
-                    <a href="/help">المساعدة</a>
-                </div>
+                <span>Analyzer Social</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">الرئيسية</a>
+                <a href="/privacy">سياسة الخصوصية</a>
+                <a href="/terms">شروط الخدمة</a>
+                <a href="/help">المساعدة</a>
             </div>
         </div>
+    </div>
+    
+    <!-- بدون نصوص هنا - الصورة فقط -->
+    
+</div>
+
+<!-- ===================================================== -->
+<!-- النصوص تحت الصورة -->
+<!-- ===================================================== -->
+
+<div class="hero">
+    <h1>Analyzer <span>Social</span></h1>
+    <p>منصة متكاملة لإنشاء صفحات البايو، تحليل حسابات التواصل الاجتماعي، وبوتات تلجرام مدعومة بالذكاء الاصطناعي Gemini</p>
+    <div class="hero-buttons">
+        <a href="/bio/" class="btn-primary">
+            <i class="fas fa-plus-circle"></i> ابدأ الآن - مجاني
+        </a>
+        <a href="#services" class="btn-secondary">
+            <i class="fas fa-arrow-down"></i> اكتشف الخدمات
+        </a>
+    </div>
+</div>
         
         <!-- ===================================================== -->
         <!-- القسم الرئيسي -->
