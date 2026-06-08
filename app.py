@@ -410,7 +410,7 @@ def bio_page_by_page_url(page_url):
                          bio_data=bio_data)
 
 # ======================هيثم===============================
-@app.route('/plans')
+@app.route('/bio/plans')
 def plans_page():
     """صفحة خطط الاشتراك والدفع"""
     return render_template('plans.html', 
@@ -980,7 +980,7 @@ def admin_stats():
         'total_clicks': total_clicks
     }) 
 # =====================================================
-@app.route('/api/subscription/plans', methods=['GET'])
+@app.route('/api/subscription/bio/plans', methods=['GET'])
 def get_subscription_plans():
     """جلب خطط الاشتراك من قاعدة البيانات"""
     if not supabase:
@@ -1075,7 +1075,7 @@ def sitemap():
         static_urls = [
             {'loc': '/', 'priority': '1.0', 'changefreq': 'weekly'},
             {'loc': '/dashboard', 'priority': '0.9', 'changefreq': 'weekly'},
-            {'loc': '/plans', 'priority': '0.8', 'changefreq': 'monthly'},
+            {'loc': '/bio/plans', 'priority': '0.8', 'changefreq': 'monthly'},
             {'loc': '/privacy', 'priority': '0.5', 'changefreq': 'yearly'},
             {'loc': '/terms', 'priority': '0.5', 'changefreq': 'yearly'},
             {'loc': '/help', 'priority': '0.6', 'changefreq': 'monthly'},
@@ -1137,7 +1137,7 @@ def robots():
     content = """User-agent: *
 Allow: /
 Allow: /bio/
-Allow: /plans
+Allow: /bio/plans
 Allow: /privacy
 Allow: /terms
 Allow: /help

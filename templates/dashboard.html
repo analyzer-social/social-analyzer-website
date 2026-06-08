@@ -822,7 +822,7 @@
             const userId = localStorage.getItem('bio_user_id');
             const username = localStorage.getItem('bio_username');
             const token = btoa(`${userId}:${Date.now()}`);
-            window.open(`/plans?token=${token}&user_id=${userId}&username=${username}`, '_blank');
+            window.open(`/bio/plans?token=${token}&user_id=${userId}&username=${username}`, '_blank');
         }
         
         // =====================================================
