@@ -326,7 +326,9 @@ def home():
 @app.route('/bio/')
 def bio_home():
     """صفحة البايو الرئيسية (تسجيل الدخول)"""
-    return render_template('index.html', ...)  # ملفك الحالي
+    return render_template('index.html',   # هذا هو الملف الذي يحتوي على أزرار المصادقة
+                         SUPABASE_URL=SUPABASE_BIO_URL, 
+                         SUPABASE_ANON_KEY=SUPABASE_BIO_ANON_KEY)
     
 @app.route('/bio/dashboard')
 def dashboard():
